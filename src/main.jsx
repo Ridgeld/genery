@@ -2,25 +2,28 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App.jsx';
 import './index.css';
-import { Routes, Route, Navigate } from "react-router-dom";
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
-const routes = [
+const router = createBrowserRouter([
   {
-    path: '/',
-    element: <App/>
+    path: "/",
+    element: <Logo/>
   },
   {
     path:'/about-us',
-    element: <h3>О нас</h3>
+    element: <About/>
   }
-];
+])
 
-ReactDOM.render(
+
+ReactDOM.createRoot(document.getElementById('main')).render(
   <React.StrictMode>
-    <Routes>
-      <Route path='/' element={<App/>} />
-      <Route path='/about' element={<h2>Привет!</h2>} />
-  </Routes>
+    <div className="wrapper">
+      <div className="content">
+      <RouterProvider router={router}/>
+      <h2>6565</h2>
+      </div>
+    </div>
+    {/* <App /> */}
   </React.StrictMode>,
-  document.getElementById('root')
-);
+)
