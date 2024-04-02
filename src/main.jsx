@@ -20,7 +20,7 @@ ReactDOM.createRoot(document.getElementById('main')).render(
   <React.StrictMode>
     <div className="wrapper">
       <div className="content">
-      <RouterProvider router={router}/>
+      <App/>
       <h2>6565</h2>
       </div>
     </div>
