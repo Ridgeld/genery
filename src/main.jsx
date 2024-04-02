@@ -7,7 +7,7 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 const routes = [
   {
     path: '/',
-    element: <h2>Привет!</h2>
+    element: <App/>
   },
   {
     path:'/about-us',
