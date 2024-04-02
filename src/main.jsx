@@ -11,7 +11,7 @@ const router = createBrowserRouter([
   },
   {
     path:'/about-us',
-    element: <h2>О нас</h2>
+    element: <h2>О нас!</h2>
   }
 ])
 
