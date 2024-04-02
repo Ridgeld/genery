@@ -7,23 +7,13 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App/>
+    element: <div>Hello world!</div>,
   },
-  {
-    path:'/about-us',
-    element: <h2>Привет</h2>
-  }
-])
+]);
 
 
-ReactDOM.createRoot(document.getElementById('main')).render(
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <div className="wrapper">
-      <div className="content">
-      <RouterProvider router={router}/>
-      <h2>6565</h2>
-      </div>
-    </div>
-    {/* <App /> */}
-  </React.StrictMode>,
-)
+    <RouterProvider router={router} />
+  </React.StrictMode>
+);
