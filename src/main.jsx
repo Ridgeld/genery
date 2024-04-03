@@ -2,25 +2,29 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App.jsx';
 import './index.css';
-import { BrowserRouter, Routes, Route } from 'react-router-dom'; // Добавлены Routes и Route
+import { HashRouter, createBrowserRouter } from 'react-router-dom'
 
-// Определите маршруты внутри компонента App или внутри Routes
-const routes = [
+
+const router = createBrowserRouter([
   {
-    path: "",
-    element: <div>Hello world!</div>,
+    path: "/",
+    element: <Logo/>
   },
-];
+  {
+    path:'/about-us',
+    element: <About/>
+  }
+])
 
-ReactDOM.createRoot(document.getElementById("main")).render(
+
+ReactDOM.createRoot(document.getElementById('main')).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        {routes.map((route, index) => (
-          <Route key={index} path={route.path} element={route.element} />
-        ))}
-        <Route path="/app" element={<App />} /> {/* Пример маршрута для компонента App */}
-      </Routes>
-    </BrowserRouter>
-  </React.StrictMode>
-);
+    <div className="wrapper">
+      <div className="content">
+      <HashRouter router={router}/>
+      <h2>6565</h2>
+      </div>
+    </div>
+    {/* <App /> */}
+  </React.StrictMode>,
+)
