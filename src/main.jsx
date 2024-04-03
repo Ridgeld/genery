@@ -8,11 +8,11 @@ import { HashRouter, createBrowserRouter } from 'react-router-dom'
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Logo/>
+    element: <h2>Привет!</h2>
   },
   {
     path:'/about-us',
-    element: <About/>
+    element: <h2>О нас</h2>
   }
 ])
 
