@@ -17,6 +17,7 @@ const router = createHashRouter([
   },
 ]);
 
+
 ReactDOM.createRoot(document.getElementById('main')).render(
   <React.StrictMode>
     <div className="wrapper">
