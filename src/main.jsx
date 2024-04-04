@@ -13,7 +13,7 @@ const router = createHashRouter([
   },
   {
     path: "/about-us",
-    element: <App/>,
+    element: <h2>О нас</h2>,
   },
 ]);
 
