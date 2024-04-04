@@ -3,12 +3,13 @@ import ReactDOM from 'react-dom';
 import App from './App.jsx';
 import './index.css';
 import { createHashRouter, RouterProvider } from "react-router-dom";
+import { Logo } from './logo/Logo.jsx';
 
 
 const router = createHashRouter([
   {
     path: "/",
-    element: <h2>Привет!</h2>,
+    element: <Logo/>,
   },
   {
     path: "/about-us",
