@@ -3,7 +3,7 @@ import styles from './Logo.module.scss'
 import { useEffect } from 'react';
 
 
-export function Logo(){
+export default function Logo(){
   const navigate = useNavigate();
 
   useEffect(() => {
