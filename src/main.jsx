@@ -24,6 +24,5 @@ ReactDOM.createRoot(document.getElementById('main')).render(
       <RouterProvider router={router} />
       </div>
     </div>
-    {/* <App /> */}
   </React.StrictMode>,
 )
