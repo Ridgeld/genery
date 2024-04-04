@@ -8,7 +8,7 @@ export function Logo(){
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      navigate('/about-us');
+      navigate('/about');
     }, 3000);
 
     return () => clearTimeout(timeoutId);
