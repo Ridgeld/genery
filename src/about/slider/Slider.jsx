@@ -30,6 +30,7 @@ function SamplePrevArrow(props) {
   );
 }
 
+
 export function MySlider() { // изменяем имя компонента
 
   const settings = {
