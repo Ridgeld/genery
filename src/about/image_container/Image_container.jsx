@@ -1,4 +1,4 @@
-import styles from './Image-container.module.scss'
+import styles from './Image_container.module.scss'
 export function Image_container(){
   return (
     <div className={styles.container}>
