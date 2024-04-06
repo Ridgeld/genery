@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App.jsx';
+import About from './about/About.jsx';
 import Logo from './logo/Logo.jsx';
 import './index.css';
 import { createHashRouter, RouterProvider } from "react-router-dom";
@@ -13,7 +13,7 @@ const router = createHashRouter([
   },
   {
     path: "/about",
-    element: <h2>О нас</h2>,
+    element: <About/>,
   },
 ]);
 

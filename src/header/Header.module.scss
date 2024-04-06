@@ -1,0 +1,45 @@
+.header{
+    position: absolute;
+    top:0;
+    display: flex;
+    width: calc(100% - 20px);
+    padding: 10px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background: #0D0D12;
+    z-index: 3;
+  }
+  .logo_container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+  .icon {
+    max-width: 100%;
+    max-height: 100%;
+  
+    svg{
+        width: 18px;
+        height: 18px;
+    }
+  }
+  .title{
+    font-size: clamp(15px, 4vw, 20px);
+    font-weight: 500;
+    color: #fff;
+  }
+  .settings{
+    max-width: 100%;
+    max-height: 100%;
+  
+    svg{
+        width: 25px;
+        height: 25px;
+    }
+  }
+  .hide{
+    display: none;
+  }
+  
