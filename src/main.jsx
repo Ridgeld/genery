@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { About } from './about/About.jsx';
-import { Logo } from './logo/Logo.jsx';
+import Logo from './logo/Logo.jsx';
 import './index.css';
 import { createHashRouter, RouterProvider } from "react-router-dom";
 
