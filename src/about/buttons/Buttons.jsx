@@ -1,5 +1,5 @@
 import styles from './Buttons.module.scss'
-export function Image_container(){
+export function Buttons(){
   return (
     <div className={styles.container}>
         <button className='button stroke'>Привет</button>
