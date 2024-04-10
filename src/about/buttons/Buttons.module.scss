@@ -26,8 +26,13 @@
 }
 .stroke{
     background: transparent;
-    stroke: 2px solid #0038FF;
+    border: 2px solid #0038FF;
 }
 .arrow{
     margin-left: auto;
+}
+@media(min-width: 700px){
+    .container{
+        width: 60%;
+    }
 }
