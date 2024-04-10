@@ -7,16 +7,33 @@
 }
 img{
     position: absolute;
-    max-width: 250px;
-    max-height: 250px;
+    max-width: 200px;
+    max-height: 200px;
     z-index: 3;
     user-select: none;
 }
 .img_1{
-    bottom:0;
+    bottom:40px;
     left: -110px;
 }
 .img_2{
     top:0;
     right: -100px;
+}
+@media(min-width:700px){
+    img{
+        position: absolute;
+        max-width: 250px;
+        max-height: 250px;
+        z-index: 3;
+        user-select: none;
+    }
+    .img_1{
+        bottom:0;
+        left: -110px;
+    }
+    .img_2{
+        top:0;
+        right: -100px;
+    }
 }
