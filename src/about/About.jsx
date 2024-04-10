@@ -6,7 +6,7 @@ import { MySlider } from './slider/Slider.jsx'
 export function About(){
   return (
     <>
-    <Header/>
+    <Header isMain={true}/>
     <MySlider/>
     <Buttons/>
     <Image_container/>
