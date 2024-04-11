@@ -4,14 +4,14 @@ import { useEffect } from 'react';
 
 export function Buttons(){
   const navigate = useNavigate();
-  
+
   const redirect = () =>{
-    navigate('/me');
+    navigate('/menu');
   }
   return (
     <div className={styles.container}>
-        <button className={`${styles.button} ${styles.stroke}`} onClick={redirect}>Регистрация</button>
-        <button className={`${styles.button} ${styles.fill}`}>Войти</button>
+        <button className={`${styles.button} ${styles.stroke}`}>Регистрация</button>
+        <button className={`${styles.button} ${styles.fill}`} onClick={redirect} >Войти</button>
     </div>
   )
 }
