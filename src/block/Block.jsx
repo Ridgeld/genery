@@ -25,7 +25,8 @@ function Block(data) {
              onMouseLeave={() => setIsHovered(false)}
              onClick={{handleClick}}>
             <div className={styles.info}>
-                <div className={styles.title} style={{color: data.textColor}}>{data.name}</div>
+                <div className={styles.title} 
+                     style={{color: data.textColor}}>{data.name}</div>
                 <div className={styles.text} style={{color: data.textColor}}>{data.description}</div>
             </div>
             <div className={data.isCircleArrow ? styles.circle_arrow : styles.default_arrow}  
