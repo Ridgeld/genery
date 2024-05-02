@@ -1,0 +1,10 @@
+.container{
+    margin-top: 70px;
+    display: grid;
+    justify-content: flex-start;
+    grid-template-columns: repeat(4, 165px);
+    grid-auto-rows: 165px;
+    grid-gap: 20px;
+    width: 100%;
+    height: calc(100% - 70px);
+}

@@ -1,19 +1,22 @@
-import  Block  from '../block/Block.jsx';
-import '../themes/default.scss';
-// import { Header } from '../header/Header.jsx'
-// import { Buttons } from './buttons/Buttons.jsx';
-// import { Image_container } from './image_container/Image_container.jsx'
-// import { MySlider } from './slider/Slider.jsx'
-import { useAuth } from "../providers/Authprovired.jsx";
-import { signOut } from 'firebase/auth';
-import {MySlider} from './slider/Slider.jsx';
-import Button from './buttons/Button.jsx';
+// import  Block  from '../../block/Block.jsx';
+import '../../themes/default.scss';
+import { useAuth } from "../../providers/Authprovired.jsx";
+import MySlider  from '../../components/slider/Slider.jsx';
+import Button from '../../components/buttons/About/Button.jsx';
 import styles from './About.module.scss'
 import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 
-function About(){
+function About({ setHeaderColor }){
   const { authUser, ga } = useAuth();
-  const navigateTo = useNavigate()
+  const navigateTo = useNavigate();
+  const [slideIndex, setSlideIndex] = useState(0);
+
+  const handleClick = () =>{
+    navigateTo('/sign-in');
+  }
+  
+
   return (
     <div className={styles.container}>
       {/* <button onClick={() => signOut(ga)}>Выйти</button> */}
@@ -28,7 +31,7 @@ function About(){
         linkTo = "/sign-up"/> */}
         <MySlider/>
         <div className={styles.button_container}>
-          <Button name= "Начать" onClick={navigateTo('/sign-in')}/>
+          <Button name= "Начать" linkTo="/sign-in"/>
         </div>
     </div>
   )

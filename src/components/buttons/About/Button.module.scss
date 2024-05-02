@@ -1,0 +1,21 @@
+.button{
+    position: relative;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(100%);
+    height: 40px;
+    padding: 10px;
+    background: #0A0B10;
+    border-radius: 40px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 400;
+    cursor: pointer;
+}
+.arrow{
+    position: absolute;
+    right: 20px;
+    // margin-left: auto;
+}

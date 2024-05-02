@@ -1,7 +1,8 @@
 // import styles from './Slider.module.scss';
-import React, { useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Slider from "react-slick";
-
+import { ElementContext }  from "../../providers/ElementProvider.jsx";
+import '../../themes/default.scss'
 import './Slider.scss'
 
 import "slick-carousel/slick/slick.css";
@@ -31,18 +32,53 @@ function SamplePrevArrow(props) {
 }
 
 
-export function MySlider() { // изменяем имя компонента
+function MySlider() { // изменяем имя компонента
+    const { elementColors, setElementColors } = useContext(ElementContext);
 
-  useEffect(() => {
-    const slider = document.querySelector('.slick-active');
-    const slideIndex = parseInt(slider.getAttribute('data-index'));
+    const [slideIndex, setSlideIndex] = useState(0);
+    useEffect(() => {
+        const slider = document.querySelector('.slick-active');
+        const slideIndex = parseInt(slider.getAttribute('data-index'));
 
-    // Массив цветов фона для каждого слайда
-    const backgroundColors = ["#C3F82B", "#FF4365", "#0040F9"];
+        // Массив цветов фона для каждого слайда
+        const backgroundColors = ["#C3F82B", "#FF4365", "#0040F9"];
+        const colorsArray = {
+            0: { // Цвета для первого слайда
+                iconColor: 'var(--background-color)',
+                titleColor: 'var(--background-color)',
+                showArrow: false,
+                arrowColor: '#0000FF',
+                isBackground: false,
+                backgroundColor: '#FFFF00',
+                isHeader: true,
+            },
+            1: { // Цвета для второго слайда
+                iconColor: 'var(--text-first-color)',
+                titleColor: 'var(--text-first-color)',
+                showArrow: false,
+                arrowColor: '#0000FF',
+                isBackground: false,
+                backgroundColor: '#FFFF00',
+                isHeader: true,
+            },
+            2: { // Цвета для третьего слайда
+                iconColor: 'var(--text-first-color)',
+                titleColor: 'var(--text-first-color)',
+                showArrow: false,
+                arrowColor: '#0000FF',
+                isBackground: false,
+                backgroundColor: '#FFFF00',
+                isHeader: true,
+            },
+            // Добавьте цвета для других слайдов по мере необходимости
+        };
+        // Устанавливаем цвет фона body в зависимости от текущего слайда
+        document.body.style.backgroundColor = backgroundColors[slideIndex];
+        document.body.style.transition = "0.5s";
 
-    // Устанавливаем цвет фона body в зависимости от текущего слайда
-    document.body.style.backgroundColor = backgroundColors[slideIndex];
-  }, []);
+        setElementColors(colorsArray[slideIndex]);
+        // console.log(elementColors.iconColor);
+    }, [slideIndex]);
   const settings = {
     customPaging: function(i) {
       return (
@@ -62,12 +98,8 @@ export function MySlider() { // изменяем имя компонента
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
     afterChange: (index) => {
-      // Массив цветов фона для каждого слайда
-      const backgroundColors = ["#C3F82B", "#FF4365", "#0040F9"];
-      // Устанавливаем цвет фона body в зависимости от текущего слайда
-      document.body.style.backgroundColor = backgroundColors[index];
-      document.body.style.transition = "0.5s"
-    }
+        setSlideIndex(index); // Обновляем текущий индекс слайда
+      }
   };
   return (
     <div className='slider_container'>
@@ -103,3 +135,4 @@ export function MySlider() { // изменяем имя компонента
     </div>
   );
 }
+export default MySlider
