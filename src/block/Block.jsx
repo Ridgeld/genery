@@ -28,7 +28,7 @@ function Block(data) {
                 <div className={styles.title} 
                      style={{color: data.textColor}}>{data.name}</div>
                 <div className={styles.text} 
-                     style={{color: data.textColor}}>{data.description}</div>
+                     style={{color: data.textColor}}> {data.description} </div>
             </div>
             <div className={data.isCircleArrow ? styles.circle_arrow : styles.default_arrow}  
                 style={data.isCircleArrow 
