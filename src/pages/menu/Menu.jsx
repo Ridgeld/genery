@@ -21,7 +21,7 @@ function About(){
   }
   const fetchQuote = async () => {
     try {
-        const response = await fetch('/genery/public/assets/qoutes.txt');
+        const response = await fetch('genery/public/assets/qoutes.txt');
         const data = await response.text();
         const quotes = data.split('\n').filter(line => line.trim() !== '');
         const randomIndex = Math.floor(Math.random() * quotes.length);
