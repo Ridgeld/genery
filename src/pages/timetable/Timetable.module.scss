@@ -1,0 +1,79 @@
+.container{
+    margin-top: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    width: 90%;
+    gap: 20px;
+}
+.week{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.day{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    border-radius: 15px;
+    background: red;
+    font-size: 15px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: 0.5s ease;
+}
+.lessons-container{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+    gap:5px;
+}
+// .active{
+//     background: greenyellow;
+// }
+.lesson-body{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px;
+    width: calc(100% - 20px);
+    gap: 20px;
+    border-radius: 20px;
+}
+.lesson-circle{
+    display: flex;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+.lesson-name{
+    font-size: 15px;
+    font-weight: 500;
+}
+.lesson-time{
+    font-size: 12px;
+    font-weight: 400;
+}
+.lesson-room{
+    margin-left: auto;
+    font-size: 15px;
+    font-weight: 400;
+}
+@media(min-width: 700px){
+    .container{
+        width: 60%;
+    }
+    .lesson-body{
+        padding: 5px 10px 5px 5px;
+    }
+}

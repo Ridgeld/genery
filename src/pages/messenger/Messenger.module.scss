@@ -1,0 +1,369 @@
+.container{
+    margin-top: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    // height: 100%;
+    padding-bottom: 100px;
+}
+.background-cover{
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    height: 70px;
+}
+.input-container{
+    position: fixed;
+    width: 90%;
+    // height: 40px;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 10px;
+    z-index: 5000;
+}
+.message-action{
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    gap: 10px;
+    margin-bottom:40px;
+}
+.add-file{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    svg{
+        transition: 0.5s ease;
+        width: 20px;
+        height: 20px;
+    }
+}
+.add-file:hover{
+    svg{
+        opacity: 0.5;
+    }
+}
+.input-body{
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    width: calc(100% - 65px);
+    height: 30px;
+    max-height: 100px;
+    padding: 5px 5px 5px 10px;
+    // background: red;
+    border-radius: 20px;
+    // gap: 10px;
+}
+.smile-button{
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    background: transparent;
+    cursor: pointer;
+    svg{
+        min-width: 22px;
+        min-height: 22px;
+        opacity: 1;
+        transition: 0.5s ease;
+    }
+}
+.smile-button:hover{
+    svg{
+        opacity: 0.5;
+    }
+}
+// .placeholder{
+//     position: absolute;
+//     left: 42px;
+//     bottom: 10px;
+//     font-size: 15px;
+//     font-weight: 400;
+// }
+.input-message{
+    border: none;
+    display: flex;
+    width: calc(100% - 85px);
+    line-height: 25px;
+    // height: 100%;
+    height: 28px;
+    max-height: 100px;
+    padding-bottom: 0;
+    background: transparent;
+    font-size: 15px;
+    font-weight: 400;
+    word-break: break-all;
+    // background: red;
+    resize: none;
+}
+.input-message:focus{
+    outline: none;
+}
+.send-button{
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    margin-left: auto;
+    border-radius: 50%;
+    cursor: pointer;
+    svg{
+        transition: 0.5s ease;
+    }
+}
+.send-button:hover{
+    svg{
+        transform: rotate(-45deg);
+    }
+}
+.emoji-panel{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px;
+    width: calc(50% - 20px);
+    margin-left: 50px;
+    max-height: 280px;
+    border-radius: 20px;
+    gap: 10px;
+}
+.categories{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    width: calc(100% - 10px);
+}
+.emoji-category{
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    background: none;
+
+}
+.active{
+    background: rgba($color: #FFFFFF, $alpha: 0.2);
+}
+.emojies-container{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    // overflow-y: scroll;
+}
+.category-name{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    font-size: 15px;
+    font-weight: 500;
+}
+.emojies-body{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.emojies-content{
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+
+}
+.messages-container{
+    // margin-bottom: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    // background-color: red;
+}
+.greeting{
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.greeting-title{
+    display: flex;
+    width: 100%;
+    margin: 0;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: clamp(50px, 4vw, 50px);
+    font-weight: 550;
+}
+.greeting-text{
+    display: flex;
+    width: 100%;
+    margin: 0;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: clamp(50px, 4vw, 50px);
+    font-weight: 550;
+}
+.data-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding:  5px 15px 5px 15px;
+    background: #565656;
+    border-radius: 20px;
+    font-size: 15px;
+    font-weight: 400;
+    user-select: none;
+}
+.message-body{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 10px;
+    width: calc(100% - 20px);
+    // background: green;
+    gap: 10px;
+}
+@media(min-width: 700px){
+    .message-body{
+        width: calc(60% - 20px);
+    }
+    .input-container{
+        width: 60%;
+    }
+    .greeting{
+        width: 60%;
+    }
+}
+.user-container{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: flex-start;
+    gap:15px;
+}
+.user-photo{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+}
+.user-name{
+    font-size: 15px;
+    font-weight: 550;
+}
+.message-text{
+    display: flex;
+    // flex-direction: column;
+    max-width: calc(95% - 35px);
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin-left: 35px;
+    font-size: 15px;
+    font-weight: 300;
+    // background: blue;
+    word-break: break-all;
+}
+span{
+    font-weight: 400;
+}
+.skeleton-high{
+    width: calc(95% - 35px);
+    margin-left: 35px;
+    height: 20px;
+    background: linear-gradient(to right, transparent, #888, transparent); /* Градиентная линия */
+    position: relative;
+    overflow: hidden;
+    border-radius: 5px;
+}
+.skeleton-high::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, #0040F9); /* Градиент для движения */
+    animation: moveGradient 1s linear infinite; /* Анимация движения */
+}
+.skeleton-meduim{
+    width: calc(75% - 35px);
+    margin-left: 35px;
+    height: 20px;
+    background: linear-gradient(to right, transparent, #888, transparent); /* Градиентная линия */
+    position: relative;
+    overflow: hidden;
+    border-radius: 5px;
+}
+.skeleton-meduim::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, #0040F9); /* Градиент для движения */
+    animation: moveGradient 1s linear infinite; /* Анимация движения */
+}
+.skeleton-small{
+    width: calc(95% - 35px);
+    margin-left: 35px;
+    height: 20px;
+    background: linear-gradient(to right, transparent, #888, transparent); /* Градиентная линия */
+    position: relative;
+    overflow: hidden;
+    border-radius: 5px;
+}
+.skeleton-small::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, #0040F9); /* Градиент для движения */
+    animation: moveGradient 1s linear infinite; /* Анимация движения */
+}
+@keyframes moveGradient {
+    0% {
+        transform: translateX(-100%); /* Начальное положение сдвинуто влево за границу видимости */
+    }
+    100% {
+        transform: translateX(100%); /* Конечное положение сдвинуто вправо за границу видимости */
+    }
+}
+@keyframes moveGradientHigh {
+    0% {
+        transform: translateX(-100%); /* Начальное положение сдвинуто влево за границу видимости */
+    }
+    100% {
+        transform: translateX(40%); /* Конечное положение сдвинуто вправо за границу видимости */
+    }
+}

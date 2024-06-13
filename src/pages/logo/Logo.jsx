@@ -22,8 +22,9 @@ function Logo(){
     }, [navigateTo]);
 
     return (
-        <Loader color="var(--first-color)"></Loader>
-
+        <div className={styles.container}>
+                <Loader color="var(--first-color)"></Loader>
+        </div>
     )
 }
 export default Logo

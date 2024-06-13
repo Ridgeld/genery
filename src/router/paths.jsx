@@ -4,6 +4,17 @@ import SignUp from '../components/auth/SignUp/SignUp.jsx';
 import SignIn from '../components/auth/SignIn/SignIn.jsx';
 import About from '../pages/about/About.jsx';
 import Menu from '../pages/menu/Menu.jsx'
+import Messenger from '../pages/messenger/Messenger.jsx';
+import Timetable from '../pages/timetable/Timetable.jsx';
+import ListMenu from '../pages/list-menu/ListMenu.jsx';
+import PostContainer from '../pages/posts/PostContainer.jsx';
+import Settings from '../pages/settings/Settings.jsx';
+import CashBack from '../pages/cashback/CashBack.jsx';
+import Shop from '../pages/shop/Shop.jsx';
+import Casino from '../pages/casino/Casino.jsx';
+import Updates from '../pages/updates/Updates.jsx';
+import Downloads from '../pages/downloads/Downloads.jsx';
+import Profile from '../pages/profile/Profile.jsx';
 
 export const routes = [
     {
@@ -32,8 +43,74 @@ export const routes = [
     },
     {
         path: '/menu',
-        exact: false,
+        exact: true,
         component: <Menu/>,
         auth: true,
-    }
+    },
+    {
+        path: '/messenger',
+        exact: true,
+        component: <Messenger/>,
+        auth: true,
+    },
+    {
+        path: '/timetable',
+        exact: true,
+        component: <Timetable/>,
+        auth: true,
+    },
+    {
+        path: '/list-menu',
+        exact: true,
+        component: <ListMenu/>,
+        auth: true,
+    },
+    {
+        path:'/posts',
+        exact: true,
+        component: <PostContainer/>,
+        auth: true,
+    },
+    {
+        path:'/settings',
+        exact: true,
+        component: <Settings/>,
+        auth: true,
+    },
+    {
+        path:'/cashback',
+        exact: true,
+        component: <CashBack/>,
+        auth: false,
+    },
+    {
+        path:'/shop',
+        exact: true,
+        component: <Shop/>,
+        auth: true,
+    },
+    {
+        path:'/casino',
+        exact: true,
+        component: <Casino/>,
+        auth: true,
+    },
+    {
+        path:'/updates',
+        exact: true,
+        component: <Updates/>,
+        auth: true,
+    },
+    {
+        path:'/downloads',
+        exact: true,
+        component: <Downloads/>,
+        auth: true,
+    },
+    {
+        path:'/profile/:id?',
+        exact: false,
+        component: <Profile/>,
+        auth: true,
+    },
 ]

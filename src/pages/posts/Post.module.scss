@@ -1,0 +1,275 @@
+.container{
+    margin-top: 60px;
+    padding-bottom: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 90%;
+    gap: 20px;
+}
+.post-body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    border-radius: 20px;
+}
+.post-info{
+    display: flex;
+    width: calc(100% - 20px);
+    padding: 10px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+.post-author{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.author-photo{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+}
+.author-name{
+    font-size: 15px;
+    font-weight: 500;
+}
+.post-date{
+    font-size: 15px;
+    font-weight: 500;
+}
+.post-data{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    height: 100%;
+    gap:10px;
+}
+.post-photo{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    img{
+        max-width: 100%;
+        max-height: 100%;
+    }
+}
+.post-text{
+    display: flex;
+    width: calc(100% - 20px);
+    padding: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    font-size: 15px;
+    font-weight: 500;
+}
+.post-actions{
+    display: flex;
+    flex-direction: row;
+    width: calc(100% - 20px);
+    padding: 10px;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+}
+.action-like{
+    display: flex;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    svg{
+        max-width: 22px;
+        max-height: 22px;
+    }
+}
+.action-send{
+    display: flex;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    svg{
+        max-width: 22px;
+        max-height: 22px;
+    }
+}
+.input-container{
+    position: fixed;
+    width: 90%;
+    // height: 40px;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 10px;
+    z-index: 5000;
+}
+.message-action{
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    gap: 10px;
+    margin-bottom:40px;
+}
+.add-file{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    svg{
+        transition: 0.5s ease;
+        width: 20px;
+        height: 20px;
+    }
+}
+.add-file:hover{
+    svg{
+        opacity: 0.5;
+    }
+}
+.input-body{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 65px);
+    border-radius: 20px;
+    padding: 5px 5px 5px 5px;
+    gap: 10px;
+}
+.image-preview{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 150px;
+    // overflow: hidden;
+    img{
+        border-radius: 15px;
+        width: 100%;
+        height: 100%;
+    }
+}
+.remove-image{
+    position: absolute;
+    display: flex;
+    top: 10px;
+    right: 10px;
+    width: 25px;
+    height: 25px;
+    align-items: center;
+    justify-content: center;
+    background: rgba($color: #000000, $alpha: 0.5);
+    border-radius: 50%;
+    cursor: pointer;
+    svg{
+        width: 15px;
+        height: 15px;
+        transform: rotate(45deg);
+    }
+}
+.input-component{
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    width: calc(100%);
+    height: 30px;
+    max-height: 100px;
+    // background: red;
+    border-radius: 40px;
+    // gap: 10px;
+}
+.smile-button{
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    background: transparent;
+    cursor: pointer;
+    svg{
+        min-width: 22px;
+        min-height: 22px;
+        opacity: 1;
+        transition: 0.5s ease;
+    }
+}
+.smile-button:hover{
+    svg{
+        opacity: 0.5;
+    }
+}
+// .placeholder{
+//     position: absolute;
+//     left: 42px;
+//     bottom: 10px;
+//     font-size: 15px;
+//     font-weight: 400;
+// }
+.input-message{
+    border: none;
+    display: flex;
+    width: calc(100% - 85px);
+    line-height: 25px;
+    // height: 100%;
+    height: 28px;
+    max-height: 100px;
+    padding-bottom: 0;
+    background: transparent;
+    font-size: 15px;
+    font-weight: 400;
+    word-break: break-all;
+    // background: red;
+    resize: none;
+}
+.input-message:focus{
+    outline: none;
+}
+.send-button{
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    margin-left: auto;
+    border-radius: 50%;
+    cursor: pointer;
+    svg{
+        transition: 0.5s ease;
+    }
+}
+.send-button:hover{
+    svg{
+        transform: rotate(-45deg);
+    }
+}
+@media(min-width: 700px){
+    .container{
+        width: calc(60% - 20px);
+    }
+}

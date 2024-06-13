@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 
 
 function Block(data) {
-    const [isHovered, setIsHovered] = useState(false);
     const navigateTo = useNavigate();
 
     const handleClick = () => {
@@ -18,12 +17,9 @@ function Block(data) {
         <div className={styles.block} 
              style={{
                 backgroundColor: data.backgroundColor,
-                opacity: isHovered ? 0.7 : 1,
                 transition: '0.5s ease',
-                }} 
-             onMouseEnter={() => setIsHovered(true)}
-             onMouseLeave={() => setIsHovered(false)}
-             onClick={{handleClick}}>
+                }}
+             onClick={handleClick}>
             <div className={styles.info}>
                 <div className={styles.title} 
                      style={{color: data.textColor}}>{data.name}</div>

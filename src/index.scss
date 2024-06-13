@@ -6,21 +6,52 @@
 body{
   padding: 0;
   margin: 0;
+  box-sizing: border-box;
   background: #0A0B10;
 }
-.wrapper{
-    position: absolute;
-    top:0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
+::-webkit-scrollbar {
+  width: 10px; /* Ширина ползунка */
 }
-.content{
-    height: 100%;
-    margin: 0 5%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+
+/* Стилизация ползунка скроллбара */
+::-webkit-scrollbar-thumb {
+  background-color: #0040F9; /* Цвет ползунка */
+  border-radius: 5px; /* Закругление углов ползунка */
+  cursor: pointer;
+}
+
+/* Стилизация фона скроллбара */
+::-webkit-scrollbar-track {
+  background-color: rgba($color: #000000, $alpha: 0.3); /* Цвет фона */
+}
+textarea::-webkit-scrollbar {
+  width: 6px; /* Ширина ползунка */
+}
+
+/* Стилизация ползунка скроллбара */
+textarea::-webkit-scrollbar-thumb {
+  background-color: #fff; /* Цвет ползунка */
+  border-radius: 5px; /* Закругление углов ползунка */
+  cursor: pointer;
+}
+
+/* Стилизация фона скроллбара */
+textarea::-webkit-scrollbar-track {
+  background-color: rgba($color: #000000, $alpha: 0.3); /* Цвет фона */
+}
+div::-webkit-scrollbar {
+  width: 6px; /* Ширина ползунка */
+}
+
+/* Стилизация ползунка скроллбара */
+div::-webkit-scrollbar-thumb {
+  background-color: #fff; /* Цвет ползунка */
+  border-radius: 5px; /* Закругление углов ползунка */
+  cursor: pointer;
+}
+
+/* Стилизация фона скроллбара */
+div::-webkit-scrollbar-track {
+  border-radius: 0 0 50px 0;
+  background-color: rgba($color: #000000, $alpha: 0.3); /* Цвет фона */
 }

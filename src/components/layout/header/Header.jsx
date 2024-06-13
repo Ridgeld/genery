@@ -4,12 +4,11 @@ import { ElementContext } from "../../../providers/ElementProvider";
 
 function Header(props) {
     const { elementColors } = useContext(ElementContext);
-
     // console.log(elementColors.iconColor);
     if(!elementColors.isHeader) return null
     return(
         <div className={styles.header} 
-        style={{background: elementColors.isBackground ? elementColors.backgroundColor : 'transparent'}}>
+        style={{background: elementColors.isHeaderBackground ? elementColors.headerBackground : 'transparent'}}>
             <div className = {styles.logo_container}>
             <div className = {styles.icon}>
                 <svg width="50" height="73" viewBox="0 0 50 73" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -19,11 +18,11 @@ function Header(props) {
             <div className={styles.title} 
                     style={{color: elementColors.titleColor}}>GENERY</div>
             </div>
-            <div className={elementColors.showArrow ? styles.show : styles.hide}>
+            <a href={elementColors.arrowLink} className={elementColors.showArrow ? styles.show : styles.hide}>
                 <svg width="22" height="16" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M21 9C21.5523 9 22 8.55228 22 8C22 7.44772 21.5523 7 21 7L21 9ZM0.292893 7.2929C-0.0976311 7.68342 -0.097631 8.31658 0.292893 8.70711L6.65685 15.0711C7.04738 15.4616 7.68054 15.4616 8.07107 15.0711C8.46159 14.6805 8.46159 14.0474 8.07107 13.6569L2.41421 8L8.07107 2.34315C8.46159 1.95262 8.46159 1.31946 8.07107 0.928933C7.68054 0.538409 7.04738 0.538409 6.65685 0.928933L0.292893 7.2929ZM21 7L1 7L1 9L21 9L21 7Z" fill="white"/>
+                    <path d="M21 9C21.5523 9 22 8.55228 22 8C22 7.44772 21.5523 7 21 7L21 9ZM0.292893 7.2929C-0.0976311 7.68342 -0.097631 8.31658 0.292893 8.70711L6.65685 15.0711C7.04738 15.4616 7.68054 15.4616 8.07107 15.0711C8.46159 14.6805 8.46159 14.0474 8.07107 13.6569L2.41421 8L8.07107 2.34315C8.46159 1.95262 8.46159 1.31946 8.07107 0.928933C7.68054 0.538409 7.04738 0.538409 6.65685 0.928933L0.292893 7.2929ZM21 7L1 7L1 9L21 9L21 7Z" fill={elementColors.titleColor}/>
                 </svg>
-            </div>
+            </a>
         </div>
     )
 }

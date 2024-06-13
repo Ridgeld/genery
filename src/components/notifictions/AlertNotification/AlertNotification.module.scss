@@ -1,0 +1,128 @@
+.notif-area{
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top:0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    background: rgba($color: #000000, $alpha: 0.5)
+}
+.notif-area.animated{
+    opacity: 0;
+    visibility: hidden;
+
+    .notif-body{
+        opacity: 0;
+        visibility: hidden;
+        transform: translate(0, 100%);
+        transition: 0.5s ease;
+    }
+    
+    &.show{
+        opacity: 1;
+        visibility: visible;
+
+        .notif-body{
+            opacity: 1;
+            visibility: visible;
+            transform: translate(0, 0);
+            transition: 0.5s ease;
+        }
+    }
+}
+.notif-body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 75%;
+    padding: 20px;
+    border-radius: 20px;
+    gap: 20px;
+}
+.notif-info{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    gap: 10px;
+}
+.notif-title{
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 18px;
+    font-weight: 500;
+}
+.notif-text{
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 15px;
+    font-weight: 500;
+}
+.button-container{
+    margin-top: auto;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 10px;
+}
+.first-button{
+    position: relative;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 40px;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 400;
+    gap: 10px;
+    cursor: pointer;
+    transition: 0.5s ease;
+    &:hover{
+        opacity: 0.8;
+    }
+}
+.first-arrow{
+    position: absolute;
+    right: 20px;
+}
+.second-button{
+    position: relative;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 40px;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 400;
+    gap: 10px;
+    cursor: pointer;
+    transition: 0.5s ease;
+    &:hover{
+        opacity: 0.8;
+    }
+}
+.first-arrow{
+    position: absolute;
+    right: 20px;
+}
+
+@media(min-width: 700px){
+    .notif-body{
+        width: 50%;
+    }
+}

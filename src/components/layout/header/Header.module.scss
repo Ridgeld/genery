@@ -1,5 +1,5 @@
 .header{
-    position: absolute;
+    position: fixed;
     top:0;
     display: flex;
     width: calc(100% - 20px);
@@ -26,7 +26,7 @@
     }
 }
 .title{
-    font-size: clamp(15px, 4vw, 20px);
+    font-size: clamp(18px, 4vw, 20px);
     font-weight: 550;
     color: #fff;
     user-select: none;

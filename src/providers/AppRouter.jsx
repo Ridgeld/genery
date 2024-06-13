@@ -6,7 +6,6 @@ import { useAuth } from "./Authprovired.jsx";
 import SignIn from "../components/auth/SignIn/SignIn.jsx";
 import Loader from "../components/loader/Loader.jsx";
 import '../themes/default.scss';
-import About from "../pages/about/About.jsx";
 
 function AppRouter(){
     const { authUser } = useAuth();

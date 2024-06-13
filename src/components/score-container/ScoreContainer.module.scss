@@ -1,0 +1,33 @@
+.score-container{
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.name-body{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: calc(100% - 20px);
+    padding: 10px;
+    border-radius: 20px 0 0 20px;
+    font-size: 15px;
+    font-weight: 500;
+}
+.count-body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(40% - 20px);
+    padding: 10px;
+    border-radius: 0 20px 20px 0;
+    font-size: 15px;
+    font-weight: 500;
+}
+.balance-body{
+    display: flex;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 500;
+}
