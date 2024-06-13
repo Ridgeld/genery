@@ -107,7 +107,7 @@ function MySlider() { // изменяем имя компонента
         <div>
           <div className="info_container">
             <div className="image_container">
-              <img src="public/1.png"/>
+              <img src={`${process.env.PUBLIC_URL}/3.png`}/>
             </div>
             <h2 className="title black">Играй. Общайся. Развивайся.</h2>
             <h3 className="text black">Выигрывай в гонке или проигрывай все в казино.</h3>
