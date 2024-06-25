@@ -4,6 +4,7 @@ import { ElementContext } from '../../../providers/ElementProvider';
 import EmojiPanel from './emojiPanel/EmojiPanel';
 import emojis from './emojiPanel/Emojies';
 import parser from 'html-react-parser'
+import SlipNotification from '../../notifictions/SlipNotification/SlipNotification';
 
 function MessageInput({isPanelTop, placeholder, onSend}){
     const { theme, setElementColors } = useContext(ElementContext);
@@ -15,6 +16,23 @@ function MessageInput({isPanelTop, placeholder, onSend}){
     const inputFilesRef = useRef()
     const contentEditableRef = useRef(null)
     const [marginTop, setMarginTop] = useState('50px');
+
+    const [slipProp, setSlipProp] = useState({
+        isShow: false,
+        text: ''
+    });
+
+    useEffect(() => {
+        if (slipProp.isShow) {
+          const timer = setTimeout(() => {
+            setSlipProp({
+                isShow: false
+            });
+          }, 1000);
+    
+          return () => clearTimeout(timer);
+        }
+      }, [slipProp]);
 
     const replacements = [
         { pattern: /\\uE007/g, replacement: '<span class="emoji">😄</span>' },
@@ -166,7 +184,30 @@ function MessageInput({isPanelTop, placeholder, onSend}){
     };
 
     const handleAddImage = (e) => {
-        if(images.length === 5) return
+
+        const images = e.target.files;
+        const maxFiles = 5;
+      
+        // Проверяем количество выбранных файлов
+        if (images.length > maxFiles) {
+        //   alert(`Выбрано больше ${maxFiles} файлов. Выберите не более ${maxFiles} файлов.`);
+        setSlipProp({
+            isShow: true,
+            text: 'Максимально возможное число фотографий - 5'
+        })
+          return;
+        }
+        for (let i = 0; i < images.length; i++) {
+            const file = images[i];
+            if (!file.type.startsWith('image/')) {
+              setSlipProp({
+                isShow: true,
+                text: `Файл ${file.name} не является изображением. Выберите только изображения.`
+                })
+              return;
+            }
+          }
+        if(images.length > 5) return
         const files = Array.from(e.target.files);
         // console.log('Selected files:', files);
     
@@ -216,6 +257,9 @@ function MessageInput({isPanelTop, placeholder, onSend}){
     return(
         <>
             <section className={styles['input-container']}>
+            <SlipNotification
+                isShow={slipProp.isShow}
+                text={slipProp.text}/>
                 <EmojiPanel
                     isShow={isShow}
                     isTop ={isPanelTop}

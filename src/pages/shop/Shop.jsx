@@ -247,7 +247,7 @@ function Shop(){
 
                 /* Стилизация ползунка скроллбара */
                 ::-webkit-scrollbar-thumb {
-                  background-color: ${theme.first_color}; /* Цвет ползунка */
+                  background: ${theme.first_color}; /* Цвет ползунка */
                   border-radius: 5px; /* Закругление углов ползунка */
                   cursor: pointer;
                 }
