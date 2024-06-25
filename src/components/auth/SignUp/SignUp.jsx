@@ -125,6 +125,7 @@ function SignUp(){
                 }, { merge: true });
                 
                 console.log('Profile updated successfully');
+                localStorage.setItem('censor', true)
                 setEmail('');
                 setPassword('');
                 setName('');
