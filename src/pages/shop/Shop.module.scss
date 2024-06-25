@@ -20,7 +20,7 @@
 .balance-container{
     position: sticky;
     top: 0px;
-    width: 80%;
+    width: 100%;
     z-index: 10;
     // background: green;
 }
@@ -179,9 +179,9 @@
     .container{
         width: 60%;
     }
-    .balance-container{
-        width: 100%;
-    }
+    // .balance-container{
+    //     width: 100%;
+    // }
 }
 @media(min-width: 950px){
     .items-container{
