@@ -28,18 +28,18 @@ function LoadingMessage({textColor}){
         </div>
         <div className={styles['skeleton-high']}
             style={{
-                '--first-color': theme.first_color,
-                '--second-color': theme.text_second_color
+                '--first-color': theme.gradient_first_color,
+                '--second-color': theme.gradient_second_color
             }}></div>
         <div className={styles['skeleton-meduim']}
             style={{
-                '--first-color': theme.first_color,
-                '--second-color': theme.text_second_color
+                '--first-color': theme.gradient_first_color,
+                '--second-color': theme.gradient_second_color
             }}></div>
         <div className={styles['skeleton-small']}
             style={{
-                '--first-color': theme.first_color,
-                '--second-color': theme.text_second_color
+                '--first-color': theme.gradient_first_color,
+                '--second-color': theme.gradient_second_color
             }}></div>
 
     </div>
