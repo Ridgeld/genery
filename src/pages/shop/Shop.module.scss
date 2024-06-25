@@ -16,6 +16,15 @@
     gap: 10px;
 }
 
+// BALANCE CONTAINER
+.balance-container{
+    position: sticky;
+    top: 0px;
+    width: 80%;
+    z-index: 10;
+    // background: green;
+}
+
 // COVER
 .image-cover{
     position: relative;
@@ -85,7 +94,7 @@
 }
 .card-name{
     font-size: 18px;
-    font-weight: 600;
+    font-weight: 500;
 }
 .card-label{
     display: flex;
@@ -115,7 +124,7 @@
     justify-content: flex-start;
     gap:5px;
     font-size: 18px;
-    font-weight: 550;
+    font-weight: 500;
 }
 .card-buy{
     position: absolute;
@@ -128,7 +137,7 @@
     transition: 0.5s ease;
 }
 .card-body:hover .card-action {
-    opacity: 0;
+    // opacity: 0;
     // transform: translateY(305px);
 }
 .card-body:hover .card-buy {
@@ -169,6 +178,9 @@
 @media(min-width: 700px){
     .container{
         width: 60%;
+    }
+    .balance-container{
+        width: 100%;
     }
 }
 @media(min-width: 950px){

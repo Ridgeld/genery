@@ -7,7 +7,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../../firebase.js';
 
 function OtherUserProfile({id}){
-    const { elementColors, setElementColors } = useContext(ElementContext);
+    const { theme, elementColors, setElementColors } = useContext(ElementContext);
     // const { authUser } = useAuth();
     const [userData, setUserData] = useState({
         isShow: true,
@@ -22,19 +22,20 @@ function OtherUserProfile({id}){
     }, [id])
     useEffect(() => {
         setElementColors({
-            iconColor: 'var(--text-first-color)',
-            titleColor: 'var(--text-first-color)',
+            iconColor: theme.icon_color,
+            titleColor: theme.text_first_color,
             showArrow: true,
-            arrowColor: 'var(--text-first-color)',
-            arrowLink: '#/menu',
+            arrowLink: '#/list-menu',
+            arrowColor: theme.text_first_color,
             isHeaderBackground: false,
-            headerBackground: 'var(--background-color)',
+            headerBackground: theme.background_color,
             isHeader: true,
             isFooter: true,
-            footerBackground: 'var(--background-color)',
+            footerBackground: theme.background_color,
             activeElementIndex: 3,
         });
-        },[ElementContext]);
+        document.body.style.background = theme.background_color
+        },[theme]);
 
     // const copyId = () => {
     //     // setShow(true);
@@ -65,7 +66,7 @@ function OtherUserProfile({id}){
                     setUserData({
                         isUser: true,
                         name: userData.name,
-                        biography: ''
+                        biography: userData.biography
                     })
                 } else {
                     console.log("No such document!");
@@ -111,19 +112,19 @@ function OtherUserProfile({id}){
             </div>
             <div className={styles['user-photo']}
                 style={{
-                    borderColor: 'var(--background-color)'
+                    borderColor: theme.background_color
                 }}>
                 <img src='/genery/public/1.png'/>
             </div> 
             {userData.isUser ?
                     <div className={styles['user-actions']}
                         style={{
-                            background: 'var(--element-first-color)'
+                            background: theme.element_first_color
                         }}>
                         <div className={styles['user-info']}>
                             <div className={styles['user-name']}
                                 style={{
-                                    color: 'var(--text-first-color)'
+                                    color: theme.text_first_color
                                 }}>{userData.name}</div>
                             {/* <button className={styles['circle-button']}
                                 style={{
@@ -135,25 +136,25 @@ function OtherUserProfile({id}){
                         </div>
                         <div className={styles['user-biography']}
                             style={{
-                                color: 'var(--text-first-color)'
-                            }}>Биография</div>
+                                color: theme.text_first_color
+                            }}>{userData.biography}</div>
                         <div className={styles['button-container']}>
                             <button className={styles['quit-button']}
                                 style={{
-                                    background: 'var(--first-color)',
-                                    color: 'var(--text-first-color)'
+                                    background: theme.first_color,
+                                    color: theme.text_first_color
                                 }}>Подписаться</button>
                         </div>
                     </div> 
                 :
                     <div className={styles['user-actions']}
                         style={{
-                            background: 'var(--element-first-color)'
+                            background: theme.element_first_color
                         }}>
                         <div className={styles['user-info']}>
                             <div className={styles['user-name']}
                                 style={{
-                                    color: 'var(--text-first-color)'
+                                    color: theme.text_first_color
                                 }}>{userData.name}</div>                        
                         </div>
                     </div>}

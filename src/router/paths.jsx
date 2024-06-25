@@ -15,6 +15,8 @@ import Casino from '../pages/casino/Casino.jsx';
 import Updates from '../pages/updates/Updates.jsx';
 import Downloads from '../pages/downloads/Downloads.jsx';
 import Profile from '../pages/profile/Profile.jsx';
+import GameMenu from '../pages/game-menu/GameMenu.jsx';
+import Test from '../pages/testing/Test.jsx';
 
 export const routes = [
     {
@@ -111,6 +113,18 @@ export const routes = [
         path:'/profile/:id?',
         exact: false,
         component: <Profile/>,
+        auth: true,
+    },
+    {
+        path:'/game-menu',
+        exact: true,
+        component: <GameMenu/>,
+        auth: true,
+    },
+    {
+        path:'/test',
+        exact: true,
+        component: <Test/>,
         auth: true,
     },
 ]

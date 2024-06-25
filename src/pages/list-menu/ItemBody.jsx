@@ -1,19 +1,31 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import styles from './ListMenu.module.scss';
 import '../../themes/default.scss';
 import { useNavigate } from 'react-router-dom';
+import parse from "html-react-parser";
+import { ElementContext } from '../../providers/ElementProvider.jsx';
+
 
 function ItemBody({name, textColor, icon, link, category}){
-    const [iconColor, setIconColor] = useState('var(--text-first-color)');
-    const [circleColor, setCircleColor] = useState('var(--first-color)');
-    const [arrowColor, setArrowColor] = useState('var(--text-first-color)');
-    const navigateTo = useNavigate();
+    const {theme, setThemeById, elementColors, setElementColors } = useContext(ElementContext);
+    const [iconColor, setIconColor] = useState(theme.text_first_color);
+    const [circleColor, setCircleColor] = useState(theme.first_color);
+    const [arrowColor, setArrowColor] = useState(theme.text_first_color);
+    const navigate = useNavigate();
+    
+    const navigateTo = (url) => {
+        if(url.includes('https:')){
+            window.location.href = url;
+        } else{
+            navigate(url)
+        }
+    };
 
     const categoryColors = {
-        first: { circle: 'var(--first-color)', icon: 'var(--text-first-color)' },
-        second: { circle: 'var(--second-color)', icon: 'var(--text-second-color)' },
-        third: { circle: 'var(--third-color)', icon: 'var(--text-first-color)' },
-        contact: { circle: 'var(--element-first-color)', icon: 'var(--text-first-color)' }
+        first: { circle: theme.first_color, icon: theme.text_first_color },
+        second: { circle: theme.second_color, icon: theme.text_second_color },
+        third: { circle: theme.third_color, icon: theme.text_first_color },
+        contact: { circle: theme.element_first_color, icon: theme.text_first_color }
         
     };
     useEffect(() => {
@@ -21,21 +33,22 @@ function ItemBody({name, textColor, icon, link, category}){
             setCircleColor(categoryColors[category].circle);
             setArrowColor(categoryColors[category].icon);
         } else {
-            setCircleColor('var(--first-color)');
-            setArrowColor('var(--second-color)');
+            setCircleColor(theme.first_color);
+            setArrowColor(theme.second_color);
         }
     }, [category]);
+
+    const iconWithThemeColor = icon.replace(/{theme.text_first_color}/g, theme.text_first_color);
     return(
         <div className={styles['item-body']}
              style={{
-                border: `2px solid ${'var(--element-first-color)'}`
+                border: `2px solid ${theme.element_first_color}`
              }}
              onClick={() => navigateTo(link)}>
             <div className={styles['item-info']}>
-                <div className={styles['item-icon']} 
-                    dangerouslySetInnerHTML={{ 
-                        __html: icon.replace(/stroke="#\w+"/g, `stroke="${iconColor}"`) 
-                    }}/>
+                <div className={styles['item-icon']}>
+                    {parse(iconWithThemeColor)}
+                </div>
                     {/* {dangerouslySetInnerHTML={{ __html: icon }}} */}
                 <div className={styles['item-name']}
                      style={{

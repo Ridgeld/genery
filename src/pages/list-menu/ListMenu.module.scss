@@ -1,5 +1,6 @@
 .container{
     margin-top: 60px;
+    padding-bottom: 100px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -65,7 +66,7 @@
     }
 }
 .item-body:hover{
-    padding: 10px 10px 10px 20px;
+    padding-block: 10px;
     .item-circle{
         svg{
             transform: rotate(45deg);

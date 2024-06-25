@@ -5,18 +5,16 @@ import MySlider  from '../../components/slider/Slider.jsx';
 import Button from '../../components/buttons/About/Button.jsx';
 import styles from './About.module.scss'
 import { useNavigate } from 'react-router-dom';
-import React, { useState } from 'react';
-
+import React, { useContext, useState , useEffect} from 'react';
 function About({ setHeaderColor }){
   const { authUser, ga } = useAuth();
   const navigateTo = useNavigate();
   const [slideIndex, setSlideIndex] = useState(0);
+  // const {theme, setThemeById, elementColors, setElementColors } = useContext(ElementContext);
 
   const handleClick = () =>{
     navigateTo('/sign-in');
   }
-  
-
   return (
     <div className={styles.container}>
       {/* <button onClick={() => signOut(ga)}>Выйти</button> */}

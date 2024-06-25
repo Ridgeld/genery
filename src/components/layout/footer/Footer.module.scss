@@ -10,24 +10,35 @@
     background: #2f2fa1;
     z-index: 3;
 }
-.item{
+.item-body{
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-inline: 15px;
-    padding-block: 5px;
-    // background: red;
+    padding: 5px 15px 5px 15px;
     border-radius: 30px;
     transition: 0.5s ease;
     cursor: pointer;
+    // overflow: hidden;
+
+}
+.item{
+    display: flex;
+    z-index: 2;
     svg{
         width: 25px;
         height: 25px;
     }
 }
-.item:hover{
-    background: rgba(133, 133, 133, 0.10);
+.item-bg{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    border-radius: 30px;
 }
-.active{
-    background: rgba(133, 133, 133, 0.10);
-}
+// .item:hover{
+//     background: rgba(133, 133, 133, 0.10);
+// }
+// .active{
+//     background: rgba(133, 133, 133, 0.10);
+// }

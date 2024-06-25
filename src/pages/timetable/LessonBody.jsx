@@ -1,21 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import styles from './Timetable.module.scss';
 import '../../themes/default.scss'
+import { ElementContext } from '../../providers/ElementProvider.jsx';
+
+
 function LessonBody({category, backgroundColor, textColor, lessonName, lessonTime, lessonRoom }){
+    const { theme, elementColors, setElementColors } = useContext(ElementContext);
     const [circleColor, setCircleColor] = useState('var(--first-color)');
     const [iconColor, setIconColor] = useState('var(--text-first-color)');
+
     const categoryColors = {
-        math: { circle: 'var(--second-color)', icon: 'var(--text-second-color)' },
-        language: { circle: 'var(--first-color)', icon: 'var(--text-first-color)' },
-        humanitarian: { circle: 'var(--third-color)', icon: 'var(--text-first-color)' }
+        math: { circle: theme.first_color, icon: theme.text_first_color },
+        language: { circle: theme.second_color, icon: theme.text_second_color },
+        humanitarian: { circle: theme.third_color, icon: theme.text_first_color}
     };
     useEffect(() => {
         if (category in categoryColors) {
             setCircleColor(categoryColors[category].circle);
             setIconColor(categoryColors[category].icon);
         } else {
-            setCircleColor('var(--first-color)');
-            setIconColor('var(--second-color)');
+            setCircleColor(theme.first_color);
+            setIconColor(theme.text_first_color);
         }
     }, [category]);
 

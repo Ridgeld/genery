@@ -205,8 +205,10 @@
     justify-content: center;
 }
 .item-name{
+    display: flex;
     font-size: 18px;
     font-weight: 400;
+    gap: 5px;
 }
 .item-info{
     display: flex;

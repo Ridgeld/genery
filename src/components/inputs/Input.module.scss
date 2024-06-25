@@ -15,22 +15,17 @@
     font-size: 15px;
     font-weight: 500;
 
-    :hover{
-        border: 2px solid #0040F9;
+    &:hover{
+        border: 2px solid;
     }
-    :focus{
-        border: 2px solid #0040F9;
-    }
-    ::placeholder{
-        color: #ffffff;
-        opacity: .4;
-        font-size: 15px;
-        font-weight: 500;
+    &:focus{
+        // border: 2px solid #0040F9;
+        border: 2px solid;
     }
 }
-.input-inside:focus{
-    outline: 2px solid #0040F9;
-}
+// .input-inside:focus{
+//     outline: 2px solid #0040F9;
+// }
 .show-button{
     position: absolute;
     display: flex;

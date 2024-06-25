@@ -47,6 +47,7 @@
     width: calc(100% - 20px);
     gap: 20px;
     border-radius: 20px;
+    user-select: none;
 }
 .lesson-circle{
     display: flex;

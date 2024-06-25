@@ -1,23 +1,45 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import styles from './AlertNotification.module.scss'
+import { ElementContext } from '../../../providers/ElementProvider';
+import {motion} from 'framer-motion'
 
 function AlertNotification({title, text, isShow, firstButtonName, secondButtonName, firstButtonOnClick, secondButtonOnClick}){
+    const {theme, elementColors, setElementColors } = useContext(ElementContext);
+
+    const variants = {
+        open: { opacity: 1, visibility: 'visible' },
+        closed: { opacity: 0, visibility: 'hidden' },
+        show: { opacity: 1, transform: 'translate(0, 0)'},
+        hidden: { opacity: 0, transform: 'translate(0, 100%)' },
+    }
+
     return(
-        <div className={`${styles['notif-area']} ${styles['animated']} ${isShow ? styles['show'] : ''}`}>
-            <div className={styles['notif-body']}
+        // <div className={`${styles['notif-area']} ${styles['animated']} ${isShow ? styles['show'] : ''}`}>
+        <motion.div className={styles['notif-area']}
+            animate={isShow ? "open" : "closed"}
+            variants={variants}
+            transition={{
+                duration: 0.1
+            }}>
+            <motion.div className={styles['notif-body']}
                 style={{
-                    background: 'var(--element-first-color)'
+                    background: theme.element_first_color
+                }}
+                animate={isShow ? "show" : "hidden"}
+                variants={variants}
+                transition={{
+                    duration: 0.5
                 }}>
                 <div className={styles['notif-info']}>
                     <div className={styles['notif-title']}
                         style={{
-                            color: 'var(--text-first-color)'
+                            color: theme.text_first_color
                         }}>
                         {title}
                     </div>
                     <div className={styles['notif-text']}
                         style={{
-                            color: 'var(--text-first-color)'
+                            color: theme.text_first_color
                         }}>
                         {text}
                     </div>
@@ -25,8 +47,8 @@ function AlertNotification({title, text, isShow, firstButtonName, secondButtonNa
                 <div className={styles['button-container']}>
                     <button className={styles['first-button']}
                         style={{
-                            background: 'var(--element-second-color)',
-                            color: 'var(--text-first-color)'
+                            background: theme.element_second_color,
+                            color: theme.text_first_color
                         }}
                         onClick={firstButtonOnClick}>
                         {/* <div className={styles['second-arrow']}>
@@ -38,8 +60,8 @@ function AlertNotification({title, text, isShow, firstButtonName, secondButtonNa
                     </button>
                     <button className={styles['second-button']}
                         style={{
-                            background: 'var(--first-color)',
-                            color: 'var(--text-first-color)'
+                            background: theme.first_color,
+                            color: theme.text_first_color
                         }}
                         onClick={secondButtonOnClick}>
                         {secondButtonName}
@@ -50,8 +72,8 @@ function AlertNotification({title, text, isShow, firstButtonName, secondButtonNa
                         </div> */}
                     </button>
                 </div>
-            </div>
-        </div>
+            </motion.div>
+        </motion.div>
     )
 }
 export default AlertNotification

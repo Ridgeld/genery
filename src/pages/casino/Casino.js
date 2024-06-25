@@ -1,11 +1,16 @@
-const items = [  
+// import React, { useContext } from 'react';
+
+// import { ElementContext } from '../../providers/ElementProvider.jsx';
+
+// const {theme, elementColors, setElementColors } = useContext(ElementContext);
+export const createItems = (theme) => [  
     {
         grid: 'row',
         size: '1/4',
         name: 0,
         isZero: true,
         isCircle: false,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '20px 0 0 20px',   
         circleColor: ''     
     },
@@ -15,9 +20,9 @@ const items = [
         name: 3,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-second-color)'      
+        circleColor: theme.casino_second_color     
     },
     {
         grid: 'column',
@@ -25,9 +30,9 @@ const items = [
         name: 6,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-third-color)'      
+        circleColor: theme.casino_third_color     
     },
     {
         grid: 'column',
@@ -35,9 +40,9 @@ const items = [
         name: 9,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-second-color)'      
+        circleColor: theme.casino_second_color     
     },
     {
         grid: 'column',
@@ -45,9 +50,9 @@ const items = [
         name: 12,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-second-color)'      
+        circleColor: theme.casino_second_color     
     },
     {
         grid: 'column',
@@ -55,9 +60,9 @@ const items = [
         name: 15,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-third-color)'      
+        circleColor: theme.casino_third_color      
     },
     {
         grid: 'column',
@@ -65,9 +70,9 @@ const items = [
         name: 18,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-second-color)'      
+        circleColor: theme.casino_second_color     
     },
     {
         grid: 'column',
@@ -75,9 +80,9 @@ const items = [
         name: 21,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-second-color)'      
+        circleColor: theme.casino_second_color     
     },
     {
         grid: 'column',
@@ -85,9 +90,9 @@ const items = [
         name: 24,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-third-color)'      
+        circleColor: theme.casino_third_color      
     },
     {
         grid: 'column',
@@ -95,9 +100,9 @@ const items = [
         name: 27,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-second-color)'      
+        circleColor: theme.casino_second_color     
     },
     {
         grid: 'column',
@@ -105,9 +110,9 @@ const items = [
         name: 30,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-second-color)'      
+        circleColor: theme.casino_second_color     
     },
     {
         grid: 'column',
@@ -115,9 +120,9 @@ const items = [
         name: 33,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-third-color)'      
+        circleColor: theme.casino_third_color      
     },
     {
         grid: 'column',
@@ -125,9 +130,9 @@ const items = [
         name: 36,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-second-color)'      
+        circleColor: theme.casino_second_color     
     },
     {
         grid: 'column',
@@ -135,9 +140,9 @@ const items = [
         name: '1st',
         isZero: false,
         isCircle: false,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0 20px 0 0',
-        circleColor: 'var(--casino-third-color)'      
+        circleColor: theme.casino_third_color      
     },
     {
         grid: 'column',
@@ -145,9 +150,9 @@ const items = [
         name: 2,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-third-color)'      
+        circleColor: theme.casino_third_color      
     },
     {
         grid: 'column',
@@ -155,9 +160,9 @@ const items = [
         name: 5,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-second-color)'      
+        circleColor: theme.casino_second_color     
     },
     {
         grid: 'column',
@@ -165,9 +170,9 @@ const items = [
         name: 8,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-third-color)'      
+        circleColor: theme.casino_third_color      
     },
     {
         grid: 'column',
@@ -175,9 +180,9 @@ const items = [
         name: 11,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-third-color)'      
+        circleColor: theme.casino_third_color      
     },
     {
         grid: 'column',
@@ -185,9 +190,9 @@ const items = [
         name: 14,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-second-color)'      
+        circleColor: theme.casino_second_color     
     },
     {
         grid: 'column',
@@ -195,9 +200,9 @@ const items = [
         name: 17,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-third-color)'      
+        circleColor: theme.casino_third_color      
     },
     {
         grid: 'column',
@@ -205,9 +210,9 @@ const items = [
         name: 20,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-third-color)'      
+        circleColor: theme.casino_third_color      
     },
     {
         grid: 'column',
@@ -215,9 +220,9 @@ const items = [
         name: 23,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-second-color)'      
+        circleColor: theme.casino_second_color     
     },
     {
         grid: 'column',
@@ -225,9 +230,9 @@ const items = [
         name: 26,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-third-color)'      
+        circleColor: theme.casino_third_color      
     },
     {
         grid: 'column',
@@ -235,9 +240,9 @@ const items = [
         name: 29,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-third-color)'      
+        circleColor: theme.casino_third_color      
     },
     {
         grid: 'column',
@@ -245,9 +250,9 @@ const items = [
         name: 32,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-second-color)'      
+        circleColor: theme.casino_second_color     
     },
     {
         grid: 'column',
@@ -255,9 +260,9 @@ const items = [
         name: 35,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-third-color)'      
+        circleColor: theme.casino_third_color      
     },
     {
         grid: 'column',
@@ -265,9 +270,9 @@ const items = [
         name: '2nd',
         isZero: false,
         isCircle: false,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-third-color)'      
+        circleColor: theme.casino_third_color      
     },
     {
         grid: 'column',
@@ -275,9 +280,9 @@ const items = [
         name: 1,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-second-color)'      
+        circleColor: theme.casino_second_color     
     },
     {
         grid: 'column',
@@ -285,9 +290,9 @@ const items = [
         name: 4,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-third-color)'      
+        circleColor: theme.casino_third_color      
     },
     {
         grid: 'column',
@@ -295,9 +300,9 @@ const items = [
         name: 7,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-second-color)'      
+        circleColor: theme.casino_second_color     
     },
     {
         grid: 'column',
@@ -305,9 +310,9 @@ const items = [
         name: 10,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-third-color)'      
+        circleColor: theme.casino_third_color      
     },
     {
         grid: 'column',
@@ -315,9 +320,9 @@ const items = [
         name: 13,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-third-color)'      
+        circleColor: theme.casino_third_color      
     },
     {
         grid: 'column',
@@ -325,9 +330,9 @@ const items = [
         name: 16,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-second-color)'      
+        circleColor: theme.casino_second_color     
     },
     {
         grid: 'column',
@@ -335,9 +340,9 @@ const items = [
         name: 19,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-second-color)'      
+        circleColor: theme.casino_second_color     
     },
     {
         grid: 'column',
@@ -345,9 +350,9 @@ const items = [
         name: 22,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-third-color)'      
+        circleColor: theme.casino_third_color      
     },
     {
         grid: 'column',
@@ -355,9 +360,9 @@ const items = [
         name: 25,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-second-color)'      
+        circleColor: theme.casino_second_color     
     },
     {
         grid: 'column',
@@ -365,9 +370,9 @@ const items = [
         name: 28,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-third-color)'      
+        circleColor: theme.casino_third_color      
     },
     {
         grid: 'column',
@@ -375,9 +380,9 @@ const items = [
         name: 31,
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-third-color)'      
+        circleColor: theme.casino_third_color      
     },
     {
         grid: 'column',
@@ -386,9 +391,9 @@ const items = [
         isZero: false,
         isCircle: true,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-second-color)'      
+        circleColor: theme.casino_second_color     
     },
     {
         grid: 'column',
@@ -396,9 +401,9 @@ const items = [
         name: '3rd',
         isZero: false,
         isCircle: false,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0 0 20px',
-        circleColor: 'var(--casino-third-color)'      
+        circleColor: theme.casino_third_color      
     },
     {
         grid: 'column',
@@ -406,7 +411,7 @@ const items = [
         name: '1-18',
         isZero: false,
         isCircle: false,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
         circleColor: ''      
     },
@@ -416,7 +421,7 @@ const items = [
         name: '19-36',
         isZero: false,
         isCircle: false,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
         circleColor: ''      
     },
@@ -426,9 +431,9 @@ const items = [
         name: 'even',
         isZero: false,
         isCircle: false,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0 0 0 20px',
-        circleColor: 'var(--casino-second-color)'      
+        circleColor: theme.casino_second_color     
     },
     {
         grid: 'column',
@@ -436,9 +441,9 @@ const items = [
         name: 'red',
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-second-color)'      
+        circleColor: theme.casino_second_color     
     },
     {
         grid: 'column',
@@ -446,9 +451,9 @@ const items = [
         name: 'black',
         isZero: false,
         isCircle: true,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-third-color)'      
+        circleColor: theme.casino_third_color      
     },
     {
         grid: 'column',
@@ -456,10 +461,10 @@ const items = [
         name: 'odd',
         isZero: false,
         isCircle: false,
-        background: 'var(--casino-first-color)',
+        background: theme.casino_first_color,
         border: '0',
-        circleColor: 'var(--casino-third-color)'      
+        circleColor: theme.casino_third_color      
     },
     
 ];
-export default items;
+// export default items;

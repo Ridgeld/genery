@@ -3,27 +3,45 @@
     font-family: 'Inter', sans-serif;
     font-weight: bold;
 }
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Emoji:wght@300..700&display=swap');
+// *{
+//     font-family: "Noto Color Emoji", sans-serif;
+//     font-weight: 400;
+// }
+// @font-face {
+//   font-family: 'Noto Color Emoji';
+//   src: url('https://fonts.gstatic.com/s/notocolorememoji/v12/6ae1fb2756c93c344b3e7eec552191f9ac7ec9f6d633c5f6c0f5869cbfd4e99f.eot');
+//   src: url('https://fonts.gstatic.com/s/notocolorememoji/v12/6ae1fb2756c93c344b3e7eec552191f9ac7ec9f6d633c5f6c0f5869cbfd4e99f.eot?#iefix') format('embedded-opentype'),
+//        url('https://fonts.gstatic.com/s/notocolorememoji/v12/6ae1fb2756c93c344b3e7eec552191f9ac7ec9f6d633c5f6c0f5869cbfd4e99f.woff2') format('woff2'),
+//        url('https://fonts.gstatic.com/s/notocolorememoji/v12/6ae1fb2756c93c344b3e7eec552191f9ac7ec9f6d633c5f6c0f5869cbfd4e99f.woff') format('woff'),
+//        url('https://fonts.gstatic.com/s/notocolorememoji/v12/6ae1fb2756c93c344b3e7eec552191f9ac7ec9f6d633c5f6c0f5869cbfd4e99f.ttf') format('truetype');
+//   font-weight: normal;
+//   font-style: normal;
+// }
+
 body{
   padding: 0;
   margin: 0;
   box-sizing: border-box;
-  background: #0A0B10;
+  // background: #0A0B10;
 }
-::-webkit-scrollbar {
-  width: 10px; /* Ширина ползунка */
-}
+// ::-webkit-scrollbar {
+//   width: 10px; /* Ширина ползунка */
+// }
 
-/* Стилизация ползунка скроллбара */
-::-webkit-scrollbar-thumb {
-  background-color: #0040F9; /* Цвет ползунка */
-  border-radius: 5px; /* Закругление углов ползунка */
-  cursor: pointer;
-}
+// /* Стилизация ползунка скроллбара */
+// ::-webkit-scrollbar-thumb {
+//   background-color: #0040F9; /* Цвет ползунка */
+//   border-radius: 5px; /* Закругление углов ползунка */
+//   cursor: pointer;
+// }
 
-/* Стилизация фона скроллбара */
-::-webkit-scrollbar-track {
-  background-color: rgba($color: #000000, $alpha: 0.3); /* Цвет фона */
-}
+// /* Стилизация фона скроллбара */
+// ::-webkit-scrollbar-track {
+//   background-color: rgba($color: #000000, $alpha: 0.3); /* Цвет фона */
+// }
 textarea::-webkit-scrollbar {
   width: 6px; /* Ширина ползунка */
 }
@@ -39,19 +57,19 @@ textarea::-webkit-scrollbar-thumb {
 textarea::-webkit-scrollbar-track {
   background-color: rgba($color: #000000, $alpha: 0.3); /* Цвет фона */
 }
-div::-webkit-scrollbar {
-  width: 6px; /* Ширина ползунка */
-}
+// div::-webkit-scrollbar {
+//   width: 6px; /* Ширина ползунка */
+// }
 
-/* Стилизация ползунка скроллбара */
-div::-webkit-scrollbar-thumb {
-  background-color: #fff; /* Цвет ползунка */
-  border-radius: 5px; /* Закругление углов ползунка */
-  cursor: pointer;
-}
+// /* Стилизация ползунка скроллбара */
+// div::-webkit-scrollbar-thumb {
+//   background-color: #ff0000; /* Цвет ползунка */
+//   border-radius: 5px; /* Закругление углов ползунка */
+//   cursor: pointer;
+// }
 
-/* Стилизация фона скроллбара */
-div::-webkit-scrollbar-track {
-  border-radius: 0 0 50px 0;
-  background-color: rgba($color: #000000, $alpha: 0.3); /* Цвет фона */
-}
+// /* Стилизация фона скроллбара */
+// div::-webkit-scrollbar-track {
+//   border-radius: 0 0 50px 0;
+//   background-color: rgba($color: #000000, $alpha: 0.3); /* Цвет фона */
+// }

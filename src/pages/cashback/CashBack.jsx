@@ -7,7 +7,7 @@ import AlertNotification from '../../components/notifictions/AlertNotification/A
 import SlipNotification from '../../components/notifictions/SlipNotification/SlipNotification.jsx';
 
 function CashBack(){
-    const { elementColors, setElementColors } = useContext(ElementContext);
+    const { theme, elementColors, setElementColors } = useContext(ElementContext);
     const [winCount, setWinCount] = useState('0 c');
     const [sum, setSum] = useState('');
     const [koeff, setKoeff] = useState('');
@@ -38,19 +38,20 @@ function CashBack(){
     
     useEffect(() => {
         setElementColors({
-            iconColor: 'var(--first-color)',
-            titleColor: 'var(--text-first-color)',
+            iconColor: theme.icon_color,
+            titleColor: theme.text_first_color,
             showArrow: true,
-            arrowLink: '#/menu',
-            arrowColor: 'var(--text-first-color)',
+            arrowLink: '#/list-menu',
+            arrowColor: theme.background_color,
             isHeaderBackground: true,
-            headerBackground: 'var(--background-color)',
+            headerBackground: theme.background_color,
             isHeader: true,
             isFooter: false,
-            footerBackground: 'var(--background-color)',
+            footerBackground: theme.background_color,
             activeElementIndex: 1,
         });
-        },[ElementContext]);
+        document.body.style.background = theme.background_color
+        },[theme]);
     
 
     return(
@@ -68,47 +69,49 @@ function CashBack(){
                 isShow={show}/> */}
             <div className={styles['block-body']}
                 style={{
-                    background: 'var(--element-first-color)'
+                    background: theme.element_first_color
                 }}>
                 <div className={styles['block-name']}
                     style={{
-                        color: 'var(--text-first-color)'
+                        color: theme.text_first_color
                     }}>
                     1X ГЛЕБ
                 </div>
                 <div className={styles['block-text']}
                     style={{
-                        color: 'var(--text-first-color)'
+                        color: theme.text_first_color
                     }}>
                     Ваш выигрыш составил:
                 </div>
                     <div className={styles['block-price']}
                     style={{
-                        color: 'var(--text-first-color)'
+                        color: theme.text_first_color
                     }}>
                         {winCount}
                     </div>
             </div>
             <Input
+                key={self.crypto.randomUUID()}
                 type="number" 
                 placeholder="Введите сумму ставки" 
                 // onInputChange={handleInputChange} 
                 onInputChange={(e) => setSum(e.target.value)}
-                backgroundColor="var(--element-first-color)"
-                textColor="var(--text-first-color)"
-                placeholderColor="var(--casino-first-color)"/>
+                backgroundColor={theme.element_first_color}
+                textColor={theme.text_first_color}
+                placeholderColor={theme.text_second_color}/>
             <Input
+                key={self.crypto.randomUUID()}
                 type="number" 
                 placeholder="Введите коэффициент ставки" 
                 // onInputChange={handleInputChange} 
                 onInputChange={(e) => setKoeff(e.target.value)}
-                backgroundColor="var(--element-first-color)"
-                textColor="var(--text-first-color)"
-                placeholderColor="var(--casino-first-color)"/>
+                backgroundColor={theme.element_first_color}
+                textColor={theme.text_first_color}
+                placeholderColor={theme.text_second_color}/>
             <MainButton
                 name="Рассчитать"
-                backgroundColor={'var(--first-color)'}
-                textColor={'var(--text-first-color)'}
+                backgroundColor={theme.first_color}
+                textColor={theme.text_first_color}
                 onButtonClick={calculateWin}/>
         </div>
     )

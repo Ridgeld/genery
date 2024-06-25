@@ -10,29 +10,29 @@
     z-index: 10;
     background: rgba($color: #000000, $alpha: 0.5)
 }
-.notif-area.animated{
-    opacity: 0;
-    visibility: hidden;
+// .notif-area.animated{
+//     opacity: 0;
+//     visibility: hidden;
 
-    .notif-body{
-        opacity: 0;
-        visibility: hidden;
-        transform: translate(0, 100%);
-        transition: 0.5s ease;
-    }
+//     .notif-body{
+//         opacity: 0;
+//         visibility: hidden;
+//         transform: translate(0, 100%);
+//         transition: 0.5s ease;
+//     }
     
-    &.show{
-        opacity: 1;
-        visibility: visible;
+//     &.show{
+//         opacity: 1;
+//         visibility: visible;
 
-        .notif-body{
-            opacity: 1;
-            visibility: visible;
-            transform: translate(0, 0);
-            transition: 0.5s ease;
-        }
-    }
-}
+//         .notif-body{
+//             opacity: 1;
+//             visibility: visible;
+//             transform: translate(0, 0);
+//             transition: 0.5s ease;
+//         }
+//     }
+// }
 .notif-body{
     display: flex;
     flex-direction: column;

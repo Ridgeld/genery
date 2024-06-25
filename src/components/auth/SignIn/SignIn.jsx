@@ -9,8 +9,8 @@ import { useNavigate } from "react-router-dom";
 import { ElementContext } from "../../../providers/ElementProvider.jsx";
 import styles from './SignIn.module.scss'
 function SignIn(){
-    const { authUser, setAuthUser, ga } = useAuth();
-    const { setElementColors } = useContext(ElementContext);
+    const { authUser, ga } = useAuth();
+    const {theme, setElementColors } = useContext(ElementContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(''); 
@@ -29,21 +29,20 @@ function SignIn(){
     // };
     useEffect(() => {
         setElementColors({
-            iconColor: 'var(--first-color)',
-            titleColor: 'var(--text-first-color)',
+            iconColor: theme.icon_color,
+            titleColor: theme.text_first_color,
             showArrow: false,
-            arrowColor: 'var(--text-first-color)',
-            arrowLink: '#/list-menu',
+            arrowColor: theme.text_first_color,
             isHeaderBackground: true,
-            headerBackground: 'var(--background-color)',
+            headerBackground: theme.background_color,
             isHeader: true,
             isFooter: false,
-            footerBackground: 'var(--background-color)',
+            footerBackground: theme.background_color,
             activeElementIndex: 3,
+            background: theme.background_color
         });
-
-        },[ElementContext]);
-    document.body.style.backgroundColor = 'var(--background-color)';
+        document.body.style.background = theme.background_color
+        },[theme]);
 
     function login(e){
         e.preventDefault()
@@ -81,43 +80,43 @@ function SignIn(){
                 <div className={styles['greeting']}>
                     <h2 className={styles['greeting-title']}
                         style={{
-                            color: 'var(--text-first-color)'
+                            color: theme.text_first_color
                         }}>Представьтесь</h2>
                     <h3 className={styles['greeting-text']}
                         style={{
-                            color: 'var(--text-first-color)'
+                            color: theme.text_first_color
                         }}>Работа не волк, подождет, а мы нет</h3>
                 </div>
                 <div className={styles['input-container']}>
                     <div className={styles['error']}
                     style={{
-                        color: 'var(--third-color)'
+                        color: theme.third_color
                     }}>{error}</div>
                     <Input 
                         type="email" 
                         placeholder="Введите email" 
                         // onInputChange={handleInputChange} 
                         onInputChange={(e) => setEmail(e.target.value)}
-                        backgroundColor="var(--element-first-color)"
-                        textColor="var(--text-first-color)"
-                        placeholderColor="var(--casino-first-color)"/>
+                        backgroundColor={theme.element_first_color}
+                        textColor={theme.text_first_color}
+                        placeholderColor={theme.text_second_color}/>
                     <Input 
                         type="password" 
                         placeholder="Введите пароль" 
                         onInputChange={(e) => setPassword(e.target.value)} 
-                        backgroundColor="var(--element-first-color)"
-                        textColor="var(--text-first-color)"
-                        placeholderColor="var(--casino-first-color)"/>
+                        backgroundColor={theme.element_first_color}
+                        textColor={theme.text_first_color}
+                        placeholderColor={theme.text_second_color}/>
                     <button className={styles['forgot-password']}
                         style={{
-                            color: 'var(--text-first-color)'
+                            color: theme.text_first_color
                         }}
                         >Забыли пароль?</button>
                 </div>
                 <div className={styles['button-container']}>
                     <button onClick={login} className={styles['continue-button']}
                     style={{
-                        background: 'var(--first-color)'
+                        background: theme.first_color
                     }}>
                         Войти
                         <svg width="12" height="11" viewBox="0 0 12 11" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -126,7 +125,7 @@ function SignIn(){
                     </button>
                     <button className={styles['create-account']}
                         style={{
-                            color: 'var(--text-first-color)'
+                            color: theme.text_first_color
                         }}
                         onClick={() => navigateTo('/sign-up')}>
                             Нет аккаунта? Регистрация</button>

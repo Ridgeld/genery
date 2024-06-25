@@ -5,25 +5,44 @@ import updates from './Updates.js';
 import UpdateBody from './UpdateBody.jsx';
 
 function Updates(){
-    const { elementColors, setElementColors } = useContext(ElementContext);
+    const {theme, elementColors, setElementColors } = useContext(ElementContext);
 
     useEffect(() => {
         setElementColors({
-            iconColor: 'var(--first-color)',
-            titleColor: 'var(--text-first-color)',
+            iconColor: theme.icon_color,
+            titleColor: theme.text_first_color,
             showArrow: true,
+            arrowColor: theme.text_first_color,
             arrowLink: '#/menu',
-            arrowColor: 'var(--text-first-color)',
             isHeaderBackground: true,
-            headerBackground: 'var(--background-color)',
+            headerBackground: theme.background_color,
             isHeader: true,
             isFooter: true,
-            footerBackground: 'var(--background-color)',
+            footerBackground: theme.background_color,
             activeElementIndex: 3,
         });
+        document.body.style.background = theme.background_color
         },[ElementContext]);
+
     return(
         <div className={styles.container}>
+            <style>{`
+                ::-webkit-scrollbar {
+                  width: 10px; /* Ширина ползунка */
+                }
+
+                /* Стилизация ползунка скроллбара */
+                ::-webkit-scrollbar-thumb {
+                  background-color: ${theme.first_color}; /* Цвет ползунка */
+                  border-radius: 5px; /* Закругление углов ползунка */
+                  cursor: pointer;
+                }
+
+                /* Стилизация фона скроллбара */
+                ::-webkit-scrollbar-track {
+                  background-color: rgba($color: #000000, $alpha: 0.3); /* Цвет фона */
+                }
+            `}</style>
             {updates.map((update) => (
                 <UpdateBody
                     data={update.data}

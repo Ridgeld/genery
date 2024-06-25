@@ -1,0 +1,61 @@
+.circle-skeleton{
+    position: relative;
+    background: linear-gradient(to right, transparent, var(--first-color, #888), transparent);
+    border-radius: 50%;
+    overflow: hidden;
+}
+.circle-skeleton::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, var(--second-color, #313131)); /* Градиент для движения */
+    animation: moveGradient 1s linear infinite; /* Анимация движения */
+}
+
+.rect-skeleton{
+    position: relative;
+    background: linear-gradient(to right, transparent, var(--first-color, #888), transparent);
+    border-radius: 5px;
+    overflow: hidden;
+}
+.rect-skeleton::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, var(--second-color, #313131)); /* Градиент для движения */
+    animation: moveGradient 1s linear infinite; /* Анимация движения */
+}
+// .skeleton-high{
+//     width: calc(95% - 35px);
+//     margin-left: 35px;
+//     height: 20px;
+//     background: linear-gradient(to right, transparent, var(--first-color, #888), transparent); /* Градиентная линия */
+//     position: relative;
+//     overflow: hidden;
+//     border-radius: 5px;
+// }
+
+.skeleton-high::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, var(--second-color, #313131)); /* Градиент для движения */
+    animation: moveGradient 1s linear infinite; /* Анимация движения */
+}
+@keyframes moveGradient {
+    0% {
+        transform: translateX(-100%); /* Начальное положение сдвинуто влево за границу видимости */
+    }
+    100% {
+        transform: translateX(100%); /* Конечное положение сдвинуто вправо за границу видимости */
+    }
+}

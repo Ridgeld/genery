@@ -97,11 +97,13 @@
     font-weight: 500;
 }
 .themes-container{
-    display: grid;
+    display: flex;
+    flex-wrap: wrap;
     justify-content: flex-start;
-    grid-template-columns: repeat(2, 40px);
-    grid-auto-rows: 40px;
-    grid-gap: 10px;
+    // grid-template-columns: repeat(5, 40px);
+    // grid-auto-rows: 40px;
+    // grid-gap: 10px;
+    gap: 10px;
     width: 100%;
 }
 .theme-body{

@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styles from './Downloads.module.scss'
 import { getDownloadURL, ref } from 'firebase/storage';
 import { storage } from '../../../firebase';
+import { ElementContext } from '../../providers/ElementProvider.jsx';
 
 function DownloadBody({name, url}){
-
+    const {theme, elementColors, setElementColors } = useContext(ElementContext);
     const getFileStyles = (name) => {
         const extension = name.split('.').pop().toLowerCase();
         switch (extension) {
@@ -12,18 +13,18 @@ function DownloadBody({name, url}){
           case 'jpeg':
           case 'png':
           case 'gif':
-            return { arrowColor: 'var(--background-color)', buttonColor: 'var(--second-color)' };
+            return { arrowColor: theme.background_color, buttonColor: theme.second_color };
           case 'pdf':
           case 'doc':
           case 'docx':
           case 'txt':
-            return { arrowColor: 'var(--text-first-color)', buttonColor: 'var(--first-color)' };
+            return { arrowColor: theme.text_first_color, buttonColor: theme.first_color};
           case 'mp4':
           case 'avi':
           case 'mkv':
-            return { arrowColor: 'var(--text-first-color)', buttonColor: 'var(--third-color)' };
+            return { arrowColor: theme.text_first_color, buttonColor: theme.third_color };
           default:
-            return { arrowColor: 'var(--text-first-color)', buttonColor: 'var(--element-second-color)' }; // цвет по умолчанию для остальных типов файлов
+            return { arrowColor: theme.text_first_color, buttonColor: theme.element_first_color }; // цвет по умолчанию для остальных типов файлов
         }
     };
     const { arrowColor, buttonColor } = getFileStyles(name);
@@ -68,11 +69,11 @@ function DownloadBody({name, url}){
     return(
         <div className={styles['download-body']}
             style={{
-                border: '2px solid var(--element-first-color)'
+                border: `2px solid ${theme.element_first_color}`
             }}>
             <div className={styles['download-name']}
                 style={{
-                    color: 'var(--text-first-color)'
+                    color: theme.text_first_color
                 }}>
                 {name}
             </div>

@@ -5,22 +5,25 @@ import { ElementContext } from '../../providers/ElementProvider.jsx';
 import '../../themes/default.scss'
 import LessonBody from './LessonBody.jsx';
 function Timetable(){
-    const { elementColors, setElementColors } = useContext(ElementContext);
+    const { theme, elementColors, setElementColors } = useContext(ElementContext);
+
     const [activeDay, setActiveDay] = useState(0);
     useEffect(() => {
         setElementColors({
-            iconColor: 'var(--first-color)',
-            titleColor: 'var(--text-first-color)',
+            iconColor: theme.icon_color,
+            titleColor: theme.text_first_color,
             showArrow: true,
-            arrowColor: 'var(--text-first-color)',
+            arrowColor: theme.text_first_color,
             arrowLink: '#/list-menu',
             isHeaderBackground: true,
-            headerBackground: 'var(--background-color)',
+            headerBackground: theme.background_color,
             isHeader: true,
             isFooter: true,
-            footerBackground: 'var(--background-color)',
-            activeElementIndex: 0,
+            footerBackground: theme.background_color,
+            activeElementIndex: 3,
+            background: theme.background_color
         });
+        document.body.style.background = theme.background_color
         },[ElementContext]);
 
 
@@ -32,8 +35,8 @@ function Timetable(){
                              onClick={() => setActiveDay(index)} 
                              className={`${styles['day']} ${activeDay === index ? styles['active'] : ''}`}
                              style={{
-                                background: activeDay === index ? 'var(--first-color)' : 'var(--element-first-color)',
-                                color: 'var(--text-first-color)',
+                                background: activeDay === index ? theme.first_color : theme.element_first_color,
+                                color: theme.text_first_color,
                             }}>{dayData.day}</div>
                     ))}
             </div>
@@ -41,10 +44,10 @@ function Timetable(){
                 {timetable[activeDay].lessons.map((lesson, lessonIndex) => (
                     <LessonBody 
                         category={lesson.category}
-                        backgroundColor={'var(--element-first-color)'}  
-                        circleBackgroundColor={'var(--first-color)'} 
-                        arrowColor={'var(--text-first-color)'} 
-                        textColor={'var(--text-first-color)'} 
+                        backgroundColor={theme.element_first_color}  
+                        circleBackgroundColor={theme.first_color} 
+                        arrowColor={theme.text_first_color} 
+                        textColor={theme.text_first_color} 
                         lessonName={lesson.name} 
                         lessonTime={lesson.time} 
                         lessonRoom={lesson.room} />

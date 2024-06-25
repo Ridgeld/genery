@@ -1,0 +1,129 @@
+.emoji-panel{
+    position: absolute;
+    // top: 50px;
+    left: 50px;
+    transform: translate(200%, 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 10px;
+    width: calc(100% - 70px);
+    max-height: 280px;
+    border-radius: 20px;
+    gap: 10px;
+    overflow-y: auto;
+    opacity: 0;
+    transform: scale(0);
+    transform-origin: top left;
+    transition: 0.2s ease;
+    z-index: 10;
+
+    &.show{
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.categories{
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    width: calc(100% - 20px);
+    padding: 10px;
+    gap: 5px;
+    min-height: 18px;
+    // background: greenyellow;
+    overflow-x: scroll;
+    overflow-y: hidden;
+}
+.categories::-webkit-scrollbar {
+  display: none; /* Скрываем горизонтальный скроллбар */
+}
+.categories {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+.emoji-category{
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    min-height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    background: none;
+    transition: 0.5s ease;
+    font-size:  20px;
+    font-family: var(--font,'Inter');
+
+}
+.active{
+    background: rgba($color: #FFFFFF, $alpha: 0.2);
+}
+.emojies-container{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    // overflow-y: scroll;
+}
+.category-name{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    font-size: 15px;
+    font-weight: 500;
+}
+.emojies-body{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.emojies-content{
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    gap: 10px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+
+}
+.emoji{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
+    font-family: 'Noto Color Emoji';
+    font-size: 25px;
+    transition: 0.5s ease;
+}
+.emoji-img{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    
+}
+.emoji-img-text{
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
+    transition: 0.5s ease;
+}
+@media(min-width: 700px){
+    .emoji-panel{
+        width: calc(50% - 70px);
+    }
+}

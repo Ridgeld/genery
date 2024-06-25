@@ -1,28 +1,54 @@
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { auth, db } from "../../../../firebase";
-// import '../../../themes/default.scss';
 import { useAuth } from "../../../providers/Authprovired";
 import Input from "../../inputs/Input.jsx";
 import { useNavigate } from "react-router-dom";
 import styles from './SignUp.module.scss'
 import { doc, setDoc } from "firebase/firestore";
+import { ElementContext } from "../../../providers/ElementProvider.jsx";
+import avatars from "./Avatars.js";
+
+
 function SignUp(){
+    const getRandomAvatar = () => {
+        const randomIndex = Math.floor(Math.random() * avatars.length);
+        return avatars[randomIndex].src;
+    };
+
+    const {theme, setElementColors } = useContext(ElementContext);
     const [email, setEmail] = useState();
     const [password, setPassword] = useState();
     const [name, setName] = useState()
     const [error, setError] = useState(); 
     const { authUser, setAuthUser, ga } = useAuth();
+    const [avatar, setAvatar] = useState(getRandomAvatar());
     const navigateTo = useNavigate()
 
     const handleInputChange = (event) => {
         const value = event.target.value;
         setInputValue(value);
-        // Дополнительные действия при изменении значения ввода
         console.log(value);
     };
-    
-    document.body.style.backgroundColor = 'var(--background-color)';
+
+    useEffect(() => {
+        setElementColors({
+            iconColor: theme.icon_color,
+            titleColor: theme.text_first_color,
+            showArrow: false,
+            arrowColor: theme.text_first_color,
+            isHeaderBackground: true,
+            headerBackground: theme.background_color,
+            isHeader: true,
+            isFooter: false,
+            footerBackground: theme.background_color,
+            activeElementIndex: 3,
+            background: theme.background_color
+        });
+        document.body.style.background = theme.background_color
+    },[theme]);
+
+    // document.body.style.backgroundColor = 'var(--background-color)';
 
     // function register(e){
     //     e.preventDefault();
@@ -85,13 +111,17 @@ function SignUp(){
     
                 const userDocRef = doc(db, 'users', user.uid, 'info', 'preferences');
                 await setDoc(userDocRef, {
+                    uid: user.uid,
                     name: name,
-                    photo: '',
+                    photo: avatar,
                     cover: 'blue',
                     biography: '',
-                    themeName: 'default', 
+                    boughtThemes: ['default'], 
+                    boughtColors: ['default'],
+                    boughtEmojies: [],
                     censorState: true,  // Добавляем поле censorState
-                    balance: 1000              // Добавляем поле balance
+                    balance: 1000, 
+                    followers: []             // Добавляем поле balance
                 }, { merge: true });
                 
                 console.log('Profile updated successfully');
@@ -117,40 +147,39 @@ function SignUp(){
                 <div className={styles['greeting']}>
                     <h2 className={styles['greeting-title']}
                         style={{
-                            color: 'var(--text-first-color)'
+                            color: theme.text_first_color
                         }}>Давай знакомиться</h2>
                     <h3 className={styles['greeting-text']}
                         style={{
-                            color: 'var(--text-first-color)'
+                            color: theme.text_first_color
                         }}>Выбери желаемое имя и пароль</h3>
                 </div>
                 <div className={styles['input-container']}>
                     <div className={styles['error']}
                     style={{
-                        color: 'var(--third-color)'
+                        color: theme.third_color
                     }}>{error}</div>
                     <Input 
                         type="email" 
                         placeholder="Введите email" 
-                        // onInputChange={handleInputChange} 
                         onInputChange={(e) => setEmail(e.target.value)}
-                        backgroundColor="var(--element-first-color)"
-                        textColor="var(--text-first-color)"
-                        placeholderColor="var(--casino-first-color)"/>
+                        backgroundColor={theme.element_first_color}
+                        textColor={theme.text_first_color}
+                        placeholderColor={theme.text_second_color}/>
                     <Input 
                         type="text" 
                         placeholder="Введите имя" 
                         onInputChange={(e) => setName(e.target.value)} 
-                        backgroundColor="var(--element-first-color)"
-                        textColor="var(--text-first-color)"
-                        placeholderColor="var(--casino-first-color)"/>
+                        backgroundColor={theme.element_first_color}
+                        textColor={theme.text_first_color}
+                        placeholderColor={theme.text_second_color}/>
                     <Input 
                         type="password" 
                         placeholder="Введите пароль" 
                         onInputChange={(e) => setPassword(e.target.value)} 
-                        backgroundColor="var(--element-first-color)"
-                        textColor="var(--text-first-color)"
-                        placeholderColor="var(--casino-first-color)"/>
+                        backgroundColor={theme.element_first_color}
+                        textColor={theme.text_first_color}
+                        placeholderColor={theme.text_second_color}/>
                     {/* <button className={styles['forgot-password']}
                         style={{
                             color: 'var(--text-first-color)'
@@ -160,7 +189,7 @@ function SignUp(){
                 <div className={styles['button-container']}>
                     <button onClick={register} className={styles['continue-button']}
                     style={{
-                        background: 'var(--first-color)'
+                        background: theme.first_color
                     }}>
                         Регистрация
                         <svg width="12" height="11" viewBox="0 0 12 11" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -169,9 +198,9 @@ function SignUp(){
                     </button>
                     <button className={styles['create-account']}
                         style={{
-                            color: 'var(--text-first-color)'
+                            color: theme.text_first_color
                         }}
-                        onClick={() => navigateTo('/sign-up')}>
+                        onClick={() => navigateTo('/sign-in')}>
                             Уже есть аккаунт? Войти</button>
                 </div>
             </form>

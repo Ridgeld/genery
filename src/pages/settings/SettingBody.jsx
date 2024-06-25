@@ -1,16 +1,20 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import styles from './Settings.module.scss'
 import { updateProfile } from "firebase/auth";
 import { setDoc, doc, collection, onSnapshot, deleteDoc, getDocs, orderBy, query  } from "firebase/firestore"; 
 import { auth, db, storage} from '../../../firebase.js';
-function SettingBody({itemName, itemIcon, authUserCensor, onCensorChange}){
-    console.log(authUserCensor);
+import { ElementContext } from '../../providers/ElementProvider.jsx';
+import parse from "html-react-parser";
 
-    const handleClick = async () => {
+function SettingBody({itemName, itemIcon, authUserCensor, onCensorChange}){
+    console.log(`Пришло значение: ${authUserCensor}`);
+    const { theme, setThemeById, elementColors, setElementColors } = useContext(ElementContext);
+
+    const handleClick = () => {
         if (itemName === 'Цензура') {
             const newCensorValue = !authUserCensor;
+            console.log(`Изменено при клике на: ${newCensorValue}`);
             onCensorChange(newCensorValue);
-            console.log(newCensorValue);
             // await saveDataToFirestore(newCensorValue, 'default');
         }
     };
@@ -25,27 +29,32 @@ function SettingBody({itemName, itemIcon, authUserCensor, onCensorChange}){
     //         console.error("Error saving document: ", error);
     //     }
     // };
-
+    const iconWithThemeColor = itemIcon.replace(/{theme.text_first_color}/g, theme.text_first_color);
     return(
         <div className={styles['item-body']}
             style={{
-                background: 'var(--element-first-color)'
+                background: theme.element_first_color
             }}>
             <div className={styles['item-info']}>
-                <div className={styles['item-icon']} dangerouslySetInnerHTML={{ __html: itemIcon }}></div>
-                <div className={styles['item-name']}>{itemName}</div>
+                <div className={styles['item-icon']}>
+                    {parse(iconWithThemeColor)}
+                </div>
+                <div className={styles['item-name']}
+                    style={{
+                        color: theme.text_first_color
+                    }}>{itemName}</div>
             </div>
             <div
                 className={styles['check-box']}
                 // className={`${styles['check-box']} ${censor && itemName === 'Цензура' ? styles['check-box-active'] : ''}`}
                 style={{
-                    background: authUserCensor && itemName === 'Цензура' ? 'var(--first-color)' : 'var(--element-second-color)',
+                    background: authUserCensor && itemName === 'Цензура' ? theme.first_color : theme.element_second_color,
                     // justifyContent: censor && itemName === 'Цензура' ? 'flex-start' : 'flex-end',
                 }}
                 onClick={handleClick}>
                 <div className={styles['check-box-circle']}
                 style={{
-                    background:'var(--text-first-color)',
+                    background: theme.text_first_color,
                     marginLeft: authUserCensor && itemName === 'Цензура' ? '29px' : '0',
                 }}></div>
             </div>

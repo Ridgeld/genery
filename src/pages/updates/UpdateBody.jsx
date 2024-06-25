@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styles from './Updates.module.scss'
+import { ElementContext } from '../../providers/ElementProvider.jsx';
 
 function UpdateBody({data, update, corrections}){
+    const {theme, elementColors, setElementColors } = useContext(ElementContext);
 
     const updateLines = update ? update.split('\n') : [];
     const correctionLines = corrections ? corrections.split('\n') : [];
@@ -9,11 +11,11 @@ function UpdateBody({data, update, corrections}){
     return(
         <div className={styles['update-body']}
             style={{
-                background: 'var(--element-first-color)'
+                background: theme.element_first_color
             }}>
             <div className={styles['update-data']}
                 style={{
-                    color: 'var(--text-first-color)'
+                    color: theme.text_first_color
                 }}>
                 {data}
             </div>
@@ -21,11 +23,11 @@ function UpdateBody({data, update, corrections}){
                 <div className={styles['text-container']}>
                     <div className={styles['title']}
                         style={{
-                            color: 'var(--text-first-color)'
+                            color: theme.text_first_color
                         }}>Новые функции:</div>
                     <div className={styles['text']}
                         style={{
-                            color: 'var(--text-first-color)' 
+                            color: theme.text_first_color 
                         }}>
                         {updateLines.map((line, index) => (
                             <React.Fragment key={index}>
@@ -39,11 +41,11 @@ function UpdateBody({data, update, corrections}){
                 <div className={styles['text-container']}>
                     <div className={styles['title']}
                         style={{
-                            color: 'var(--text-first-color)'
+                            color: theme.text_first_color
                         }}>Исправления:</div>
                     <div className={styles['text']}
                         style={{
-                            color: 'var(--text-first-color)' 
+                            color: theme.text_first_color 
                         }}>
                         {correctionLines.map((line, index) => (
                             <React.Fragment key={index}>

@@ -1,33 +1,48 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styles from './Messenger.module.scss';
-function MessageContainer(props) {
+import { useAuth } from "../../providers/Authprovired.jsx";
+import themes from '../settings/Themes.js';
+import { ElementContext } from '../../providers/ElementProvider.jsx';
+import {motion } from 'framer-motion'
+import parser from 'html-react-parser';
+
+function MessageContainer({messages, backgroundColor,textColor, date, photoClick }) {
+    console.log(messages.photos);
+
+    const handlePhotoClick = (photos, index) => {
+        photoClick(photos, index)
+    };
+
+    const { authUser } = useAuth();
+    const {theme, setThemeById, elementColors, setElementColors } = useContext(ElementContext);
     return (
         <>
             <div
                 className={styles['data-container']}
                 style={{
-                    background: props.backgroundColor,
-                    color: props.textColor
-                }}>{props.date}</div>
-            {props.messages.map((message, index) => (
+                    background: backgroundColor,
+                    color: textColor
+                }}>{date}</div>
+            {messages.map((message, index) => (
                 <div
                     key={index}
                     className={styles['message-body']}>
                     <div className={styles['user-container']}>
                         <div className={styles['user-photo']}>
                             {message.isUser ? 
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="10" cy="10" r="10" fill="#0038FF"/>
-                                <path d="M5 13.6667C5 12.9594 5.24658 12.2811 5.68549 11.781C6.12441 11.281 6.71971 11 7.34043 11H12.6596C13.2803 11 13.8756 11.281 14.3145 11.781C14.7534 12.2811 15 12.9594 15 13.6667C15 14.0203 14.8767 14.3594 14.6573 14.6095C14.4378 14.8595 14.1401 15 13.8298 15H6.17021C5.85985 15 5.5622 14.8595 5.34275 14.6095C5.12329 14.3594 5 14.0203 5 13.6667Z" stroke="white" stroke-linejoin="round"/>
-                                <path d="M10 9C11.1046 9 12 8.10457 12 7C12 5.89543 11.1046 5 10 5C8.89543 5 8 5.89543 8 7C8 8.10457 8.89543 9 10 9Z" stroke="white"/>
-                            </svg>
+                                <img src={authUser.avatar} className={styles['user-avatar']}/>
+                            // <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            //     <circle cx="10" cy="10" r="10" fill="#0038FF"/>
+                            //     <path d="M5 13.6667C5 12.9594 5.24658 12.2811 5.68549 11.781C6.12441 11.281 6.71971 11 7.34043 11H12.6596C13.2803 11 13.8756 11.281 14.3145 11.781C14.7534 12.2811 15 12.9594 15 13.6667C15 14.0203 14.8767 14.3594 14.6573 14.6095C14.4378 14.8595 14.1401 15 13.8298 15H6.17021C5.85985 15 5.5622 14.8595 5.34275 14.6095C5.12329 14.3594 5 14.0203 5 13.6667Z" stroke="white" stroke-linejoin="round"/>
+                            //     <path d="M10 9C11.1046 9 12 8.10457 12 7C12 5.89543 11.1046 5 10 5C8.89543 5 8 5.89543 8 7C8 8.10457 8.89543 9 10 9Z" stroke="white"/>
+                            // </svg>
                                 :
                             <svg width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M8.82134 7.91657C8.95883 7.52469 9.54127 7.52469 9.67875 7.91657L10.4849 10.2168C10.6624 10.7224 10.9613 11.1818 11.3581 11.5586C11.7549 11.9354 12.2386 12.2192 12.7709 12.3875L15.1907 13.1535C15.6031 13.2841 15.6031 13.8375 15.1907 13.9681L12.7697 14.734C12.2375 14.9026 11.7539 15.1867 11.3573 15.5637C10.9608 15.9407 10.6621 16.4002 10.4849 16.906L9.67875 19.205C9.64911 19.2908 9.5917 19.3655 9.51472 19.4185C9.43773 19.4715 9.3451 19.5 9.25005 19.5C9.15499 19.5 9.06236 19.4715 8.98538 19.4185C8.90839 19.3655 8.85098 19.2908 8.82134 19.205L8.01518 16.9048C7.83786 16.3993 7.53908 15.9399 7.14251 15.5632C6.74595 15.1864 6.26248 14.9025 5.73042 14.734L3.30943 13.9681C3.21912 13.9399 3.14047 13.8854 3.08471 13.8122C3.02895 13.7391 2.99893 13.6511 2.99893 13.5608C2.99893 13.4705 3.02895 13.3825 3.08471 13.3093C3.14047 13.2362 3.21912 13.1816 3.30943 13.1535L5.73042 12.3875C6.26248 12.219 6.74595 11.9352 7.14251 11.5584C7.53908 11.1816 7.83786 10.7223 8.01518 10.2168L8.82134 7.91657ZM3.99311 1.86148C4.01103 1.81005 4.04556 1.7653 4.09178 1.73358C4.138 1.70186 4.19356 1.68479 4.25058 1.68479C4.3076 1.68479 4.36316 1.70186 4.40939 1.73358C4.45561 1.7653 4.49013 1.81005 4.50805 1.86148L4.99175 3.24136C5.20798 3.85649 5.71543 4.33861 6.36286 4.54405L7.8152 5.00362C7.86933 5.02064 7.91643 5.05345 7.94981 5.09736C7.98319 5.14128 8.00116 5.19407 8.00116 5.24824C8.00116 5.30241 7.98319 5.35521 7.94981 5.39912C7.91643 5.44304 7.86933 5.47584 7.8152 5.49287L6.36286 5.95243C6.04355 6.05351 5.7534 6.22385 5.51541 6.44997C5.27743 6.67608 5.09814 6.95175 4.99175 7.25513L4.50805 8.63501C4.49013 8.68643 4.45561 8.73118 4.40939 8.7629C4.36316 8.79462 4.3076 8.81169 4.25058 8.81169C4.19356 8.81169 4.138 8.79462 4.09178 8.7629C4.04556 8.73118 4.01103 8.68643 3.99311 8.63501L3.50941 7.25513C3.40303 6.95175 3.22374 6.67608 2.98575 6.44997C2.74776 6.22385 2.45762 6.05351 2.13831 5.95243L0.685964 5.49287C0.631838 5.47584 0.584736 5.44304 0.551352 5.39912C0.517969 5.35521 0.5 5.30241 0.5 5.24824C0.5 5.19407 0.517969 5.14128 0.551352 5.09736C0.584736 5.05345 0.631838 5.02064 0.685964 5.00362L2.13831 4.54405C2.45762 4.44297 2.74776 4.27263 2.98575 4.04652C3.22374 3.8204 3.40303 3.54474 3.50941 3.24136L3.99311 1.86148ZM12.8284 0.615785C12.8408 0.581972 12.8639 0.552652 12.8946 0.531901C12.9252 0.511151 12.962 0.5 12.9996 0.5C13.0373 0.5 13.074 0.511151 13.1047 0.531901C13.1354 0.552652 13.1585 0.581972 13.1709 0.615785L13.4933 1.53491C13.6371 1.94579 13.9758 2.2676 14.4082 2.40417L15.3756 2.71054C15.4112 2.72227 15.4421 2.74423 15.4639 2.77339C15.4858 2.80255 15.4975 2.83744 15.4975 2.87323C15.4975 2.90902 15.4858 2.94392 15.4639 2.97307C15.4421 3.00223 15.4112 3.0242 15.3756 3.03592L14.4082 3.3423C14.1951 3.40966 14.0015 3.52329 13.8427 3.67418C13.6838 3.82508 13.5642 4.00907 13.4933 4.21155L13.1709 5.13068C13.1585 5.16449 13.1354 5.19381 13.1047 5.21456C13.074 5.23531 13.0373 5.24646 12.9996 5.24646C12.962 5.24646 12.9252 5.23531 12.8946 5.21456C12.8639 5.19381 12.8408 5.16449 12.8284 5.13068L12.5059 4.21155C12.435 4.00907 12.3154 3.82508 12.1566 3.67418C11.9978 3.52329 11.8042 3.40966 11.591 3.3423L10.6249 3.03592C10.5893 3.0242 10.5584 3.00223 10.5366 2.97307C10.5148 2.94392 10.503 2.90902 10.503 2.87323C10.503 2.83744 10.5148 2.80255 10.5366 2.77339C10.5584 2.74423 10.5893 2.72227 10.6249 2.71054L11.5923 2.40417C12.0247 2.2676 12.3635 1.94579 12.5072 1.53491L12.8284 0.615785Z" fill="url(#paint0_linear_2006_8484)"/>
                                 <defs>
                                 <linearGradient id="paint0_linear_2006_8484" x1="0.5" y1="15.6651" x2="15.9873" y2="14.9843" gradientUnits="userSpaceOnUse">
-                                <stop stop-color="#2400FF"/>
-                                <stop offset="1" stop-color="#00C2FF"/>
+                                <stop stop-color={theme.gradient_first_color}/>
+                                <stop offset="1" stop-color={theme.gradient_second_color}/>
                                 </linearGradient>
                                 </defs>
                             </svg>
@@ -35,22 +50,34 @@ function MessageContainer(props) {
                         </div>
                         <div className={styles['user-name']}
                             style={{
-                                color: props.textColor
+                                color: textColor
                             }}>
                                 {message.isUser ? message.userName : 'Genery'}
                         </div>
                     </div>
+                    {message.photos && 
+                    <div className={styles['images-body']}>
+                        <div className={styles[`images-wrapper_${message.photos.length}`]}>
+                            {message.photos.map((image, index)=> (
+                                <motion.div className={styles[`image_${index}`]}
+                                whileTap={{scale: 1.5}}>
+                                    <img src={image}
+                                    onClick={() => handlePhotoClick(message.photos, index)}/> 
+                                </motion.div>
+                            ))}
+                        </div>
+                    </div> }
                     <div className={styles['message-text']}
                         style={{
-                            color: props.textColor
-                        }}>
-                        {message.text.split('**').map((part, i) => {
+                            color: textColor
+                        }}>{parser(message.text)}
+                        {/* {message.text.split('**').map((part, i) => {
                             return i % 2 === 0 ? (
                                 <span key={i}>{part}</span>
                             ) : (
                                 <b key={i}>{part}</b>
                             );
-                        })}
+                        })} */}
                     </div>
                 </div>
             ))}

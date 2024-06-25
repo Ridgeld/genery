@@ -5,24 +5,25 @@ import { ref, listAll, getDownloadURL } from 'firebase/storage';
 import { storage } from '../../../firebase.js';
 import DownloadBody from './DownloadBody.jsx';
 function Downloads(){
-    const { elementColors, setElementColors } = useContext(ElementContext);
+    const {theme, elementColors, setElementColors } = useContext(ElementContext);
     const [files, setFiles] = useState([]);
 
     useEffect(() => {
         setElementColors({
-            iconColor: 'var(--first-color)',
-            titleColor: 'var(--text-first-color)',
+            iconColor: theme.icon_color,
+            titleColor: theme.text_first_color,
             showArrow: true,
-            arrowLink: '#/menu',
-            arrowColor: 'var(--text-first-color)',
+            arrowLink: '#/list-menu',
+            arrowColor: theme.text_first_color,
             isHeaderBackground: true,
-            headerBackground: 'var(--background-color)',
+            headerBackground: theme.background_color,
             isHeader: true,
             isFooter: true,
-            footerBackground: 'var(--background-color)',
+            footerBackground: theme.background_color,
             activeElementIndex: 3,
         });
-        },[ElementContext]);
+        document.body.style.background = theme.background_color
+        },[theme]);
 
         useEffect(() => {
             const fetchFiles = async () => {
@@ -41,7 +42,7 @@ function Downloads(){
         <div className={styles.container}>
             <div className={styles['title']}
                 style={{
-                    color: 'var(--text-first-color)'
+                    color: theme.text_first_color
                 }}>Файлы</div>
             <div className={styles['files-container']}>
                 {files.map(file => (

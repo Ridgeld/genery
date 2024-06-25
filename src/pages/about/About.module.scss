@@ -1,11 +1,15 @@
 .container{
-    margin-top: 60px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    // padding-top: 60px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: calc(100% - 60px);
+    height: 100%;
+    // height: calc(100% - 60px);
 }
 .button_container{
     position: absolute;

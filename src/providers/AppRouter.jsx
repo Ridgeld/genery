@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {routes} from '../router/paths.jsx'
 import { HashRouter as Router, Route, Routes, Navigate, useLocation } from "react-router-dom";
 import { auth } from "../../firebase.js";
@@ -6,8 +6,9 @@ import { useAuth } from "./Authprovired.jsx";
 import SignIn from "../components/auth/SignIn/SignIn.jsx";
 import Loader from "../components/loader/Loader.jsx";
 import '../themes/default.scss';
-
+import { ElementContext } from './ElementProvider.jsx';
 function AppRouter(){
+    const { theme, elementColors, setElementColors } = useContext(ElementContext);
     const { authUser } = useAuth();
     const isAuth = false;
     const [authChecked, setAuthChecked] = useState(false);
@@ -21,7 +22,7 @@ function AppRouter(){
     }, []);
 
     if (!authChecked) {
-        return <Loader color='var(--icon-color)'/>; // Показываем прелоадер, пока проверка аутентификации не завершена
+        return <Loader color={theme.icon_color}/>; // Показываем прелоадер, пока проверка аутентификации не завершена
     }
 
     return (

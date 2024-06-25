@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import styles from './Casino.module.scss'
 import AlertNotification from '../../components/notifictions/AlertNotification/AlertNotification';
 import SlipNotification from '../../components/notifictions/SlipNotification/SlipNotification';
-import items from './Casino';
+import { createItems } from './Casino.js';
 import { useAuth } from "../../providers/Authprovired.jsx";
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../../firebase.js';
@@ -15,10 +15,10 @@ import ScoreContainer from '../../components/score-container/ScoreContainer.jsx'
 
 
 function Casino(){
-    const { elementColors, setElementColors } = useContext(ElementContext);
+    const {theme, elementColors, setElementColors } = useContext(ElementContext);
     // const [showAlert, setShowAlert] = useState(false);
+    const items = createItems(theme);
     const navigateTo = useNavigate();
-    const [showSlip, setShowSlip] = useState(false);
     const [showWheel, setShowWheel] = useState(false);
     const { authUser } = useAuth();
     const [balance, setBalance] = useState(0);
@@ -26,7 +26,6 @@ function Casino(){
     const [payout, setPayout] = useState(0);
     const [isWheelSpinning, setIsWheelSpinning] = useState(false);
     const [resultNumber, setResultNumber] = useState(null);
-
 
     const [alertProp, setAlertProp] = useState({
         isShow: false,
@@ -36,6 +35,23 @@ function Casino(){
         secondButtonName: 'играть',
 
     });
+
+    const [slipProp, setSlipProp] = useState({
+        isShow: false,
+        text: ''
+    });
+
+    useEffect(() => {
+        if (slipProp.isShow) {
+          const timer = setTimeout(() => {
+            setSlipProp({
+                isShow: false
+            });
+          }, 1000);
+    
+          return () => clearTimeout(timer);
+        }
+      }, [slipProp]);
 
     const playAgain = () => {
         // window.location.reload();
@@ -61,19 +77,20 @@ function Casino(){
 
     useEffect(() => {
         setElementColors({
-            iconColor: 'var(--first-color)',
-            titleColor: 'var(--text-first-color)',
+            iconColor: theme.icon_color,
+            titleColor: theme.text_first_color,
             showArrow: true,
-            arrowLink: '#/menu',
-            arrowColor: 'var(--text-first-color)',
+            arrowLink: '#/list-menu',
+            arrowColor: theme.text_first_color,
             isHeaderBackground: true,
-            headerBackground: 'var(--background-color)',
+            headerBackground: theme.background_color,
             isHeader: true,
             isFooter: true,
-            footerBackground: 'var(--background-color)',
+            footerBackground: theme.background_color,
             activeElementIndex: 3,
         });
-        },[ElementContext]);
+        document.body.style.background = theme.background_color
+        },[theme]);
 
     useEffect(() => {
         const fetchUserPreferences = async () => {
@@ -84,7 +101,7 @@ function Casino(){
                 if (docSnap.exists()) {
                     const userData = docSnap.data();
                     console.log(userData);
-                    setBalance(userData.balance);
+                    setBalance(userData.balance < 100 ? 1000: userData.balance);
                 } else {
                     console.log("No such document!");
                 }
@@ -113,7 +130,13 @@ function Casino(){
     };
 
     const handleItemClick = (item) => {
-
+        if(balance < 100){
+            setSlipProp({
+                isShow: true,
+                text: 'У вас недостаточно средств для ставки'
+            })
+            return
+        }
         setBets(prevBets => {
           const betExists = prevBets.some(bet => bet.item === item);
 
@@ -189,8 +212,8 @@ function Casino(){
                 firstButtonOnClick={alertProp.firstButtonOnClick}
                 secondButtonOnClick={alertProp.secondButtonOnClick}/>
             <SlipNotification
-                text={''}
-                isShow={showSlip}/>
+                isShow={slipProp.isShow}
+                text={slipProp.text}/>
             <Wheel 
                 isShow={showWheel}
                 onStop={alertPrize}/>
@@ -208,9 +231,9 @@ function Casino(){
                                 background: item.isZero ? item.background : 'transparent',
                                 gridColumn: item.grid === 'column' ? item.size : '',
                                 gridRow: item.grid === 'row' ? item.size : '',
-                                border: '1px solid var(--element-second-color)',
+                                border: `1px solid ${theme.element_first_color}`,
                                 borderRadius: item.border,
-                                color: 'var(--text-first-color)'
+                                color: theme.text_first_color
                             }}
                             onClick={() => handleItemClick(item.name)}>
                                 {bets.some(bet => bet.item === item.name) && <Chip price={100}/>}
@@ -218,15 +241,15 @@ function Casino(){
                                 <div className={styles.circle}
                                     style={{
                                         background: item.circleColor,
-                                        color: 'var(--text-first-color)'
+                                        color: theme.text_first_color
                                     }}>{item.name}</div>
                                     : item.name
                                 }</div>
                     ))}
                     <button className={styles.spin}
                         style={{
-                            background: 'var(--element-second-color)',
-                            color: 'var(--text-first-color)'
+                            background: theme.element_first_color,
+                            color: theme.text_first_color
                         }}
                         onClick={handleWheel}>крутить</button>
                 </div>

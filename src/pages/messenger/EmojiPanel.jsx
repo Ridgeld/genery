@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import styles from './Messenger.module.scss';
 import emojis from './Emojies';
-
+import parse from "html-react-parser";
+import { ElementContext } from '../../providers/ElementProvider.jsx';
 function EmojiPanel(props) {
     const [currentCategory, setCurrentCategory] = useState(emojis[0].name);
+    const {theme, setThemeById, elementColors, setElementColors } = useContext(ElementContext);
 
     const handleCategoryClick = (category) => {
         setCurrentCategory(category);
@@ -19,14 +21,18 @@ function EmojiPanel(props) {
             }}>
             <div className={styles.categories}>
                 {/* Кнопки для категорий */}
-                {emojis.map((category) => (
-                <button
-                    key={category.name}
-                    className={`${styles['emoji-category']} ${currentCategory === category.name ? styles['active'] : ''}`}
-                    onClick={() => handleCategoryClick(category.name)}
-                    dangerouslySetInnerHTML={{ __html: category.icon }}
-                />
-                ))}
+                {emojis.map((category) => {
+                const iconWithThemeColor = category.icon.replace(/{theme.text_first_color}/g, theme.text_first_color);
+                return (
+                    <button
+                        key={category.name}
+                        className={`${styles['emoji-category']} ${currentCategory === category.name ? styles['active'] : ''}`}
+                        onClick={() => handleCategoryClick(category.name)}
+                    >
+                        {parse(iconWithThemeColor)}
+                    </button>
+                );
+            })}
             </div>
             <div className={styles['emojies-container']}>
                 {/* Условный рендеринг контейнера с категорией */}

@@ -1,7 +1,7 @@
 .block{
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: flex-start;
     width: 125px;
     height: 125px;
     // grid-column-start: span 2;
@@ -12,16 +12,7 @@
 }
 .block:hover{
     opacity: 0.8;
-    .default_arrow{
-        svg{
-            transform: rotate(45deg);
-        }
-    }
-    .circle_arrow{
-        svg{
-            transform: rotate(45deg);
-        }
-    }
+
 }
 .info{
     display: flex;
@@ -40,7 +31,26 @@
     font-weight: 400;
     user-select: none;
 }
+.arrow-container{
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
 
+    .circle-arrow{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        svg{
+            max-width: 12px;
+            max-height: 12px;
+        }
+    }
+}
 .default_arrow{
     display: flex;
     width: 30px;

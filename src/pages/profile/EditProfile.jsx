@@ -9,17 +9,19 @@ import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import colorCircles from './ColorCircles.js';
 
 function EditProfile({fetchUserPreferences, handleEdit}){
-    const { elementColors, setElementColors } = useContext(ElementContext);
+    const {theme, elementColors, setElementColors } = useContext(ElementContext);
     const { authUser } = useAuth();
     const [name, setName] = useState(authUser.name);
     const [biography, setBiography] = useState(authUser.biography)
     const [isActive, setIsActive] = useState(true);
     const [photo, setPhoto] = useState(null);
-    const [cover, setCover] = useState(authUser.cover)
+    const [cover, setCover] = useState(authUser.cover);
+    const [userColors, setUserColors] = useState([]);
     const [slipData, setSlipData] = useState({
         isShow: false,
         text: ''
     });
+
     useEffect(() => {
         const fetchUserPreferences = async () => {
             if (authUser && authUser._id) {
@@ -32,6 +34,9 @@ function EditProfile({fetchUserPreferences, handleEdit}){
                     setName(userData.name)
                     setBiography(userData.biography);
                     setCover(userData.cover)
+                    setUserColors(prevColors => [...prevColors, ...userData.boughtColors]);
+                    // setUserColors(userData.boughtColors);
+                    // console.log(userColors)
                 } else {
                     console.log("No such document!");
                 }
@@ -43,21 +48,27 @@ function EditProfile({fetchUserPreferences, handleEdit}){
         fetchUserPreferences();
     }, [authUser])
 
+    const filteredColors = userColors ? 
+        colorCircles.filter(circle => userColors.includes(circle.name))
+    : []
+    // const filteredColors =[]
+
     useEffect(() => {
         setElementColors({
-            iconColor: 'var(--text-first-color)',
-            titleColor: 'var(--text-first-color)',
+            iconColor: theme.icon_color,
+            titleColor: theme.text_first_color,
             showArrow: true,
-            arrowColor: 'var(--text-first-color)',
-            arrowLink: '#/menu',
+            arrowLink: '#/profile',
+            arrowColor: theme.text_first_color,
             isHeaderBackground: false,
-            headerBackground: 'var(--background-color)',
+            headerBackground: theme.background_color,
             isHeader: true,
             isFooter: true,
-            footerBackground: 'var(--background-color)',
+            footerBackground: theme.background_color,
             activeElementIndex: 3,
         });
-        },[ElementContext]);
+        document.body.style.background = theme.background_color
+        },[theme]);
 
     const copyId = () => {
         // setShow(true);
@@ -96,10 +107,12 @@ function EditProfile({fetchUserPreferences, handleEdit}){
             console.log(e.target.files[0])
         }
     };
+
     const handleCoverChange = (color) =>{
         setCover(color)
         // alert(color)
     }
+
     const handleDataChange = async () => {
         let photoUrl = null;
         const timestamp = new Date().toISOString();
@@ -174,22 +187,49 @@ function EditProfile({fetchUserPreferences, handleEdit}){
                     onChange={handleImageChange}
                     />
             </div>
-            <div className={styles['colors-container']}
-                style={{
-                    background: 'var(--element-first-color)'
-                }}>
-                {colorCircles.map((circle)=>(
-                    <div className={styles['color-circle']}
-                        style={{
-                            background: circle.color
-                        }}
-                        onClick={() => handleCoverChange(circle.color)}>
-                        {cover === circle.color && <div className={styles['active-circle']}
-                            style={{
-                                borderColor: 'var(--text-first-color)'
-                            }}></div>}
-                    </div>
+            <div className={styles['colors-container']} style={{ background: 'var(--element-first-color)' }}>
+                {filteredColors.map((circle) => (
+                    <>
+                    {circle.colors.map((color, index) => (
+                        <div
+                        key={index}
+                        className={styles['color-circle']}
+                        style={{ background: color }}
+                        onClick={() => handleCoverChange(color)}
+                        >
+                        {cover === color && (
+                            <div className={styles['active-circle']} style={{ borderColor: 'var(--text-first-color)' }}></div>
+                        )}
+                        </div>
+                    ))}
+                    </>
                 ))}
+
+                {/* {filteredColors.map((circle)=> { */}
+                    {/* {circle.colors.map((color) => (
+                        <div className={styles['color-circle']}
+                            style={{
+                                background: color
+                            }}
+                            onClick={() => handleCoverChange(circle.color)}>
+                            {cover === color&& <div className={styles['active-circle']}
+                                style={{
+                                    borderColor: 'var(--text-first-color)'
+                                }}></div>}
+                        </div>
+                    ))} 
+                //*/}
+                    {/*<div className={styles['color-circle']}
+                    //     style={{
+                    //         background: circle.color
+                    //     }}
+                    //     onClick={() => handleCoverChange(circle.color)}>
+                    //     {cover === circle.color && <div className={styles['active-circle']}
+                    //         style={{
+                    //             borderColor: 'var(--text-first-color)'
+                    //         }}></div>}
+                    // </div>
+                )} */}
             </div>
             <div className={styles['user-actions']}
                 style={{

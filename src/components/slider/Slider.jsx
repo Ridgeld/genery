@@ -33,9 +33,25 @@ function SamplePrevArrow(props) {
 
 
 function MySlider() { // изменяем имя компонента
-    const { elementColors, setElementColors } = useContext(ElementContext);
-
+    const { theme, elementColors, setElementColors } = useContext(ElementContext);
     const [slideIndex, setSlideIndex] = useState(0);
+
+    // useEffect(() => {
+    //   setElementColors({
+    //       iconColor: theme.icon_color,
+    //       titleColor: theme.text_first_color,
+    //       showArrow: true,
+    //       arrowColor: theme.text_first_color,
+    //       arrowLink: '#/menu',
+    //       isHeaderBackground: true,
+    //       headerBackground: theme.background_color,
+    //       isHeader: true,
+    //       isFooter: true,
+    //       footerBackground: theme.background_color,
+    //       activeElementIndex: 2,
+    //       background: '#676767'
+    //   });
+    //   },[ElementContext]);
     useEffect(() => {
         const slider = document.querySelector('.slick-active');
         const slideIndex = parseInt(slider.getAttribute('data-index'));
@@ -44,8 +60,8 @@ function MySlider() { // изменяем имя компонента
         const backgroundColors = ["#C3F82B", "#FF4365", "#0040F9"];
         const colorsArray = {
             0: { // Цвета для первого слайда
-                iconColor: 'var(--background-color)',
-                titleColor: 'var(--background-color)',
+                iconColor: '#0A0B10',
+                titleColor: '#0A0B10',
                 showArrow: false,
                 arrowColor: '#0000FF',
                 isBackground: false,
@@ -53,8 +69,8 @@ function MySlider() { // изменяем имя компонента
                 isHeader: true,
             },
             1: { // Цвета для второго слайда
-                iconColor: 'var(--text-first-color)',
-                titleColor: 'var(--text-first-color)',
+                iconColor: '#ffffff',
+                titleColor: '#ffffff',
                 showArrow: false,
                 arrowColor: '#0000FF',
                 isBackground: false,
@@ -62,8 +78,8 @@ function MySlider() { // изменяем имя компонента
                 isHeader: true,
             },
             2: { // Цвета для третьего слайда
-                iconColor: 'var(--text-first-color)',
-                titleColor: 'var(--text-first-color)',
+                iconColor: '#ffffff',
+                titleColor: '#ffffff',
                 showArrow: false,
                 arrowColor: '#0000FF',
                 isBackground: false,
@@ -73,7 +89,7 @@ function MySlider() { // изменяем имя компонента
             // Добавьте цвета для других слайдов по мере необходимости
         };
         // Устанавливаем цвет фона body в зависимости от текущего слайда
-        document.body.style.backgroundColor = backgroundColors[slideIndex];
+        document.body.style.background= backgroundColors[slideIndex];
         document.body.style.transition = "0.5s";
 
         setElementColors(colorsArray[slideIndex]);
@@ -107,7 +123,7 @@ function MySlider() { // изменяем имя компонента
         <div>
           <div className="info_container">
             <div className="image_container">
-              <img src="./1.png"/>
+              <img src="1.png"/>
             </div>
             <h2 className="title black">Играй. Общайся. Развивайся.</h2>
             <h3 className="text black">Выигрывай в гонке или проигрывай все в казино.</h3>
@@ -116,7 +132,7 @@ function MySlider() { // изменяем имя компонента
         <div>
           <div className="info_container">
             <div className="image_container">
-              <img src="/genery/public/2.png"/>
+              <img src="2.png"/>
             </div>
             <h2 className="title white">Учить - не значит запомнить</h2>
             <h3 className="text white">Эту и многие другие цитаты ты узнаешь</h3>
@@ -125,7 +141,7 @@ function MySlider() { // изменяем имя компонента
         <div>
           <div className="info_container">
             <div className="image_container">
-              <img src="/genery/public/3.png"/>
+              <img src="3.png"/>
             </div>
             <h2 className="title white">Я забыл права дома. Честно</h2>
             <h3 className="text white">Вот ты и попался, а использовал бы наши причины, мог быть на свободе</h3>

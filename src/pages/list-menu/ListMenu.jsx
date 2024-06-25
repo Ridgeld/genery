@@ -6,37 +6,56 @@ import '../../themes/default.scss'
 import ItemBody from './ItemBody.jsx';
 
 function ListMenu(){
-    const { elementColors, setElementColors } = useContext(ElementContext);
+    const {theme, setThemeById, elementColors, setElementColors } = useContext(ElementContext);
     useEffect(() => {
         setElementColors({
-            iconColor: 'var(--first-color)',
-            titleColor: 'var(--text-first-color)',
+            iconColor: theme.icon_color,
+            titleColor: theme.text_first_color,
             showArrow: false,
-            arrowColor: 'var(--text-first-color)',
+            arrowColor: theme.text_first_color,
             isHeaderBackground: true,
-            headerBackground: 'var(--background-color)',
+            headerBackground: theme.background_color,
             isHeader: true,
             isFooter: true,
-            footerBackground: 'var(--background-color)',
+            footerBackground: theme.background_color,
             activeElementIndex: 3,
+            background: theme.background_color
         });
-        },[ElementContext]);
+        document.body.style.background = theme.background_color
+        },[theme]);
 
     return(
         <div className={styles.container}>
+            <style>{`
+                ::-webkit-scrollbar {
+                  width: 10px; /* Ширина ползунка */
+                }
+
+                /* Стилизация ползунка скроллбара */
+                ::-webkit-scrollbar-thumb {
+                  background-color: ${theme.first_color}; /* Цвет ползунка */
+                  border-radius: 5px; /* Закругление углов ползунка */
+                  cursor: pointer;
+                }
+
+                /* Стилизация фона скроллбара */
+                ::-webkit-scrollbar-track {
+                  background-color: rgba($color: #000000, $alpha: 0.3); /* Цвет фона */
+                }
+            `}</style>
             {menuItems.map((item, index) => (
                 <>
                     <div className={styles[`${item.category === 'контакты' ? 'contact-category' : 'category-name'}`]}
                         key={index}
                          style={{
-                            color: 'var(--text-first-color)'
+                            color: theme.text_first_color
                          }}>{item.category}</div>
                     <div className={styles['category-container']}>
                         {item.items.map((item, index) => (
                         <ItemBody 
                             key={index}
                             name={item.name}
-                            textColor={'var(--text-first-color)'}
+                            textColor={theme.text_first_color}
                             category={item.category}
                             icon={item.icon}
                             link={item.link}/>
