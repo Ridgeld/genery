@@ -14,7 +14,7 @@ function ThemeBody({name, img, activeTheme , onThemeChange }){
     return(
         <div className={styles['theme-body']}
         style={{
-            border: activeTheme === name ? `2px solid ${theme.first_color}` : 'none'
+            borderColor: activeTheme === name ? theme.first_color : 'none'
         }}
         onClick={handleClick}>
             <img src={img} alt={name}/>

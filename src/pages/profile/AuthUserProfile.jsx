@@ -35,7 +35,7 @@ function AuthUserProfile({id}){
 
     useEffect(() => {
         setElementColors({
-            iconColor: theme.icon_color,
+            iconColor: theme.text_first_color,
             titleColor: theme.text_first_color,
             showArrow: true,
             arrowLink: '#/list-menu',

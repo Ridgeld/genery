@@ -2,8 +2,8 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    width: 125px;
-    height: 125px;
+    width: calc(100% - 40px);
+    height: calc(100% - 40px);
     // grid-column-start: span 2;
     border-radius: 20px;
     padding: 20px;
@@ -21,13 +21,13 @@
     gap: 5px;
 }
 .title{
-    font-size:20px;
+    font-size:clamp(16px, 4vw, 20px);
     font-weight: 500;
     user-select: none;
 }
 
 .text{
-    font-size:15px;
+    font-size:clamp(12px, 4vw, 16px);
     font-weight: 400;
     user-select: none;
 }
