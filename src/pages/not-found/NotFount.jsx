@@ -46,6 +46,7 @@ function NotFound(){
                     background: theme.first_color
                 }}>
                 <div className={styles['img-wrapper']}>
+                    <div className={styles['image-no-select']}></div>
                     <img src='4.png'/>
                 </div>
                 <h3 className={styles['heading']}
