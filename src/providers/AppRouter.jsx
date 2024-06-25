@@ -7,6 +7,8 @@ import SignIn from "../components/auth/SignIn/SignIn.jsx";
 import Loader from "../components/loader/Loader.jsx";
 import '../themes/default.scss';
 import { ElementContext } from './ElementProvider.jsx';
+import NotFound from "../pages/not-found/NotFount.jsx";
+
 function AppRouter(){
     const { theme, elementColors, setElementColors } = useContext(ElementContext);
     const { authUser } = useAuth();
@@ -36,6 +38,7 @@ function AppRouter(){
                         exact={route.exact}
                     />
                 ))}
+                <Route path="*" element={<NotFound />} /> {/* Добавляем маршрут для страницы 404 */}
             </Routes>
         </Router>
     )
