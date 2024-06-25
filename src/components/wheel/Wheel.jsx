@@ -8,7 +8,34 @@ function Wheel({isShow, onStop}){
     const canvasRef = useRef(null);
     const rootStyles = getComputedStyle(document.documentElement);
     const {theme, elementColors, setElementColors } = useContext(ElementContext);
+    const [outerRadius, setOuterRadius] = useState(125);
+    const [innerRadius, setInnerRadius] = useState(100);
+    const [textPosition, setTextPosition] = useState('center')
 
+    const updateOuterRadius = () => {
+        const screenWidth = window.innerWidth;
+        if (screenWidth <= 700) {
+          setOuterRadius(125);
+          setInnerRadius(100);
+          setTextPosition('outer')
+        } else {
+          setOuterRadius(155);
+          setInnerRadius(100)
+          setTextPosition('center')
+        }
+      };
+      useEffect(() => {
+        // Устанавливаем начальное значение
+        updateOuterRadius();
+        
+        // Добавляем слушатель события на изменение размера окна
+        window.addEventListener('resize', updateOuterRadius);
+    
+        // Удаляем слушатель при размонтировании компонента
+        return () => {
+          window.removeEventListener('resize', updateOuterRadius);
+        };
+      }, []);
     useEffect(() => {
         // Путь к вашему скрипту в папке public
         // const scriptSrc = '/genery/public/script/Winwheel.min.js';
@@ -26,10 +53,11 @@ function Wheel({isShow, onStop}){
             const newWheel = new Winwheel({
                 'canvasId': canvasRef.current.id,
                 'numSegments': 37,
-                'innerRadius'     : 75,         // Make wheel hollow so segments dont go all way to center.
+                'outerRadius'     : outerRadius,
+                'innerRadius'     : innerRadius,         // Make wheel hollow so segments dont go all way to center.
                 'textFontSize'    : 12,         // Set default font size for the segments.
                 'textOrientation' : 'curved', // Make text vertial so goes down from the outside of wheel.
-                'textAlignment'   : 'center',
+                'textAlignment'   : textPosition,
                 // 'textFillStyle' : colors.text,
                 'segments': [
                     { 'fillStyle': colors.green, 'text': '0', 'textFillStyle': theme.text_first_color},
