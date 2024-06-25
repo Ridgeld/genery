@@ -1,13 +1,13 @@
 const items = [  
     {
         category: 'genery',
-        img: '/genery/src/pages/shop/images/genery/cover.png',
-        textImg: '/genery/src/pages/shop/images/genery/text-img.png',
+        img: './images/genery/cover.png',
+        textImg: './images/genery/text-img.png',
         items: [
             {   
                 id: "genery",
                 category: 'theme',
-                img: '/genery/src/pages/shop/images/genery/img-1.png',
+                img: './images/genery/img-1.png',
                 name: 'Тема',
                 label: '1 год вместе',
                 labelTextColor: '#fff',
@@ -17,7 +17,7 @@ const items = [
             },
             {
                 id:'genery',
-                img: '/genery/src/pages/shop/images/genery/img-2.png',
+                img: './images/genery/img-2.png',
                 category: 'colors',
                 name: 'Пак смайлов',
                 label: '1 год вместе',
@@ -28,7 +28,7 @@ const items = [
             },
             {
                 id:'genery',
-                img: '/genery/src/pages/shop/images/genery/img-3.png',
+                img: './images/genery/img-3.png',
                 category: 'emojies',
                 name: 'Пак смайлов',
                 label: '1 год вместе',
@@ -39,7 +39,7 @@ const items = [
             },
             {
                 id:'genery',
-                img: '/genery/src/pages/shop/images/genery/img-4.png',
+                img: './images/genery/img-4.png',
                 category: 'all',
                 name: 'Набор Genery',
                 label: '1 год вместе',
