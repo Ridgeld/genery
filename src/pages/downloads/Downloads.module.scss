@@ -26,6 +26,7 @@
     align-items: center;
     justify-content: space-between;
     width: calc(100% - 35px);
+    min-height:30px;
     border-radius: 50px;
     padding: 5px 5px 5px 25px;
 }
@@ -33,6 +34,12 @@
     font-size: 18px;
     font-weight: 500;
     user-select: none;
+}
+.download-name-empty{
+    display: flex;
+    width: 50%;
+    border-radius: 10px;
+    overflow: hidden;
 }
 .download-button{
     border: none;
@@ -51,6 +58,11 @@
             rotate: -90deg;
         }
     }
+}
+.download-button-empty{
+    display: flex;
+    min-width: 32px;
+    min-height: 32px;
 }
 @media(min-width: 700px){
     .container{

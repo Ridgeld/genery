@@ -91,7 +91,7 @@ function CashBack(){
                     </div>
             </div>
             <Input
-                key={self.crypto.randomUUID()}
+                key={1}
                 type="number" 
                 placeholder="Введите сумму ставки" 
                 // onInputChange={handleInputChange} 
@@ -100,7 +100,7 @@ function CashBack(){
                 textColor={theme.text_first_color}
                 placeholderColor={theme.text_second_color}/>
             <Input
-                key={self.crypto.randomUUID()}
+                key={2}
                 type="number" 
                 placeholder="Введите коэффициент ставки" 
                 // onInputChange={handleInputChange} 
