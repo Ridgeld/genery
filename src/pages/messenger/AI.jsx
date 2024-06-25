@@ -63,7 +63,7 @@ export async function run(userInput, images) {
         ];
     }
 
-    const MODEL_NAME = images.length > 0 ? "gemini-1.0-pro-vision-latest" : 'gemini-1.5-flash';
+    const MODEL_NAME = images.length > 0 ? "gemini-1.0-pro-vision-latest" : 'gemini-1.0-pro';
 
     // gemini-1.0-pro
     // gemini-1.5-flash
