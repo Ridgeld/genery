@@ -260,7 +260,10 @@ function Shop(){
             <SlipNotification
                 isShow={slipData.isShow}
                 text={slipData.text}/>
-            <div className={styles['balance-container']}>
+            <div className={styles['balance-container']}
+                style={{
+                    background: theme.background_color
+                }}>
                 <ScoreContainer 
                     name={'Баланс'}
                     isBalance={true}

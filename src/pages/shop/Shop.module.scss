@@ -19,7 +19,7 @@
 // BALANCE CONTAINER
 .balance-container{
     position: sticky;
-    top: 0px;
+    top: 40px;
     width: 100%;
     z-index: 10;
     // background: green;
@@ -50,7 +50,7 @@
 }
 .text-image{
     position: absolute;
-    min-width: 50%;
+    max-width: 70%;
 }
 // ITEMS
 .items-container{
@@ -178,6 +178,9 @@
 @media(min-width: 700px){
     .container{
         width: 60%;
+    }
+    .text-image{
+        max-width: 50%;
     }
     // .balance-container{
     //     width: 100%;
