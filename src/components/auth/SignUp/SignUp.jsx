@@ -159,7 +159,7 @@ function SignUp(){
                 <div className={styles['input-container']}>
                     <div className={styles['error']}
                     style={{
-                        color: theme.third_color
+                        color: theme.gradient_first_color
                     }}>{error}</div>
                     <Input 
                         type="email" 
