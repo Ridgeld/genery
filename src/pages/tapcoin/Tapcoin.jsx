@@ -12,7 +12,7 @@ function Tapcoin(){
     const { theme, setThemeById, elementColors, setElementColors } = useContext(ElementContext);
     const { authUser } = useAuth();
     const [balance, setBalance] = useState();
-    const [limit, setLimit] = useState();
+    const [limit, setLimit] = useState(0);
     const [accessCoins, setAccessCoins] = useState();
     const coinRef = useRef();
     const [angle, setAngle] = useState(0);

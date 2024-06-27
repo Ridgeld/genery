@@ -18,6 +18,7 @@
     justify-content: center;
     width: 100%;
     height: 350px;
+    user-select: none;
     // background: red;
 }
 .score-add{
@@ -34,6 +35,8 @@
     justify-content: center;
     transition: 0.2s ease;
     cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: rgba($color: #000000, $alpha: 0);
 }
 .control-point-1{
     position: absolute;
@@ -43,6 +46,7 @@
     height: 125px;
     // background: yellowgreen;
     z-index: 1;
+    user-select: none;
 }
 .control-point-2{
     position: absolute;
@@ -61,6 +65,7 @@
     height: 125px;
     // background: yellowgreen;
     z-index: 1;
+    user-select: none;
 }
 .control-point-4{
     position: absolute;
@@ -70,6 +75,7 @@
     height: 125px;
     // background: yellowgreen;
     z-index: 1;
+    user-select: none;
 }
 .control-point-center{
     position: absolute;
@@ -77,6 +83,7 @@
     left: 0;
     width: 100%;
     height: 100%;
+    user-select: none;
     // background: green;
 }
 .coin-outer{
@@ -87,6 +94,7 @@
     height: 250px;
     border-radius: 50%;
     cursor: pointer;
+    user-select: none;
 }
 .coin-inner{
     width: 120px;
@@ -94,6 +102,7 @@
     border: 20px solid rgba($color: #000000, $alpha: 0.3);
     background: transparent;
     border-radius: 50%;
+    user-select: none;
 }
 .data-container{
     display: flex;
@@ -120,6 +129,7 @@
     .data{
         font-size: 18px;
         font-weight: 500;
+        user-select: none;
     }
 }
 @media(min-width: 700px){
