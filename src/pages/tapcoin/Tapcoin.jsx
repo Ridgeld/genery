@@ -108,7 +108,7 @@ function Tapcoin(){
           // Удалить div через 1 секунду
           setTimeout(() => {
             setClicks((prevClicks) => prevClicks.filter((click) => click.id !== newClick.id));
-          }, 50);
+          }, 10);
     }
     // const rotateCoin = (angle) =>{
     //     coinRef.current.style.transform = 'rotateY(40deg)'

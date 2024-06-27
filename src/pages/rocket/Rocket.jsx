@@ -37,7 +37,7 @@ function Rocket(){
             });
           } else {
             setVariants({
-              stop: { right: -40, top: 120 },
+              stop: { right: -20, top: 120 },
               fly: { right: -150, top: 60 },
             });
           }
