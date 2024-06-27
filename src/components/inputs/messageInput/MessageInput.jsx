@@ -15,7 +15,7 @@ function MessageInput({isPanelTop, placeholder, onSend}){
     const [images, setImages] = useState([])
     const inputFilesRef = useRef()
     const contentEditableRef = useRef(null)
-    const [marginTop, setMarginTop] = useState('50px');
+    const [marginTop, setMarginTop] = useState(50);
 
     const [slipProp, setSlipProp] = useState({
         isShow: false,
@@ -102,7 +102,7 @@ function MessageInput({isPanelTop, placeholder, onSend}){
         if (text === '') {
           inputBodyRef.current.style.height = 'auto';
           contentEditableRef.current.style.height = '10px';
-          setMarginTop('50px');
+          setMarginTop(50);
           return; // выходим из useEffect если текст пустой
         }
     
@@ -110,7 +110,7 @@ function MessageInput({isPanelTop, placeholder, onSend}){
     
         if (contentHeight > 40 && isPanelTop) {
           if (contentHeight > 90) {
-            setMarginTop('120px');
+            setMarginTop(120);
           } else {
             setMarginTop(`${contentHeight + 20}px`);
           }
@@ -183,7 +183,15 @@ function MessageInput({isPanelTop, placeholder, onSend}){
         setText(newValue);
     };
 
+    useEffect(() =>{
+      if(images.length > 0){
+          setMarginTop(160);
+          return
+      }
+      setMarginTop(50);
+    }, [images])
     const handleAddImage = (e) => {
+      setMarginTop((prevMargin) => prevMargin + 100);
 
         const images = e.target.files;
         const maxFiles = 5;
@@ -263,7 +271,7 @@ function MessageInput({isPanelTop, placeholder, onSend}){
                 <EmojiPanel
                     isShow={isShow}
                     isTop ={isPanelTop}
-                    marginTop = {marginTop}
+                    marginTop = {`${marginTop}px`}
                     isImages={images.length > 0 && true}
                     onEmojiSelect={addEmoji}/>
                     <button className={styles['button-circle']}

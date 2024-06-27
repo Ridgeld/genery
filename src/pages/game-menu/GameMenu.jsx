@@ -40,46 +40,35 @@ function GameMenu(){
           circleColor={theme.block_arrow_first_color}
       /> */}
       <Block 
-          name = "Казино" 
-          description = "Последний деп?" 
-          backgroundColor = {theme.element_first_color}
-          isBorder={true}
-          borderColor={theme.block_border_color} 
-          textColor = {theme.text_first_color}
-          arrowColor = {theme.text_first_color}
-          arrowBackgroundColor = {theme.block_arrow_first_color}
-          linkTo = "/casino"/>
-      {/* <Block 
-          name = "Меню игр" 
-          description = "Сделаешь ставку?" 
-          backgroundColor = {theme.block_second_color} 
-          isBorder={false}
-          borderColor={theme.block_border_color} 
-          textColor = {theme.text_second_color} 
-          arrowColor = {theme.text_second_color}  
-          arrowBackgroundColor = {theme.block_arrow_second_color} 
-          linkTo = "/game-menu"/>
-      <Block 
-          name = "Расписание" 
-          description = "Какой сейчас урок?" 
-          backgroundColor = {theme.block_third_color} 
-          isBorder={false}
-          borderColor={theme.block_border_color} 
-          textColor = {theme.text_first_color} 
-          arrowColor = {theme.text_first_color} 
-          arrowBackgroundColor = {theme.block_arrow_third_color} 
-          linkTo = "/sign-up"/>
-      <Block 
-          name = "Магазин" 
-          description = "Прояви себя" 
-          backgroundColor = {theme.block_first_color} 
-          isBorder={true}
-          borderColor={theme.block_border_color} 
-          textColor = {theme.text_first_color}
-          isCircleArrow = {false}
-          arrowColor = {theme.text_first_color}
-          arrowBackgroundColor = {theme.block_arrow_first_color}
-          linkTo = "/shop"/> */}
+            name = "Казино" 
+            description = "Последний деп?" 
+            backgroundColor = {theme.element_first_color}
+            isBorder={true}
+            borderColor={theme.block_border_color} 
+            textColor = {theme.text_first_color}
+            arrowColor = {theme.text_first_color}
+            arrowBackgroundColor = {theme.block_arrow_first_color}
+            linkTo = "/casino"/>
+        <Block 
+            name = "GCOIN" 
+            description = "тапай по экрану" 
+            backgroundColor = {theme.element_first_color}
+            isBorder={true}
+            borderColor={theme.block_border_color} 
+            textColor = {theme.text_first_color}
+            arrowColor = {theme.text_first_color}
+            arrowBackgroundColor = {theme.block_arrow_second_color}
+            linkTo = "/tapcoin"/>
+          <Block 
+            name = "Ракетка" 
+            description = "Не входи в азарт" 
+            backgroundColor = {theme.element_first_color}
+            isBorder={true}
+            borderColor={theme.block_border_color} 
+            textColor = {theme.text_first_color}
+            arrowColor = {theme.text_first_color}
+            arrowBackgroundColor = {theme.block_arrow_third_color}
+            linkTo = "/rocket"/>
     </div>
   )
 }

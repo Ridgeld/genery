@@ -17,6 +17,8 @@ import Downloads from '../pages/downloads/Downloads.jsx';
 import Profile from '../pages/profile/Profile.jsx';
 import GameMenu from '../pages/game-menu/GameMenu.jsx';
 import Test from '../pages/testing/Test.jsx';
+import Tapcoin from '../pages/tapcoin/Tapcoin.jsx';
+import Rocket from '../pages/rocket/Rocket.jsx';
 
 export const routes = [
     {
@@ -119,6 +121,18 @@ export const routes = [
         path:'/game-menu',
         exact: true,
         component: <GameMenu/>,
+        auth: true,
+    },
+    {
+        path:'/tapcoin',
+        exact: true,
+        component: <Tapcoin/>,
+        auth: true,
+    },
+    {
+        path:'/rocket',
+        exact: true,
+        component: <Rocket/>,
         auth: true,
     },
     {
