@@ -15,6 +15,7 @@
     border-radius: 20px 0 0 20px;
     font-size: 15px;
     font-weight: 500;
+    user-select: none;
 }
 .count-body{
     display: flex;
@@ -26,6 +27,7 @@
     border-radius: 0 20px 20px 0;
     font-size: 15px;
     font-weight: 500;
+    user-select: none;
 }
 .balance-body{
     display: flex;
