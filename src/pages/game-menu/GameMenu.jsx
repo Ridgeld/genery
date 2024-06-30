@@ -148,12 +148,6 @@ function GameMenu(){
   }
   return (
     <div className={styles.container}>
-      {/* <button onClick={() => signOut(ga)}>Выйти</button> */}
-      {/* <InfoBlock
-          name={'Ежедневная цитата'}
-          text={quote}
-          circleColor={theme.block_arrow_first_color}
-      /> */}
       <SlipNotification
           isShow={slipData.isShow}
           text={slipData.text}/>
