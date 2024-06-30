@@ -149,7 +149,7 @@ function PromoMenu({isShow, setShow, onClick}){
                 animate={isShow ? 'open' : 'close'}
                 drag ='y'
                 dragConstraints={{
-                    top: -300, 
+                    top: window.innerWidth > 700 ? -300 : -50, 
                     bottom: 0,
                 }}
                 transition={{
