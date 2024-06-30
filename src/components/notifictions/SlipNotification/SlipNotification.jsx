@@ -5,12 +5,11 @@ import {motion, transform} from 'framer-motion'
 
 function SlipNotification({text, isShow}){
     const {theme, elementColors, setElementColors } = useContext(ElementContext);
-
     const variants = {
         open: { opacity: 1, visibility: 'visible'},
         closed: { opacity: 0, visibility: 'hidden' },
-        show: { opacity: 1, transform: 'translate(0, 600%)'},
-        hidden: { opacity: 0, transform: 'translate(0, 700%)' },
+        show: {opacity: 1, top: '70%'},
+        hidden: {opacity: 1, top: '100%' },
     }
     return(
         // <motion.div className={`${styles['notif-area']} ${styles['animated']} ${isShow ? styles['show'] : ''}`}
@@ -21,9 +20,9 @@ function SlipNotification({text, isShow}){
                 duration: 0.3
             }}>
             <motion.div className={styles['notif-body']}
-                animate={isShow ? "show" : "hidden"}
                 variants={variants}
                 initial={'hidden'}
+                animate={isShow ? "show" : "hidden"}
                 transition={{
                     duration: 0.4
                 }}
