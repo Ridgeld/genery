@@ -134,7 +134,7 @@ function QuizGame({ mode }){
                 const newAnswerStates = answerStates.map((state, i) => (i === correctIndex ? 'correct' : 'base'));
                 setAnswerStates(newAnswerStates);
                 setQuestionAnswered(true);
-                setTimeout(() => nextQuestion(), 1000);
+                setTimeout(() => nextQuestion(), 2000);
             }
         }
     };
@@ -142,7 +142,7 @@ function QuizGame({ mode }){
         navigateTo('/quiz');
     }
     
-    const nextQuestion = () => {
+    const nextQuestion = async () => {
         if (currentQuestionIndex < selectedQuestions.length - 1) {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
         } else {
