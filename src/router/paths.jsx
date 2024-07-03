@@ -19,6 +19,7 @@ import GameMenu from '../pages/game-menu/GameMenu.jsx';
 import Test from '../pages/testing/Test.jsx';
 import Tapcoin from '../pages/tapcoin/Tapcoin.jsx';
 import Rocket from '../pages/rocket/Rocket.jsx';
+import Quiz from '../pages/quiz/Quiz.jsx';
 
 export const routes = [
     {
@@ -133,6 +134,12 @@ export const routes = [
         path:'/rocket',
         exact: true,
         component: <Rocket/>,
+        auth: true,
+    },
+    {
+        path:'/quiz/:mode?',
+        exact: false,
+        component: <Quiz/>,
         auth: true,
     },
     {

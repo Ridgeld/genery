@@ -148,18 +148,18 @@ function GameMenu(){
   }
   return (
     <div className={styles.container}>
-      <SlipNotification
-          isShow={slipData.isShow}
-          text={slipData.text}/>
-      <PromoMenu
-        isShow={show}
-        setShow={setShow}
-        onClick={handleClickMenu}/>
-      <PromoBlock 
-          name={'Активируйте промокод'}
-          buttonText={'Активировать'}
-          onClick={blockHandleClick}/>
-      <Block 
+        <SlipNotification
+            isShow={slipData.isShow}
+            text={slipData.text}/>
+        <PromoMenu
+            isShow={show}
+            setShow={setShow}
+            onClick={handleClickMenu}/>
+        <PromoBlock 
+            name={'Активируйте промокод'}
+            buttonText={'Активировать'}
+            onClick={blockHandleClick}/>
+        <Block 
             name = "Казино" 
             description = "Последний деп?" 
             backgroundColor = {theme.element_first_color}
@@ -179,7 +179,7 @@ function GameMenu(){
             arrowColor = {theme.text_first_color}
             arrowBackgroundColor = {theme.block_arrow_second_color}
             linkTo = "/tapcoin"/>
-          <Block 
+        <Block 
             name = "Ракетка" 
             description = "Не входи в азарт" 
             backgroundColor = {theme.element_first_color}
@@ -189,6 +189,16 @@ function GameMenu(){
             arrowColor = {theme.text_first_color}
             arrowBackgroundColor = {theme.block_arrow_third_color}
             linkTo = "/rocket"/>
+        <Block 
+            name = "Тест" 
+            description = "поступи на СВО" 
+            backgroundColor = {theme.element_first_color}
+            isBorder={true}
+            borderColor={theme.block_border_color} 
+            textColor = {theme.text_first_color}
+            arrowColor = {theme.text_first_color}
+            arrowBackgroundColor = {theme.block_arrow_third_color}
+            linkTo = "/quiz"/>
     </div>
   )
 }

@@ -20,8 +20,9 @@ function ScoreContainer({name, count, isBalance}){
                     <div className={styles['balance-body']}
                         style={{
                             color: theme.text_first_color
-                        }}>{count}<Coin color={theme.first_color}/></div> 
-                    : {count}}</div>
+                        }}>{count}<Coin color={theme.first_color}/>
+                    </div> 
+                    : count }</div>
         </div>
     )
 }
