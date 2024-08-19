@@ -1,0 +1,45 @@
+.container{
+    display: flex;
+    flex-direction: row;
+    padding: 5px 5px 5px 10px;
+    border-radius: 50px;
+    width: calc(100% - 20px);
+    gap: 20px;
+}
+.icon{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    // background: red;
+}
+.input{
+    border: none;
+    width: 100%;
+    background: none;
+    font-size: 15px;
+    font-weight: 400;
+    caret-color: var(--caret-color, #888);
+    &::placeholder{
+        color: var(--placeholder-color, #888);
+    }
+    &:focus{
+        outline: none;
+    }
+}
+.button{
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    min-height: 30px;
+    border-radius: 50%;
+    svg{
+        transition: 0.5s ease;
+    }
+    &:hover{
+        svg{
+            scale: 1.2;
+        }
+    }
+}

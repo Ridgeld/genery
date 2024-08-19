@@ -1,0 +1,73 @@
+.container{
+    margin-top: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 90%;
+    gap: 10px;
+}
+.search-container{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%;
+}
+.add{
+    position: absolute;
+    bottom: 100px;
+    right: 30px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    cursor: pointer;
+    svg{
+        transition: 0.5s ease;
+    }
+    &:hover{
+        svg{
+            scale: 1.2;
+        }
+    }
+}
+.empty-body{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px;
+    width: calc(100% - 20px);
+    cursor: pointer;
+}
+.empty-photo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;  /* Устанавливаем фиксированную ширину */
+    height: 30px; /* Устанавливаем фиксированную высоту */
+    border-radius: 50%;
+    overflow: hidden;
+}
+.empty-info{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 10px 0 10px 20px;
+    height: 100%;
+}
+.empty-name{
+    width: 100%;
+}
+@media(min-width: 700px){
+    .container{
+        width: 60%;
+    }
+    .add{
+        right: 20%;
+    }
+}

@@ -20,6 +20,10 @@ import Test from '../pages/testing/Test.jsx';
 import Tapcoin from '../pages/tapcoin/Tapcoin.jsx';
 import Rocket from '../pages/rocket/Rocket.jsx';
 import Quiz from '../pages/quiz/Quiz.jsx';
+import Search from '../pages/search/Search.jsx';
+import Group from '../pages/group/Group.jsx';
+import GroupList from '../pages/group-list/GroupList.jsx';
+import CreateGroup from '../pages/create-group/CreateGroup.jsx';
 
 export const routes = [
     {
@@ -59,7 +63,7 @@ export const routes = [
         auth: true,
     },
     {
-        path: '/timetable',
+        path: '/timetable/:id?',
         exact: true,
         component: <Timetable/>,
         auth: true,
@@ -107,8 +111,8 @@ export const routes = [
         auth: true,
     },
     {
-        path:'/downloads',
-        exact: true,
+        path:'/download/:id?',
+        exact: false,
         component: <Downloads/>,
         auth: true,
     },
@@ -143,9 +147,33 @@ export const routes = [
         auth: true,
     },
     {
+        path:'/search',
+        exact: true,
+        component: <Search/>,
+        auth: true,
+    },
+    {
         path:'/test',
         exact: true,
         component: <Test/>,
+        auth: true,
+    },
+    {
+        path:'/group/:id?',
+        exact: false,
+        component: <Group/>,
+        auth: true,
+    },
+    {
+        path:'/group-list',
+        exact: false,
+        component: <GroupList/>,
+        auth: true,
+    },
+    {
+        path:'/create-group',
+        exact: false,
+        component: <CreateGroup/>,
         auth: true,
     },
 ]

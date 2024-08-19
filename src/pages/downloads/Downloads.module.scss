@@ -20,6 +20,7 @@
     align-items: center;
     justify-content: flex-start;
     gap: 5px;
+    padding-bottom: 150px;
 }
 .download-body{
     display: flex;
@@ -29,6 +30,23 @@
     min-height:30px;
     border-radius: 50px;
     padding: 5px 5px 5px 25px;
+}
+.add-body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 40px;
+    border-radius: 50px;
+}
+.circle{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
 }
 .download-name{
     font-size: 18px;
@@ -64,8 +82,44 @@
     min-width: 32px;
     min-height: 32px;
 }
+.edit{
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    cursor: pointer;
+    svg{
+        transition: 0.5s ease;
+    }
+    &:hover{
+        svg{
+            scale: 1.2;
+        }
+    }
+}
+.button{
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 40px;
+    border-radius: 50px;
+    font-size: 15px;
+    font-weight: 400;
+
+}
 @media(min-width: 700px){
     .container{
         width: 60%;
+    }
+    .edit{
+        right: 20%;
     }
 }

@@ -32,7 +32,7 @@ function OtherUserProfile({id}){
             isHeader: true,
             isFooter: true,
             footerBackground: theme.background_color,
-            activeElementIndex: 3,
+            activeElementIndex: 4,
         });
         document.body.style.background = theme.background_color
         },[theme]);
@@ -66,7 +66,8 @@ function OtherUserProfile({id}){
                     setUserData({
                         isUser: true,
                         name: userData.name,
-                        biography: userData.biography
+                        biography: userData.biography,
+                        photo: userData.photo
                     })
                 } else {
                     console.log("No such document!");

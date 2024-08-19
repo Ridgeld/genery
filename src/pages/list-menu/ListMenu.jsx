@@ -18,7 +18,7 @@ function ListMenu(){
             isHeader: true,
             isFooter: true,
             footerBackground: theme.background_color,
-            activeElementIndex: 3,
+            activeElementIndex: 4,
             background: theme.background_color
         });
         document.body.style.background = theme.background_color

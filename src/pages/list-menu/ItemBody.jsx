@@ -4,6 +4,7 @@ import '../../themes/default.scss';
 import { useNavigate } from 'react-router-dom';
 import parse from "html-react-parser";
 import { ElementContext } from '../../providers/ElementProvider.jsx';
+import { useAuth } from "../../providers/Authprovired.jsx";
 
 
 function ItemBody({name, textColor, icon, link, category}){
@@ -12,11 +13,20 @@ function ItemBody({name, textColor, icon, link, category}){
     const [circleColor, setCircleColor] = useState(theme.first_color);
     const [arrowColor, setArrowColor] = useState(theme.text_first_color);
     const navigate = useNavigate();
-    
+    const { authUser } = useAuth();
+
     const navigateTo = (url) => {
         if(url.includes('https:')){
             window.location.href = url;
-        } else{
+        } else {
+            if(url === '/timetable'){
+                navigate(`/timetable/${authUser.mainGroup}`);
+                return
+            }
+            if(url === '/downloads'){
+                navigate(`/download/${authUser.mainGroup}`)
+                return
+            }
             navigate(url)
         }
     };

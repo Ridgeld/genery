@@ -267,6 +267,21 @@ const emojies = [
                  'emojies/genery/21.png', 'emojies/genery/22.png',
                  'emojies/genery/23.png', 'emojies/genery/24.png'],
     },
+    {
+        name: 'kyrgyzstan',
+        emojiIcon: false,
+        emojiIconImg: true,
+        isCustom: true,
+        fontFamily: 'Noto Color Emoji',
+        icon: `emojies/kyrgyzstan/icon.png`,
+        isImgEmoji: true,
+        emojis: ['emojies/kyrgyzstan/1.png', 'emojies/kyrgyzstan/2.png', 
+                 'emojies/kyrgyzstan/3.png', 'emojies/kyrgyzstan/4.png',
+                 'emojies/kyrgyzstan/5.png', 'emojies/kyrgyzstan/6.png',
+                 'emojies/kyrgyzstan/7.png', 'emojies/kyrgyzstan/8.png',
+                 'emojies/kyrgyzstan/9.png', 'emojies/kyrgyzstan/10.png',
+                 'emojies/kyrgyzstan/11.png', 'emojies/kyrgyzstan/12.png',],
+    },
     
     // Другие категории смайликов
 ];

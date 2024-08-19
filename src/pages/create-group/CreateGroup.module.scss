@@ -1,0 +1,259 @@
+.container{
+    margin-top: 100px;
+    padding-bottom: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 90%;
+    gap: 10px;
+}
+.profile-container{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%;
+    gap: 10px;
+}
+.cover-container{
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 150px;
+}
+.cover{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+    height: 100%;
+}
+.cover-pattern{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    height: 100%;
+    // background: red;
+}
+.group-photo{
+    position: relative;
+    // position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 7px solid;
+    overflow: hidden;
+    z-index: 5;
+
+    img{
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Обеспечивает заполнение контейнера изображением */
+        object-position: center; /* Центрирует изображение */
+    }
+}
+.change-photo-button{
+    border: none;
+    position: absolute;
+    display: flex;
+    background: rgba($color: #000000, $alpha: 0.5);
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    svg{
+        transition: 0.5s ease;
+    }
+    &:hover{
+        svg{
+            transform: scale(1.2);
+        }
+    }
+}
+.group-actions{
+    width: calc(100% - 40px);
+    padding: 20px;
+    border-radius: 20px;
+}
+.group-info{
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+}
+.group-name{
+    font-size: 18px;
+    font-weight: 500;
+}
+.circle-button{
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    min-height: 32px;
+    border-radius: 50%;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.5s ease;
+
+    &:hover{
+        transform: scale(1.2);
+    }
+}
+.group-description{
+    font-size: 15px;
+    font-weight: 500;
+}
+.button-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 10px;
+    padding-top: 10px;
+}
+.quit-button{
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 32px;
+    border-radius: 20px;
+    font-size: 15px;
+    font-weight: 500;
+    transition: 0.5s ease;
+    cursor: pointer;
+
+    &:hover{
+        opacity: 0.8;
+    }
+}
+.colors-container{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: calc(100% - 40px);
+    padding: 20px;
+    border-radius: 20px;
+    gap: 10px;
+}
+.color-circle{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+.active-circle{
+    width: 26px;
+    height: 26px;
+    border: 2px solid;
+    border-radius: 50%;
+}
+.input-data-container{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%;
+    gap: 5px;
+    margin-top: 5px;
+}
+.label{
+    font-size: 15px;
+    font-weight: 500;
+}
+.input-data{
+    border: none;
+    background: transparent;
+    width: 100%;
+    font-size: 18px;
+    font-weight: 500;
+    &:focus{
+        outline: none;
+    }
+}
+.item-body{
+    display: flex;
+    flex-direction: row;
+    width: calc(100% - 25px);
+    align-items: center;
+    justify-content: flex-start;
+    padding: 5px 5px 5px 20px;
+    background: transparent;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: 0.5s ease;
+}
+.item-icon{
+    display: flex;
+    width: 20px;
+    height: 20px;
+    align-items: center;
+    justify-content: center;
+}
+.item-name{
+    display: flex;
+    font-size: 18px;
+    font-weight: 400;
+    gap: 5px;
+}
+.item-info{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+}
+.item-circle{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    svg{
+        transition: 0.5s ease;
+    }
+}
+.item-body:hover{
+    .item-circle{
+        svg{
+            transform: rotate(45deg);
+        }
+    }
+}
+
+@media(min-width: 700px){
+    .container{
+        margin-top: 75px;
+        width: calc(60% - 20px);
+    }
+    .cover-container{
+        width: calc(90% * 0.6 - 20px);
+        left: calc(5% + 90% * 0.2 + 10px);
+    }
+    // .cover{
+    //     height: 200px;
+    // }
+    .group-photo{
+        width: 150px;
+        height: 150px;
+    }
+}

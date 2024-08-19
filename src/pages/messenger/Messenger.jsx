@@ -76,7 +76,7 @@ function Messenger(){
             isHeader: true,
             isFooter: false,
             footerBackground: theme.background_color,
-            activeElementIndex: 1,
+            activeElementIndex: 2,
         });
         document.body.style.background = theme.background_color
         },[ElementContext]);

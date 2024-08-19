@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.10.0",
+    "canvas": "^2.11.2",
     "cors": "^2.8.5",
     "firebase": "^9.23.0",
     "framer-motion": "^11.2.11",

@@ -111,7 +111,7 @@ function About(){
           textColor = {theme.text_first_color} 
           arrowColor = {theme.text_first_color} 
           arrowBackgroundColor = {theme.block_arrow_third_color} 
-          linkTo = "/timetable"/>
+          linkTo = {`/timetable/${authUser.mainGroup}`}/>
       <Block 
           name = "Магазин" 
           description = "Прояви себя" 
