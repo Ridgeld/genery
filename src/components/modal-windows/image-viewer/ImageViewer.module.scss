@@ -65,6 +65,7 @@
     padding: 10px;
     // background: red;
     z-index: 3;
+    gap: 20px;
 }
 .viewer-button{
     border: none;
@@ -80,6 +81,16 @@
 .close{
     svg{
         rotate: 45deg;
+        transition: 0.5s ease;
+    }
+    &:hover{
+        svg{
+            transform: scale(1.2);
+        }
+    }
+}
+.download{
+    svg{
         transition: 0.5s ease;
     }
     &:hover{

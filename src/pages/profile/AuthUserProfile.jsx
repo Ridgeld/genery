@@ -45,7 +45,7 @@ function AuthUserProfile({id}){
             isHeader: true,
             isFooter: true,
             footerBackground: theme.background_color,
-            activeElementIndex: 3,
+            activeElementIndex: 4,
         });
         document.body.style.background = theme.background_color
         },[theme]);

@@ -66,7 +66,7 @@ function PostContainer(){
             isHeader: true,
             isFooter: true,
             footerBackground: theme.background_color,
-            activeElementIndex: 2,
+            activeElementIndex: 3,
         });
         document.body.style.background = theme.background_color
         },[ElementContext]);
@@ -88,6 +88,7 @@ function PostContainer(){
                         postsArray.push({
                             id: doc.id,  // добавляем уникальный идентификатор документа
                             userId: postData.userId,
+                            groupOwnerId: postData.groupOwnerId,
                             userName: postData.userName,
                             userPhoto: postData.userPhoto,
                             postText: postData.text,
@@ -344,6 +345,7 @@ function PostContainer(){
                         key={post.id}
                         postId={post.id}
                         userId = {post.userId}
+                        groupOwnerId={post.groupOwnerId}
                         userName={post.userName}
                         userPhoto={post.userPhoto}
                         postData={post.postData}

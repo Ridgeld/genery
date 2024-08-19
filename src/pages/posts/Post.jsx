@@ -9,7 +9,7 @@ import parser from 'html-react-parser';
 import DropMenu from '../../components/modal-windows/drop-menu/DropMenu.jsx';
 
 
-function Post({postId, userPhoto,userId, userName, postData, postText, postPhotos, likesArray, photoClick, postAction}){
+function Post({postId, userPhoto, groupOwnerId, userId, userName, postData, postText, postPhotos, likesArray, photoClick, postAction}){
     const [like, setLike] = useState(false);
     const {theme, setThemeById, elementColors, setElementColors } = useContext(ElementContext);
     const { authUser } = useAuth();
@@ -55,10 +55,58 @@ function Post({postId, userPhoto,userId, userName, postData, postText, postPhoto
         // setSelectedPhotoIndex(index);
         // setSelectedMessagePhotos(photos);
       }; 
+    //   const processText = (text) => {
+    //     const regex = /(^|\s)(#[a-zA-Zа-яА-Я0-9_]+)/g;
+    //     const parts = text.split(regex);
+    //     return parts.map((part, index) => {
+    //         if (part.startsWith('#')) {
+    //             return <div key={index} className={styles.hashtags}>{part}</div>;
+    //         } else if (part.startsWith(' ') && part.trim().startsWith('#')) {
+    //             return <div key={index} className={styles.hashtags}>{part.trim()}</div>;
+    //         }
+    //         return part;
+    //     });
+    // };
+
+    // const parsedText = processText(postText);
+    const wrapHashtags = (text) => {
+        if (typeof text === 'string') {
+            // Заменяем хештеги и обрабатываем невидимые символы
+            return text
+                .replace(/(#[\wа-яА-Я_]+)/g, (match) => `<div class="${styles.hashtags}">${match}</div>`)
+                .split(/(<div class=".*?">.*?<\/div>)/g)
+                .map((part, index) => {
+                    // Возвращаем элемент если это див с хештегом
+                    if (part.startsWith('<div')) {
+                        return parser(part);
+                    }
+                    return part;
+                });
+        }
+        return text;
+    };
+    
+    const processNode = (node) => {
+        if (typeof node === 'string') {
+            return wrapHashtags(node);
+        }
+    
+        if (React.isValidElement(node)) {
+            const newChildren = React.Children.map(node.props.children, processNode);
+            return React.cloneElement(node, { children: newChildren });
+        }
+    
+        return node;
+    };
+    const processContent = (html) => {
+        const parsed = parser(html);
+        return processNode(parsed);
+    };
     return(
         <div className={styles['post-body']}
         style={{
-            background: theme.element_first_color
+            // background: theme.element_first_color,
+            '--hashtag-color': theme.icon_color,
         }}>
         <DropMenu 
             isShow={DropIsShow}
@@ -76,10 +124,10 @@ function Post({postId, userPhoto,userId, userName, postData, postText, postPhoto
                     style={{
                         color: theme.text_first_color
                     }}>
-                    {userName}
+                        {userName}
                 </div>
             </div>
-            {userId === authUser._id && 
+            {userId === authUser._id || groupOwnerId === authUser._id && 
                 <div className={styles['post-delete']}
                     onClick={() => setDropIsShow(!DropIsShow)}>
                     <div className={styles['post-more']}>
@@ -118,8 +166,10 @@ function Post({postId, userPhoto,userId, userName, postData, postText, postPhoto
                     style={{
                         color: theme.text_first_color
                     }}>
-                        {parser(postText)}
+                        {/* {parser(postText)} */}
                         {/* {postText} */}
+                        {/* {parsedText} */}
+                        {processContent(postText)}
                 </div>}
         </div>
         <div className={styles['post-actions']}>
