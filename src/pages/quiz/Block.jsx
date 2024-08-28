@@ -12,6 +12,7 @@ function Block({ blockColor, name, textColor, arrowBackground, labelColor, label
                 background: blockColor
             }}
             onClick={onClick}>
+                
             <section className={styles['block-info']}>
                 <h5 className={styles['block-name']}
                     style={{
