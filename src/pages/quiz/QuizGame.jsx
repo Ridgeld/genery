@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import styles from './Quiz.module.scss'
 import { ElementContext, useTheme } from '../../providers/ElementProvider.jsx';
 import ProgressBar from '../../components/progress-bars/Test-progress-bar/ProgressBar.jsx';
@@ -12,8 +12,14 @@ import kyrgyzTest from './quizes/kyrgyz.js';
 
 import AlertNotification from '../../components/notifictions/AlertNotification/AlertNotification.jsx';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../providers/Authprovired.jsx';
+import ImageViewer from '../../components/modal-windows/image-viewer/ImageViewer.jsx';
 
 function QuizGame({ mode }){
+    const [ip, setIp] = useState('');
+    const [number, setNumber] = useState()
+    const { authUser } = useAuth();
+    const canvasRef = useRef(null);
     const {theme, setThemeById, elementColors, setElementColors } = useContext(ElementContext);
     const navigateTo = useNavigate()
     const quizMapping = {
@@ -63,6 +69,184 @@ function QuizGame({ mode }){
         secondButtonName: 'играть',
 
     });
+    const [viewData, setViewData] = useState({
+        isShow: false,
+        images: [],
+        index: null
+
+    }) 
+    useEffect(() => {
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                setIp(data.ip);
+            })
+            .catch(error => {
+                console.error('Error fetching IP address:', error);
+            });
+    }, []);
+    useEffect(() => {
+        fetch('https://ipinfo.io/json?token=daabefc348f9fc')
+            .then(response => response.json())
+            .then(data => {
+                console.log('IP Address:', data.ip);
+                console.log('City:', data.city);
+                console.log('Region:', data.region);
+                console.log('Country:', data.country);
+                console.log('Location:', data.loc); // широта и долгота
+                console.log('Street:', data.org); // организация, предоставляющая IP (может быть полезно для определения улицы)
+                // Установка значений в state
+                setIp({
+                    ip: data.ip,
+                    city: data.city,
+                    region: data.region,
+                    location: data.loc
+                });
+                // setCity(data.city);
+                // setRegion(data.region);
+                // setLocation(data.loc);
+            })
+            .catch(error => {
+                console.error('Error fetching IP address and location:', error);
+            });
+    }, []);
+    const getMonthNameInGenitive = (monthIndex) => {
+        const monthsInGenitive = [
+            'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+            'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+        ];
+        return monthsInGenitive[monthIndex];
+    };
+    // const showImageWithDateAndName = (callback) => {
+    //     const canvas = canvasRef.current;
+    //     const ctx = canvas.getContext('2d');
+    //     const baseImage = new Image();
+    //     const overlayImage = new Image();
+    
+    //     // Устанавливаем источник изображений
+    //     baseImage.src = 'SMO.jpg'; // Путь к вашему основному изображению
+    //     overlayImage.src = 'print.png'; // Путь к изображению, которое будет накладываться
+    
+    //     baseImage.onload = () => {
+    //         ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
+    
+    //         // Отрисовка имени пользователя
+    //         ctx.font = '20px Times New Roman';
+    //         ctx.fillStyle = '#000';
+    //         ctx.fillText(authUser.name, 145, 48);
+    
+    //         // Отрисовка IP-адреса и случайного числа
+    //         ctx.fillText(`Ваш ip адрес: ${ip}`, 170, 68);
+    //         ctx.fillText(Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000, 680, 95);
+    
+    //         // Получение завтрашней даты
+    //         const tomorrow = new Date();
+    //         tomorrow.setDate(tomorrow.getDate() + 1);
+            
+    //         // Извлечение дня и названия месяца
+    //         const day = tomorrow.getDate();
+    //         const monthIndex = tomorrow.getMonth();
+    //         const month = getMonthNameInGenitive(monthIndex); // Функция для получения названия месяца в родительном падеже
+    
+    //         // Отрисовка дня и месяца
+    //         ctx.fillText(day, 420, 138);
+    //         ctx.fillText(month, 470, 138);
+    
+    //         // Загрузка и отрисовка накладываемого изображения
+    //         // overlayImage.onload = () => {
+    //         //     // Настройте координаты и размер второго изображения по необходимости
+    //         //     ctx.drawImage(overlayImage, 450, 140, 200, 200);
+    
+    //         //     // Создание data URL и открытие его в новой вкладке
+    //         //     canvas.toBlob((blob) => {
+    //         //         const url = URL.createObjectURL(blob);
+    //         //         window.open(url, '_blank');
+    //         //         // Освобождаем URL-объект после использования
+    //         //         URL.revokeObjectURL(url);
+    //         //     }, 'image/png');
+    //         // };
+    //         overlayImage.onload = () => {
+    //             ctx.drawImage(overlayImage, 50, 50, 200, 200);
+    
+    //             canvas.toBlob((blob) => {
+    //                 const url = URL.createObjectURL(blob);
+    //                 callback(url);  // Передаём URL в коллбек
+    //                 URL.revokeObjectURL(url);
+    //             }, 'image/png');
+    //         };
+    //     };
+    // };
+    const loadImage = (src) => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.src = src;
+            img.onload = () => resolve(img);
+            img.onerror = (err) => reject(err);
+        });
+    };
+    
+    const showImageWithDateAndName = async (callback) => {
+        try {
+            const canvas = canvasRef.current;
+            const ctx = canvas.getContext('2d');
+    
+            // Загрузка изображений
+            const baseImage = await loadImage('SMO.jpg');
+            const overlayImage = await loadImage('print.png');
+    
+            // Отрисовка основного изображения
+            ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
+    
+            // Отрисовка имени пользователя
+            ctx.font = '20px Times New Roman';
+            ctx.fillStyle = '#000';
+            ctx.fillText(authUser.name, 145, 48);
+            // ctx.fillText('Владимиру Владимировичу', 145, 48);
+    
+            // setNumber(Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000)
+            const randomNumber = Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000;
+            // Отрисовка IP-адреса и случайного числа
+            // ctx.fillText(`Ваш ip адрес: ${ip.ip}`, 170, 68);
+            ctx.font = '16px Times New Roman';
+            ctx.fillText(`по адресу:  город ${ip.city}, ${ip.location}, IP адрес: ${ip.ip} `, 170, 68);
+            // ctx.fillText(`по адресу:  город Геленджик, село Прасковеевка`, 170, 68);
+            ctx.font = '20px Times New Roman';
+            ctx.fillText(randomNumber, 680, 95);
+    
+            // Получение завтрашней даты
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+    
+            // Извлечение дня и названия месяца
+            const day = tomorrow.getDate();
+            const monthIndex = tomorrow.getMonth();
+            const month = getMonthNameInGenitive(monthIndex);
+    
+            // Отрисовка дня и месяца
+            ctx.fillText(day, 420, 138);
+            ctx.fillText(month, 470, 138);
+    
+            // Отрисовка накладываемого изображения
+            ctx.drawImage(overlayImage, 450, 140, 200, 200);
+    
+            // Создание data URL и передача его в коллбек
+            const dataURL = canvas.toDataURL('image/png');
+            callback(dataURL, randomNumber);  // Передаём data URL в коллбек
+        } catch (error) {
+            console.error('Ошибка загрузки изображения:', error);
+        }
+    };
+    const downloadImage = (dataURL) => {
+        const link = document.createElement('a');
+        link.href = dataURL;
+        link.download = 'image.png';  // Имя файла
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+    
+    
+    
 
     useEffect(() => {
         if (!selectedTest) {
@@ -141,7 +325,16 @@ function QuizGame({ mode }){
     const quitGame = () =>{
         navigateTo('/quiz');
     }
-    
+    const [ imageViewerClosed ,setImageViewerClosed] = useState(false)
+    useEffect(() => {
+        if (!viewData.isShow && imageViewerClosed) {
+            setAlertProp({
+                ...alertProp,
+                isShow: true
+            });
+            setImageViewerClosed(false); // Сбрасываем состояние после показа уведомления
+        }
+    }, [viewData.isShow]);
     const nextQuestion = async () => {
         if (currentQuestionIndex < selectedQuestions.length - 1) {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
@@ -150,90 +343,184 @@ function QuizGame({ mode }){
             setIsQuizFinished(true);
             if(mode === 'kyrgyz'){
                 if (score > 40) {
-                    setAlertProp({
-                        isShow: true,
-                        title: 'Вы выиграли!',
-                        text: `Викторина завершена! Ваш счёт: ${score}. Вы также были приняты в Улуттук гвардия на бюджетную форму обучения!`,
-                        firstButtonName: 'Выйти',
-                        secondButtonName: 'Играть снова',
-                        firstButtonOnClick: quitGame,
-                        secondButtonOnClick: resetQuiz,
+                    // showImageWithDateAndName();
+                    // setAlertProp({
+                    //     isShow: true,
+                    //     title: 'Вы выиграли!',
+                    //     text: `Викторина завершена! Ваш счёт: ${score}. Вы также были приняты в Улуттук гвардия на бюджетную форму обучения!`,
+                    //     firstButtonName: 'Выйти',
+                    //     secondButtonName: 'Играть снова',
+                    //     firstButtonOnClick: quitGame,
+                    //     secondButtonOnClick: resetQuiz,
+                    // });
+                    showImageWithDateAndName((imageDataURL) => {
+                        setViewData({
+                            isShow: true,
+                            images: [imageDataURL],  // Передаём data URL изображения в ImageViewer
+                            index: 0,
+                        });
+                        setImageViewerClosed(true)
+
+                        setAlertProp({
+                            // isShow: true,
+                            title: 'Вы выиграли!',
+                            text: `Викторина завершена! Ваш счёт: ${score}. Вы также были приняты в Улуттук гвардия на бюджетную форму обучения!`,
+                            firstButtonName: 'Выйти',
+                            secondButtonName: 'Играть снова',
+                            firstButtonOnClick: quitGame,
+                            secondButtonOnClick: resetQuiz,
+                        });
                     });
+                    
                 } else if (score < 20) {
-                    setAlertProp({
-                        isShow: true,
-                        title: 'Вы проиграли!',
-                        text: `Викторина завершена! Ваш счёт: ${score}. Вы также были приняты в Улуттук гвардия, поздравляем!`,
-                        firstButtonName: 'Выйти',
-                        secondButtonName: 'Играть снова',
-                        firstButtonOnClick: quitGame,
-                        secondButtonOnClick: resetQuiz,
+                    // showImageWithDateAndName();
+                    // setAlertProp({
+                    //     isShow: true,
+                    //     title: 'Вы проиграли!',
+                    //     text: `Викторина завершена! Ваш счёт: ${score}. Вы также были приняты в Улуттук гвардия, поздравляем!`,
+                    //     firstButtonName: 'Выйти',
+                    //     secondButtonName: 'Играть снова',
+                    //     firstButtonOnClick: quitGame,
+                    //     secondButtonOnClick: resetQuiz,
+                    // });
+                    showImageWithDateAndName((imageDataURL) => {
+                        setViewData({
+                            isShow: true,
+                            images: [imageDataURL],  // Передаём data URL изображения в ImageViewer
+                            index: 0,
+                        });
+                        setImageViewerClosed(true)
+                    
+                        setAlertProp({
+                            // isShow: true,
+                            title: 'Вы выиграли!',
+                            text: `Викторина завершена! Ваш счёт: ${score}. Вы также были приняты в Улуттук гвардия на бюджетную форму обучения!`,
+                            firstButtonName: 'Выйти',
+                            secondButtonName: 'Играть снова',
+                            firstButtonOnClick: quitGame,
+                            secondButtonOnClick: resetQuiz,
+                        });
                     });
+                    
                 }
             } else if (mode === 'russian'){
                 if (score > 40) {
-                    setAlertProp({
-                        isShow: true,
-                        title: 'Вы выиграли!',
-                        text: `Викторина завершена! Ваш счёт: ${score}. Вы также были приняты в ряды российской армии на бюджет, поздравляем!`,
-                        firstButtonName: 'Выйти',
-                        secondButtonName: 'Играть снова',
-                        firstButtonOnClick: quitGame,
-                        secondButtonOnClick: resetQuiz,
+                    showImageWithDateAndName((imageDataURL) => {
+                        setViewData({
+                            isShow: true,
+                            images: [imageDataURL],  // Передаём data URL изображения в ImageViewer
+                            index: 0,
+                        });
+                        setImageViewerClosed(true)
+
+                        setAlertProp({
+                            // isShow: true,
+                            title: 'Вы выиграли!',
+                            text: `Викторина завершена! Ваш счёт: ${score}. Вы также были приняты в ряды российской армии на бюджет, поздравляем!`,
+                            firstButtonName: 'Выйти',
+                            secondButtonName: 'Играть снова',
+                            firstButtonOnClick: quitGame,
+                            secondButtonOnClick: resetQuiz,
+                        });
                     });
                 } else if (score < 20) {
-                    setAlertProp({
-                        isShow: true,
-                        title: 'Вы проиграли!',
-                        text: `Викторина завершена! Ваш счёт: ${score}. Вы также были приняты в ряды российской армии, поздравляем!`,
-                        firstButtonName: 'Выйти',
-                        secondButtonName: 'Играть снова',
-                        firstButtonOnClick: quitGame,
-                        secondButtonOnClick: resetQuiz,
+                    showImageWithDateAndName((imageDataURL) => {
+                        setViewData({
+                            isShow: true,
+                            images: [imageDataURL],  // Передаём data URL изображения в ImageViewer
+                            index: 0,
+                        });
+                        setImageViewerClosed(true)
+
+                        setAlertProp({
+                            // isShow: true,
+                            title: 'Вы проиграли!',
+                            text: `Викторина завершена! Ваш счёт: ${score}. Вы также были приняты в ряды российской армии, поздравляем!`,
+                            firstButtonName: 'Выйти',
+                            secondButtonName: 'Играть снова',
+                            firstButtonOnClick: quitGame,
+                            secondButtonOnClick: resetQuiz,
+                        });
                     });
                 }
             } else if (mode === 'math'){
                 if (score > 40) {
-                    setAlertProp({
-                        isShow: true,
-                        title: 'Вы выиграли!',
-                        text: `Викторина завершена! Ваш счёт: ${score}. Вы также были приняты в ряды военных инженеров СВО на бюджет, поздравляем!`,
-                        firstButtonName: 'Выйти',
-                        secondButtonName: 'Играть снова',
-                        firstButtonOnClick: quitGame,
-                        secondButtonOnClick: resetQuiz,
+                    showImageWithDateAndName((imageDataURL) => {
+                        setViewData({
+                            isShow: true,
+                            images: [imageDataURL],  // Передаём data URL изображения в ImageViewer
+                            index: 0,
+                        });
+                        setImageViewerClosed(true)
+
+                        setAlertProp({
+                            // isShow: true,
+                            title: 'Вы выиграли!',
+                            text: `Викторина завершена! Ваш счёт: ${score}. Вы также были приняты в ряды военных инженеров СВО на бюджет, поздравляем!`,
+                            firstButtonName: 'Выйти',
+                            secondButtonName: 'Играть снова',
+                            firstButtonOnClick: quitGame,
+                            secondButtonOnClick: resetQuiz,
+                        });
                     });
                 } else if (score < 20) {
-                    setAlertProp({
-                        isShow: true,
-                        title: 'Вы проиграли!',
-                        text: `Викторина завершена! Ваш счёт: ${score}. Вы также были приняты в ряды военных инженеров СВО, поздравляем!`,
-                        firstButtonName: 'Выйти',
-                        secondButtonName: 'Играть снова',
-                        firstButtonOnClick: quitGame,
-                        secondButtonOnClick: resetQuiz,
+                    showImageWithDateAndName((imageDataURL) => {
+                        setViewData({
+                            isShow: true,
+                            images: [imageDataURL],  // Передаём data URL изображения в ImageViewer
+                            index: 0,
+                        });
+                        setImageViewerClosed(true)
+
+                        setAlertProp({
+                            // isShow: true,
+                            title: 'Вы проиграли!',
+                            text: `Викторина завершена! Ваш счёт: ${score}. Вы также были приняты в ряды военных инженеров СВО, поздравляем!`,
+                            firstButtonName: 'Выйти',
+                            secondButtonName: 'Играть снова',
+                            firstButtonOnClick: quitGame,
+                            secondButtonOnClick: resetQuiz,
+                        });
                     });
                 }
             } else if (mode === 'english'){
                 if (score > 40) {
-                    setAlertProp({
-                        isShow: true,
-                        title: 'Вы выиграли!',
-                        text: `Викторина завершена! Ваш счёт: ${score}. Вы также были приняты в ряды российской разведки на бюджет, поздравляем!`,
-                        firstButtonName: 'Выйти',
-                        secondButtonName: 'Играть снова',
-                        firstButtonOnClick: quitGame,
-                        secondButtonOnClick: resetQuiz,
+                    showImageWithDateAndName((imageDataURL) => {
+                        setViewData({
+                            isShow: true,
+                            images: [imageDataURL],  // Передаём data URL изображения в ImageViewer
+                            index: 0,
+                        });
+                        setImageViewerClosed(true)
+
+                        setAlertProp({
+                            // isShow: true,
+                            title: 'Вы выиграли!',
+                            text: `Викторина завершена! Ваш счёт: ${score}. Вы также были приняты в ряды российской разведки на бюджет, поздравляем!`,
+                            firstButtonName: 'Выйти',
+                            secondButtonName: 'Играть снова',
+                            firstButtonOnClick: quitGame,
+                            secondButtonOnClick: resetQuiz,
+                        });
                     });
                 } else if (score < 20) {
-                    setAlertProp({
-                        isShow: true,
-                        title: 'Вы проиграли!',
-                        text: `Викторина завершена! Ваш счёт: ${score}. Вы также были приняты в ряды российской разведки, поздравляем!`,
-                        firstButtonName: 'Выйти',
-                        secondButtonName: 'Играть снова',
-                        firstButtonOnClick: quitGame,
-                        secondButtonOnClick: resetQuiz,
+                    showImageWithDateAndName((imageDataURL) => {
+                        setViewData({
+                            isShow: true,
+                            images: [imageDataURL],  // Передаём data URL изображения в ImageViewer
+                            index: 0,
+                        });
+                        setImageViewerClosed(true)
+
+                        setAlertProp({
+                            // isShow: true,
+                            title: 'Вы проиграли!',
+                            text: `Викторина завершена! Ваш счёт: ${score}. Вы также были приняты в ряды российской разведки, поздравляем!`,
+                            firstButtonName: 'Выйти',
+                            secondButtonName: 'Играть снова',
+                            firstButtonOnClick: quitGame,
+                            secondButtonOnClick: resetQuiz,
+                        });
                     });
                 }
             }
@@ -260,6 +547,12 @@ function QuizGame({ mode }){
 
     return(
         <div className={styles['container']}>
+            <canvas ref={canvasRef} width="816" height="367" style={{ display: 'none' }}/>
+            <ImageViewer
+                isShow={viewData.isShow}
+                images={viewData.images}
+                index={viewData.index}
+                onClose={()=> setViewData({isShow: false})}/>
             <AlertNotification
                 title={alertProp.title}
                 text={alertProp.text}

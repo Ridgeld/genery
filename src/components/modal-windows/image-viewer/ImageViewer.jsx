@@ -15,6 +15,7 @@ function ImageViewer({isShow, images, index, onClose}){
     
 
     useEffect(() => {
+        console.log(images);
         let updatedImageUrls = [];
         if (!Array.isArray(images)) {
             updatedImageUrls.push(images);
@@ -27,11 +28,6 @@ function ImageViewer({isShow, images, index, onClose}){
     }, [images]);
 
 
-    // useEffect(() => {
-    //     if (images) {
-    //       setImageUrls(images);
-    //     }
-    //   }, [images]);
 
     useEffect(() => {
         setCurrentIndex(index);
@@ -178,58 +174,118 @@ function ImageViewer({isShow, images, index, onClose}){
     //         console.error('Ошибка при преобразовании URL:', error);
     //     }
     // };
+    // const downloadFile = () => {
+    //     const url = imageUrls[currentIndex];
+    
+    //     // Функция для преобразования URL в путь
+    //     const convertFirebaseUrlToPath = (url) => {
+    //         const decodedUrl = decodeURIComponent(url);
+    //         const pathStart = decodedUrl.indexOf('/o/') + 3; // Начало пути после /o/
+    //         const pathEnd = decodedUrl.indexOf('?'); // Конец пути перед ?
+    
+    //         if (pathStart === -1 || pathEnd === -1) {
+    //             throw new Error('Не удалось найти путь в URL');
+    //         }
+    
+    //         return decodedUrl.substring(pathStart, pathEnd).replace(/%2F/g, '/'); // Заменяем %2F на /
+    //     };
+    
+    //     try {
+    //         // Извлекаем путь из URL
+    //         const path = convertFirebaseUrlToPath(url);
+            
+    //         // Получаем ссылку для скачивания файла
+    //         getDownloadURL(ref(storage, path))
+    //             .then((downloadUrl) => {
+    //                 // `downloadUrl` - это URL для скачивания файла
+    
+    //                 // Создаем запрос для получения файла
+    //                 const xhr = new XMLHttpRequest();
+    //                 xhr.responseType = 'blob';
+    //                 xhr.onload = () => {
+    //                     const blob = xhr.response;
+    //                     // Создаем ссылку на скачивание файла
+    //                     const downloadLink = document.createElement('a');
+    //                     downloadLink.href = window.URL.createObjectURL(blob);
+    //                     // Устанавливаем имя файла
+    //                     downloadLink.download = path.split('/').pop(); // Получаем имя файла из пути
+    //                     // Добавляем ссылку на страницу и эмулируем клик по ней
+    //                     document.body.appendChild(downloadLink);
+    //                     downloadLink.click();
+    //                     // Удаляем ссылку из документа
+    //                     document.body.removeChild(downloadLink);
+    //                 };
+    //                 xhr.open('GET', downloadUrl);
+    //                 xhr.send();
+    //             })
+    //             .catch((error) => {
+    //                 // Обработка ошибок
+    //                 console.log(error);
+    //             });
+    //     } catch (error) {
+    //         console.error('Ошибка при преобразовании URL:', error);
+    //     }
+    // };
+
     const downloadFile = () => {
         const url = imageUrls[currentIndex];
+        const link = document.createElement('a');
+        
+        console.log('URL:', url); // Проверка URL
+        
+        // Установите имя файла
+        const fileName = 'повестка.png';
     
-        // Функция для преобразования URL в путь
-        const convertFirebaseUrlToPath = (url) => {
-            const decodedUrl = decodeURIComponent(url);
-            const pathStart = decodedUrl.indexOf('/o/') + 3; // Начало пути после /o/
-            const pathEnd = decodedUrl.indexOf('?'); // Конец пути перед ?
-    
-            if (pathStart === -1 || pathEnd === -1) {
-                throw new Error('Не удалось найти путь в URL');
+        if (url.startsWith('blob:')) {
+            console.log('Downloading blob URL');
+            link.href = url;
+            link.download = fileName; // Устанавливаем имя файла
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else if (url.startsWith('https://firebasestorage.googleapis.com')) {
+            console.log('Downloading from Firebase Storage');
+            try {
+                const path = convertFirebaseUrlToPath(url);
+                getDownloadURL(ref(storage, path))
+                    .then((downloadUrl) => {
+                        console.log('Firebase download URL:', downloadUrl);
+                        fetch(downloadUrl)
+                            .then(response => {
+                                if (!response.ok) throw new Error('Network response was not ok.');
+                                return response.blob();
+                            })
+                            .then(blob => {
+                                console.log('Blob:', blob);
+                                const blobUrl = window.URL.createObjectURL(blob);
+                                console.log('Blob URL:', blobUrl);
+                                link.href = blobUrl;
+                                link.download = fileName; // Устанавливаем имя файла
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                window.URL.revokeObjectURL(blobUrl); // Освобождаем память
+                            })
+                            .catch(error => {
+                                console.error('Error fetching file:', error);
+                            });
+                    })
+                    .catch((error) => {
+                        console.error('Error getting download URL from Firebase:', error);
+                    });
+            } catch (error) {
+                console.error('Error converting Firebase URL:', error);
             }
-    
-            return decodedUrl.substring(pathStart, pathEnd).replace(/%2F/g, '/'); // Заменяем %2F на /
-        };
-    
-        try {
-            // Извлекаем путь из URL
-            const path = convertFirebaseUrlToPath(url);
-            
-            // Получаем ссылку для скачивания файла
-            getDownloadURL(ref(storage, path))
-                .then((downloadUrl) => {
-                    // `downloadUrl` - это URL для скачивания файла
-    
-                    // Создаем запрос для получения файла
-                    const xhr = new XMLHttpRequest();
-                    xhr.responseType = 'blob';
-                    xhr.onload = () => {
-                        const blob = xhr.response;
-                        // Создаем ссылку на скачивание файла
-                        const downloadLink = document.createElement('a');
-                        downloadLink.href = window.URL.createObjectURL(blob);
-                        // Устанавливаем имя файла
-                        downloadLink.download = path.split('/').pop(); // Получаем имя файла из пути
-                        // Добавляем ссылку на страницу и эмулируем клик по ней
-                        document.body.appendChild(downloadLink);
-                        downloadLink.click();
-                        // Удаляем ссылку из документа
-                        document.body.removeChild(downloadLink);
-                    };
-                    xhr.open('GET', downloadUrl);
-                    xhr.send();
-                })
-                .catch((error) => {
-                    // Обработка ошибок
-                    console.log(error);
-                });
-        } catch (error) {
-            console.error('Ошибка при преобразовании URL:', error);
+        } else {
+            console.log('Downloading from other URL');
+            link.href = url;
+            link.download = fileName; // Устанавливаем имя файла
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     };
+    
     
     
     // Пример использования
