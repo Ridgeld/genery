@@ -99,7 +99,7 @@ function CreateGroup({}) {
             iconColor: theme.icon_color,
             titleColor: theme.text_first_color,
             showArrow: true,
-            arrowLink: '#/profile',
+            arrowLink: '#/search',
             arrowColor: theme.text_first_color,
             isHeaderBackground: false,
             headerBackground: theme.background_color,
@@ -318,8 +318,8 @@ const handleGroupCreate = async () => {
                 </div>
                 <div className={styles['group-photo']}
                     style={{
-                        borderColor: 'var(--background-color)',
-                        background: 'var(--background-color)'
+                        borderColor: theme.background_color,
+                        background: theme.background_color
                     }}>
                     <button className={styles['change-photo-button']}
                         onClick={() => document.getElementById('photo-input').click()}>
@@ -336,7 +336,7 @@ const handleGroupCreate = async () => {
                         onChange={handleImageChange}
                     />
                 </div>
-                <div className={styles['colors-container']} style={{ background: 'var(--element-first-color)' }}>
+                <div className={styles['colors-container']} style={{ background: theme.element_first_color }}>
                     {filteredColors.map((circle) => (
                         <>
                         {circle.colors.map((color, index) => (
@@ -347,7 +347,7 @@ const handleGroupCreate = async () => {
                             onClick={() => handleCoverChange(color)}
                             >
                             {cover === color && (
-                                <div className={styles['active-circle']} style={{ borderColor: 'var(--text-first-color)' }}></div>
+                                <div className={styles['active-circle']} style={{ borderColor: theme.text_first_color }}></div>
                             )}
                             </div>
                         ))}
@@ -356,37 +356,37 @@ const handleGroupCreate = async () => {
                 </div>
                 <div className={styles['group-actions']}
                     style={{
-                        background: 'var(--element-first-color)'
+                        background: theme.element_first_color
                     }}>
                     <div className={styles['input-data-container']}>
                         <div className={styles['label']}
                             style={{
-                                color: 'var(--first-color)'
+                                color: theme.first_color
                             }}>Название</div>
                         <input type='text' value={name} className={styles['input-data']}
                             style={{
-                                color: 'var(--text-first-color)',
-                                caretColor: 'var(--first-color)'
+                                color: theme.text_first_color,
+                                caretColor: theme.first_color
                             }}
                             onChange={(e) => setName(e.target.value)}/>
                     </div>
                     <div className={styles['input-data-container']}>
                         <div className={styles['label']}
                             style={{
-                                color: 'var(--first-color)'
+                                color: theme.first_color
                             }}>Описание</div>
                         <input type='text' value={description} className={styles['input-data']}
                             style={{
-                                color: 'var(--text-first-color)',
-                                caretColor: 'var(--first-color)'
+                                color: theme.text_first_color,
+                                caretColor: theme.first_color
                             }}
                             onChange={(e) => setDescription(e.target.value)}/>
                     </div>
                     <div className={styles['button-container']}>
                         <button className={styles['quit-button']}
                             style={{
-                                background: 'var(--first-color)',
-                                color: 'var(--text-first-color)'
+                                color: theme.text_first_color,
+                                background: theme.first_color
                             }}
                             onClick={handleGroupCreate}>Создать</button>
                     </div>

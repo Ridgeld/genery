@@ -9,6 +9,10 @@ const themes = {
         name: "genery",
         img: 'themes/genery/preview.png',
     },
+    kyrgyzstan: {
+        name: "kyrgyzstan",
+        img: 'themes/kyrgyzstan/preview.png',
+    },
 };
 
 

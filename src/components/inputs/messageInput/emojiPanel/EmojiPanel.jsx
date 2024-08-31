@@ -13,7 +13,7 @@ function EmojiPanel({isShow, isImages, isTop, marginTop, onEmojiSelect}) {
     const [currentCategory, setCurrentCategory] = useState(emojies[0].name);
     const [userEmojies, setUserEmojies] = useState(['smiles', 'animals', 'food', 
                                                     'exercise','transport','objects', 
-                                                    'flags', 'kyrgyzstan']);
+                                                    'flags']);
     const categoryRefs = useRef({});
     const categoriesRef = useRef();
     const containerRef = useRef();

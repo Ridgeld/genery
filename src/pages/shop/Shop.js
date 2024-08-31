@@ -1,4 +1,55 @@
-const items = [  
+const items = [
+    {
+        category: 'kyrgyzstan',
+        img: 'shop/kyrgyzstan/cover.png',
+        textImg: 'shop/kyrgyzstan/text-img.png',
+        items: [
+            {   
+                id: "kyrgyzstan",
+                category: 'theme',
+                img: 'shop/kyrgyzstan/img-2.png',
+                name: 'Тема',
+                label: 'День независимости',
+                labelTextColor: '#fff',
+                labelColor: '#E3010F',
+                isFree: true,
+                price: 0,
+            },
+            {   
+                id: "kyrgyzstan",
+                category: 'emojies',
+                img: 'shop/kyrgyzstan/img-1.png',
+                name: 'Смайлы',
+                label: 'День независимости',
+                labelTextColor: '#fff',
+                labelColor: '#E3010F',
+                isFree: true,
+                price: 0,
+            },
+            {   
+                id: "kyrgyzstan",
+                category: 'colors',
+                img: 'shop/kyrgyzstan/img-3.png',
+                name: 'Пак цветов',
+                label: 'День независимости',
+                labelTextColor: '#fff',
+                labelColor: '#E3010F',
+                isFree: true,
+                price: 0,
+            },
+            {   
+                id: "kyrgyzstan",
+                category: 'all',
+                img: 'shop/kyrgyzstan/img-4.png',
+                name: 'Пак "Родина"',
+                label: 'День независимости',
+                labelTextColor: '#fff',
+                labelColor: '#E3010F',
+                isFree: true,
+                price: 0,
+            },
+        ]
+    },  
     {
         category: 'genery',
         img: 'shop/genery/cover.png',

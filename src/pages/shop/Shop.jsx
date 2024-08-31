@@ -72,7 +72,7 @@ function Shop(){
             isHeader: true,
             isFooter: true,
             footerBackground: theme.background_color,
-            activeElementIndex: 3,
+            activeElementIndex: 4,
         });
         document.body.style.background = theme.background_color
         },[ElementContext]);
@@ -187,7 +187,7 @@ function Shop(){
                 updateFields = { boughtEmojies: arrayUnion(id) };
                 slipText = `вы приобрели пак эмодзи: ${id}`;
                 break;
-            case 'themes':
+            case 'theme':
                 updateFields = { boughtThemes: arrayUnion(id) };
                 slipText = `вы приобрели тему: ${id}`;
                 break;
@@ -275,9 +275,9 @@ function Shop(){
                         img={elements.img}
                         textImg={elements.textImg}/>
                     <div className={styles['items-container']}>
-                        {elements.items.map((items) => (
+                        {elements.items.map((items, index) => (
                             <ShopCard
-                                key={items.id}
+                                key={index}
                                 category={items.category}
                                 id={items.id}
                                 photo={items.img}

@@ -497,8 +497,8 @@ function EditGroup({ fetchGroupData, handleEdit }) {
             </div>
             <div className={styles['group-photo']}
                 style={{
-                    borderColor: 'var(--background-color)',
-                    background: 'var(--background-color)'
+                    borderColor: theme.background_color,
+                    background: theme.background_color
                 }}>
                 <button className={styles['change-photo-button']}
                     onClick={() => document.getElementById('photo-input').click()}>
@@ -515,7 +515,7 @@ function EditGroup({ fetchGroupData, handleEdit }) {
                     onChange={handleImageChange}
                 />
             </div>
-            <div className={styles['colors-container']} style={{ background: 'var(--element-first-color)' }}>
+            <div className={styles['colors-container']} style={{ background: theme.element_first_color }}>
                 {filteredColors.map((circle) => (
                     <>
                     {circle.colors.map((color, index) => (
@@ -526,7 +526,7 @@ function EditGroup({ fetchGroupData, handleEdit }) {
                         onClick={() => handleCoverChange(color)}
                         >
                         {cover === color && (
-                            <div className={styles['active-circle']} style={{ borderColor: 'var(--text-first-color)' }}></div>
+                            <div className={styles['active-circle']} style={{ borderColor: theme.text_first_color }}></div>
                         )}
                         </div>
                     ))}
@@ -535,37 +535,37 @@ function EditGroup({ fetchGroupData, handleEdit }) {
             </div>
             <div className={styles['group-actions']}
                 style={{
-                    background: 'var(--element-first-color)'
+                    background: theme.element_first_color
                 }}>
                 <div className={styles['input-data-container']}>
                     <div className={styles['label']}
                         style={{
-                            color: 'var(--first-color)'
+                            color: theme.first_color
                         }}>Имя</div>
                     <input type='text' value={name} className={styles['input-data']}
                         style={{
-                            color: 'var(--text-first-color)',
-                            caretColor: 'var(--first-color)'
+                            color: theme.text_first_color,
+                            caretColor: theme.first_color
                         }}
                         onChange={(e) => setName(e.target.value)}/>
                 </div>
                 <div className={styles['input-data-container']}>
                     <div className={styles['label']}
                         style={{
-                            color: 'var(--first-color)'
+                            color: theme.text_first_color
                         }}>О себе</div>
                     <input type='text' value={description} className={styles['input-data']}
                         style={{
-                            color: 'var(--text-first-color)',
-                            caretColor: 'var(--first-color)'
+                            color: theme.text_first_color,
+                            caretColor: theme.first_color
                         }}
                         onChange={(e) => setDescription(e.target.value)}/>
                 </div>
                 <div className={styles['button-container']}>
                     <button className={styles['quit-button']}
                         style={{
-                            background: 'var(--first-color)',
-                            color: 'var(--text-first-color)'
+                            background: theme.first_color,
+                            color: theme.text_first_color,
                         }}
                         onClick={handleDataChange}>Сохранить</button>
                 </div>
