@@ -24,6 +24,9 @@ import Search from '../pages/search/Search.jsx';
 import Group from '../pages/group/Group.jsx';
 import GroupList from '../pages/group-list/GroupList.jsx';
 import CreateGroup from '../pages/create-group/CreateGroup.jsx';
+import Matrix from '../pages/matrix/Matrix.jsx';
+import { auth } from '../../firebase.js';
+import FlippyBird from '../pages/flippyBird/FlippyBird.jsx';
 
 export const routes = [
     {
@@ -176,4 +179,16 @@ export const routes = [
         component: <CreateGroup/>,
         auth: true,
     },
+    {
+        path: '/matrix',
+        exact: true,
+        component: <Matrix/>,
+        auth: false
+    },
+    {
+        path: '/flippybird',
+        exact: true,
+        component: <FlippyBird/>,
+        auth: false
+    }
 ]

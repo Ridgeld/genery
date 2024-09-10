@@ -199,6 +199,16 @@ function GameMenu(){
             arrowColor = {theme.text_first_color}
             arrowBackgroundColor = {theme.block_arrow_third_color}
             linkTo = "/quiz"/>
+        <Block 
+            name = "Flyppi bird" 
+            description = "9/11" 
+            backgroundColor = {theme.element_first_color}
+            isBorder={true}
+            borderColor={theme.block_border_color} 
+            textColor = {theme.text_first_color}
+            arrowColor = {theme.text_first_color}
+            arrowBackgroundColor = {theme.block_arrow_third_color}
+            linkTo = "/flippybird"/>
     </div>
   )
 }
