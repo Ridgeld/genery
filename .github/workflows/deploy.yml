@@ -30,6 +30,7 @@ jobs:
         with:
           name: production-files
           path: ./dist
+          if-no-files-found: error
 
   deploy:
     name: Deploy
