@@ -63,13 +63,15 @@ export async function run(userInput, images) {
         ];
     }
 
-    const MODEL_NAME = images.length > 0 ? "gemini-1.0-pro-vision-latest" : 'gemini-1.0-pro';
+    const MODEL_NAME = images.length > 0 ? "gemini-2.0-flash-exp" : 'gemini-1.0-pro';
 
     // gemini-1.0-pro
     // gemini-1.5-flash
     // gemini-1.5-pro
 
-    const API_KEY = "AIzaSyA9b9TyKyWlFPZeki8eX-p6jweZWt8f8gQ";
+    const API_KEY = "AIzaSyDXQzULiPw4hRAKK7iRUrJCIXkMZmwmDfc";
+
+    // AIzaSyDXQzULiPw4hRAKK7iRUrJCIXkMZmwmDfc
 
     // AIzaSyA9b9TyKyWlFPZeki8eX-p6jweZWt8f8gQ
     // AIzaSyARQT5WhstzZyjFL2LPWAPUmsj0qvg3fYQ - возможно не работает

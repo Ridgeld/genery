@@ -5,7 +5,7 @@ import {motion} from 'framer-motion'
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db, storage } from '../../../../../firebase';
 import { useAuth } from "../../../../providers/Authprovired";
-import colorCircles from './ColorCircles';
+import colorCircles from '../../../../themes/ColorCircles';
 import { getDownloadURL, getMetadata, ref, uploadBytesResumable } from 'firebase/storage';
 
 function AddTimetable({activeDay, id, isShow, close}){

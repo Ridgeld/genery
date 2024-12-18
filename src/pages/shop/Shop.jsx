@@ -181,7 +181,7 @@ function Shop(){
         switch (category) {
             case 'colors':
                 updateFields = { boughtColors: arrayUnion(id) };
-                slipText = `вы приобрели баннер: ${id}`;
+                slipText = `вы приобрели цвета: ${id}`;
                 break;
             case 'emojies':
                 updateFields = { boughtEmojies: arrayUnion(id) };

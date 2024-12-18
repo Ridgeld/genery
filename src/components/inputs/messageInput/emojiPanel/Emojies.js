@@ -282,6 +282,21 @@ const emojies = [
                  'emojies/kyrgyzstan/9.png', 'emojies/kyrgyzstan/10.png',
                  'emojies/kyrgyzstan/11.png', 'emojies/kyrgyzstan/12.png',],
     },
+    {
+        name: 'winter_2024',
+        emojiIcon: false,
+        emojiIconImg: true,
+        isCustom: true,
+        fontFamily: 'Noto Color Emoji',
+        icon: `emojies/winter_2024/icon.png`,
+        isImgEmoji: true,
+        emojis: ['emojies/winter_2024/1.png', 'emojies/winter_2024/2.png', 
+                 'emojies/winter_2024/3.png', 'emojies/winter_2024/4.png',
+                 'emojies/winter_2024/5.png', 'emojies/winter_2024/6.png',
+                 'emojies/winter_2024/7.png', 'emojies/winter_2024/8.png',
+                 'emojies/winter_2024/9.png', 'emojies/winter_2024/10.png',
+                 'emojies/winter_2024/11.png', 'emojies/winter_2024/12.png',],
+    },
     
     // Другие категории смайликов
 ];

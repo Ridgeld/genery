@@ -7,7 +7,7 @@ import SlipNotification from '../../components/notifictions/SlipNotification/Sli
 import { addDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import { db, storage } from '../../../firebase.js';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import colorCircles from './ColorCircles.js';
+import colorCircles from '../../themes/ColorCircles.js';
 import { createCanvas } from 'canvas';
 
 function CreateGroup({}) {

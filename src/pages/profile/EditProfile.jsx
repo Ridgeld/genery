@@ -6,7 +6,7 @@ import SlipNotification from '../../components/notifictions/SlipNotification/Sli
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db, storage } from '../../../firebase.js';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import colorCircles from './ColorCircles.js';
+import colorCircles from '../../themes/ColorCircles.js';
 
 function EditProfile({fetchUserPreferences, handleEdit}){
     const {theme, elementColors, setElementColors } = useContext(ElementContext);

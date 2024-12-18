@@ -13,6 +13,10 @@ const themes = {
         name: "kyrgyzstan",
         img: 'themes/kyrgyzstan/preview.png',
     },
+    winter_2024: {
+        name: "winter_2024",
+        img: 'themes/winter_2024/preview.png',
+    },
 };
 
 
