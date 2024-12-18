@@ -50,6 +50,7 @@ const items = [
             },
         ]
     }, 
+    
     {
         category: 'kyrgyzstan',
         img: 'shop/kyrgyzstan/cover.png',
