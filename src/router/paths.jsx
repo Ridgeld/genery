@@ -27,6 +27,7 @@ import CreateGroup from '../pages/create-group/CreateGroup.jsx';
 import Matrix from '../pages/matrix/Matrix.jsx';
 import { auth } from '../../firebase.js';
 import FlippyBird from '../pages/flippyBird/FlippyBird.jsx';
+import Rating from '../pages/rating/Rating.jsx';
 
 export const routes = [
     {
@@ -189,6 +190,12 @@ export const routes = [
         path: '/flippybird',
         exact: true,
         component: <FlippyBird/>,
+        auth: false
+    },
+    {
+        path: '/rating',
+        exact: true,
+        component: <Rating/>,
         auth: false
     }
 ]

@@ -209,6 +209,16 @@ function GameMenu(){
             arrowColor = {theme.text_first_color}
             arrowBackgroundColor = {theme.block_arrow_third_color}
             linkTo = "/flippybird"/>
+        <Block 
+            name = "Рейтинг студентов" 
+            description = "Баллы получай, IQ повышай" 
+            backgroundColor = {theme.element_first_color}
+            isBorder={true}
+            borderColor={theme.block_border_color} 
+            textColor = {theme.text_first_color}
+            arrowColor = {theme.text_first_color}
+            arrowBackgroundColor = {theme.block_arrow_third_color}
+            linkTo = "/rating"/>
     </div>
   )
 }
