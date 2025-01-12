@@ -51,8 +51,8 @@
 }
 .lesson-circle{
     display: flex;
-    width: 32px;
-    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
@@ -109,8 +109,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
     border-radius: 50%;
     cursor: pointer;
 }
