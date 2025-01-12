@@ -56,7 +56,7 @@ export default function Rating(){
 
     return(
         <div className={styles['container']}>
-            <iframe className={styles['game']} src="https://students-rating-private-k4ev417e7-ridgelds-projects.vercel.app/"></iframe>
+            <iframe className={styles['game']} src="https://students-rating-private-git-master-ridgelds-projects.vercel.app/"></iframe>
         </div>
     )
 }
