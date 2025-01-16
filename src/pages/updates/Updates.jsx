@@ -3,9 +3,11 @@ import styles from './Updates.module.scss'
 import { ElementContext } from '../../providers/ElementProvider.jsx';
 import updates from './Updates.js';
 import UpdateBody from './UpdateBody.jsx';
+import { useNavigate } from 'react-router-dom';
 
 function Updates(){
     const {theme, elementColors, setElementColors } = useContext(ElementContext);
+    const navigateTo = useNavigate()
 
     useEffect(() => {
         setElementColors({
@@ -13,7 +15,7 @@ function Updates(){
             titleColor: theme.text_first_color,
             showArrow: true,
             arrowColor: theme.text_first_color,
-            arrowLink: '#/menu',
+            arrowLink: () => navigateTo('/menu'),
             isHeaderBackground: true,
             headerBackground: theme.background_color,
             isHeader: true,

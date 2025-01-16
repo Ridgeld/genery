@@ -18,7 +18,7 @@ function Downloads(){
     const { id } = useParams()
     const [ownerId, setOwnerId] = useState()
     const { authUser } = useAuth()
-    const navigateTo = useNavigate()
+    const navigateTo = useNavigate();
     const [ isEdit, setIsEdit ] = useState(false)
 
     useEffect(() => {
@@ -80,7 +80,7 @@ function Downloads(){
             titleColor: theme.text_first_color,
             showArrow: true,
             arrowColor: theme.text_first_color,
-            arrowLink: '#/group-list',
+            arrowLink: () => navigateTo(`/group/${id}`),
             isHeaderBackground: true,
             headerBackground: theme.background_color,
             isHeader: true,
@@ -95,24 +95,24 @@ function Downloads(){
         const handleEditDownloads = () =>{
             // navigateTo(`/edit-download/${id}`); 
             setIsEdit(true);
-        }
+    }
 
-    useEffect(() => {
-        setElementColors({
-            iconColor: theme.icon_color,
-            titleColor: theme.text_first_color,
-            showArrow: true,
-            arrowLink: '#/list-menu',
-            arrowColor: theme.text_first_color,
-            isHeaderBackground: true,
-            headerBackground: theme.background_color,
-            isHeader: true,
-            isFooter: true,
-            footerBackground: theme.background_color,
-            activeElementIndex: 4,
-        });
-        document.body.style.background = theme.background_color
-        },[theme]);
+    // useEffect(() => {
+    //     setElementColors({
+    //         iconColor: theme.icon_color,
+    //         titleColor: theme.text_first_color,
+    //         showArrow: true,
+    //         arrowLink: '#/list-menu',
+    //         arrowColor: theme.text_first_color,
+    //         isHeaderBackground: true,
+    //         headerBackground: theme.background_color,
+    //         isHeader: true,
+    //         isFooter: true,
+    //         footerBackground: theme.background_color,
+    //         activeElementIndex: 4,
+    //     });
+    //     document.body.style.background = theme.background_color
+    //     },[theme]);
 
         // useEffect(() => {
         //     const fetchFiles = async () => {

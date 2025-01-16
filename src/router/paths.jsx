@@ -28,6 +28,7 @@ import Matrix from '../pages/matrix/Matrix.jsx';
 import { auth } from '../../firebase.js';
 import FlippyBird from '../pages/flippyBird/FlippyBird.jsx';
 import Rating from '../pages/rating/Rating.jsx';
+import Subscribers from '../pages/subscribers/Subscribers.jsx';
 
 export const routes = [
     {
@@ -166,6 +167,12 @@ export const routes = [
         path:'/group/:id?',
         exact: false,
         component: <Group/>,
+        auth: true,
+    },
+    {
+        path:'/subscribers/:id?',
+        exact: false,
+        component: <Subscribers/>,
         auth: true,
     },
     {

@@ -9,6 +9,7 @@ import { arrayUnion, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../../firebase.js';
 import { useAuth } from "../../providers/Authprovired.jsx";
 import ScoreContainer from '../../components/score-container/ScoreContainer.jsx';
+import { useNavigate } from 'react-router-dom';
 
 function Shop(){
     const {theme, elementColors, setElementColors } = useContext(ElementContext);
@@ -23,6 +24,7 @@ function Shop(){
     const [text, setText] = useState('');
     const [balance, setBalance] = useState(0);
     const { authUser } = useAuth();
+    const navigateTo = useNavigate()
     
     useEffect(() => {
         if (slipData.isShow) {
@@ -66,7 +68,7 @@ function Shop(){
             titleColor: theme.text_first_color,
             showArrow: true,
             arrowColor: theme.text_first_color,
-            arrowLink: '#/list-menu',
+            arrowLink: () => navigateTo('/menu'),
             isHeaderBackground: true,
             headerBackground: theme.background_color,
             isHeader: true,

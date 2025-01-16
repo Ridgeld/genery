@@ -89,9 +89,9 @@ function EditDownloads({id, handleEdit}){
         setElementColors({
             iconColor: theme.icon_color,
             titleColor: theme.text_first_color,
-            showArrow: false,
+            showArrow: true,
             arrowColor: theme.text_first_color,
-            arrowLink: `#/download/${id}`,
+            arrowLink: handleEdit,
             isHeaderBackground: true,
             headerBackground: theme.background_color,
             isHeader: true,

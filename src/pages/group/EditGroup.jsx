@@ -290,7 +290,7 @@ import { db, storage } from '../../../firebase.js';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import colorCircles from '../../themes/ColorCircles.js';
 
-function EditGroup({ fetchGroupData, handleEdit }) {
+function EditGroup({ fetchGroupData, handleEdit}) {
     const { theme, elementColors, setElementColors } = useContext(ElementContext);
     const { authUser } = useAuth();
     const { id } = useParams(); // Получаем id группы из параметров маршрута
@@ -378,7 +378,7 @@ function EditGroup({ fetchGroupData, handleEdit }) {
             iconColor: theme.icon_color,
             titleColor: theme.text_first_color,
             showArrow: true,
-            arrowLink: '#/profile',
+            arrowLink: () => handleEdit(),
             arrowColor: theme.text_first_color,
             isHeaderBackground: false,
             headerBackground: theme.background_color,

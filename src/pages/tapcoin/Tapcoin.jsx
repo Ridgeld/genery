@@ -7,6 +7,7 @@ import Coin from '../../components/coin/Coin.jsx';
 import { db } from '../../../firebase.js';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useAuth } from "../../providers/Authprovired.jsx";
+import { useNavigate } from 'react-router-dom';
 
 function Tapcoin(){
     const { theme, setThemeById, elementColors, setElementColors } = useContext(ElementContext);
@@ -17,6 +18,7 @@ function Tapcoin(){
     const coinRef = useRef();
     const [angle, setAngle] = useState(0);
     const [clicks, setClicks] = useState([]);
+    const navigateTo = useNavigate()
 
     useEffect(()=>{
         setAccessCoins(limit)
@@ -72,7 +74,7 @@ function Tapcoin(){
             titleColor: theme.text_first_color,
             showArrow: true,
             arrowColor: theme.text_first_color,
-            arrowLink: '#/game-menu',
+            arrowLink: () => navigateTo('/game-menu'),
             isHeaderBackground: true,
             headerBackground: theme.background_color,
             isHeader: true,

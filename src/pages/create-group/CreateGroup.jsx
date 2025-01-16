@@ -25,7 +25,7 @@ function CreateGroup({}) {
         text: ''
     });
     const [groupData, setGroupData] = useState([]);
-    const navigate = useNavigate();
+    const navigateTo = useNavigate();
     const colors = [theme.first_color, theme.second_color, theme.third_color];
     // useEffect(() => {
     //     const fetchGroupData = async () => {
@@ -99,7 +99,7 @@ function CreateGroup({}) {
             iconColor: theme.icon_color,
             titleColor: theme.text_first_color,
             showArrow: true,
-            arrowLink: '#/search',
+            arrowLink: () => navigateTo('/search'),
             arrowColor: theme.text_first_color,
             isHeaderBackground: false,
             headerBackground: theme.background_color,
@@ -294,7 +294,7 @@ const handleGroupCreate = async () => {
         );
 
         // Перенаправляем пользователя на страницу созданной группы
-        navigate(`/group/${groupId}`);
+        navigateTo(`/group/${groupId}`);
     } catch (error) {
         console.error("Error creating document: ", error);
     }

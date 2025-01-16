@@ -7,13 +7,14 @@ import { useNavigate } from 'react-router-dom';
 
 export default function FlippyBird(){
     const {theme, setThemeById, elementColors, setElementColors } = useContext(ElementContext);
+    const navigateTo = useNavigate();
 
     useEffect(() => {
         setElementColors({
             iconColor: theme.icon_color,
             titleColor: theme.text_first_color,
             showArrow: true,
-            arrowLink: '#/game-menu',
+            arrowLink: () => navigateTo(`/group-list`),
             arrowColor: theme.text_first_color,
             isHeaderBackground: true,
             headerBackground: theme.background_color,
@@ -38,7 +39,6 @@ export default function FlippyBird(){
 
     const canvasRef = useRef();
     const [score, setScore] = useState(0);
-    const navigateTo = useNavigate();
     const [dimensions, setDimensions] = useState({
         width: 360,
         height: 500

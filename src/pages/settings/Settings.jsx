@@ -11,6 +11,7 @@ import ThemeBody from './ThemeBody.jsx';
 import { collection, doc, getDoc, onSnapshot, query, setDoc } from 'firebase/firestore';
 import { db } from '../../../firebase.js';
 import SlipNotification from '../../components/notifictions/SlipNotification/SlipNotification.jsx';
+import { useNavigate } from 'react-router-dom';
 
 function Settings(){
     const { theme, setThemeById, elementColors, setElementColors } = useContext(ElementContext);
@@ -26,6 +27,7 @@ function Settings(){
         isShow: false,
         text: ''
     });
+    const navigateTo = useNavigate()
 
     useEffect(() => {
         if (slipData.isShow) {
@@ -45,7 +47,7 @@ function Settings(){
             titleColor: theme.text_first_color,
             showArrow: true,
             arrowColor: theme.text_first_color,
-            arrowLink: '#/list-menu',
+            arrowLink: () => navigateTo('/list-menu'),
             isHeaderBackground: true,
             headerBackground: theme.background_color,
             isHeader: true,

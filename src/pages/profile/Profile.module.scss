@@ -239,6 +239,11 @@
         }
     }
 }
+.posts-container{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
 
 @media(min-width: 700px){
     .container{

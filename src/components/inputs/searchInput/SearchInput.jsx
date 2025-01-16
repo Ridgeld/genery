@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import styles from './SearchInput.module.scss';
 import { ElementContext } from '../../../providers/ElementProvider';
 
-function SearchInput({value, onChange}){
+function SearchInput({value, onChange, placeholder}){
     const { theme, setElementColors } = useContext(ElementContext);
 
     const [searchValue, setSearchValue] = useState('');
@@ -25,7 +25,7 @@ function SearchInput({value, onChange}){
             </div>
             <input 
                 className={styles['input']}
-                placeholder='Название группы'
+                placeholder={placeholder}
                 onChange={onChange}
                 style={{
                     '--caret-color': theme.first_color,

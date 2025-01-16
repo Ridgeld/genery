@@ -183,7 +183,7 @@ function OtherUserGroup({ id }) {
       iconColor: theme.icon_color,
       titleColor: theme.text_first_color,
       showArrow: true,
-      arrowLink: '#/search',
+      arrowLink: () => navigateTo('/search'),
       arrowColor: theme.text_first_color,
       isHeaderBackground: false,
       headerBackground: theme.background_color,
@@ -424,6 +424,7 @@ useEffect(() => {
         <div
             className={styles['item-body']}
             style={{ border: `2px solid ${theme.element_first_color}` }}
+            onClick={() => navigateTo(`/subscribers/${id}?isGroup=true`)}
         >
             <div className={styles['item-info']}>
                 <div

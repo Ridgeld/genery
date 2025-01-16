@@ -8,6 +8,7 @@ import { db } from '../../../firebase.js';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useAuth } from "../../providers/Authprovired.jsx";
 import SlipNotification from '../../components/notifictions/SlipNotification/SlipNotification.jsx';
+import { useNavigate } from 'react-router-dom';
 
 
 function Rocket(){
@@ -27,6 +28,7 @@ function Rocket(){
         text: ''
     });
     const [variants, setVariants] = useState({});
+    const navigateTo = useNavigate()
 
     useEffect(() => {
         const updateVariants = () => {
@@ -196,7 +198,7 @@ function Rocket(){
             titleColor: theme.text_first_color,
             showArrow: true,
             arrowColor: theme.text_first_color,
-            arrowLink: '#/game-menu',
+            arrowLink: () => navigateTo('game-menu'),
             isHeaderBackground: true,
             headerBackground: theme.background_color,
             isHeader: true,

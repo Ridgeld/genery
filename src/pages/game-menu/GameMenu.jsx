@@ -20,7 +20,7 @@ function GameMenu(){
 
   const [balance, setBalance] =  useState();
   const [prevPromoData ,setPrevPromoData] = useState()
-
+    const navigateTo = useNavigate();
 
   const [slipData, setSlipData] = useState({
     isShow: false,
@@ -43,7 +43,7 @@ function GameMenu(){
         iconColor: theme.icon_color,
         titleColor: theme.text_first_color,
         showArrow: true,
-        arrowLink: '#/menu',
+        arrowLink: () => navigateTo(`/group-list`),
         arrowColor: theme.text_first_color,
         isHeaderBackground: true,
         headerBackground: theme.background_color,

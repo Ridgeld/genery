@@ -80,7 +80,7 @@ function Casino(){
             iconColor: theme.icon_color,
             titleColor: theme.text_first_color,
             showArrow: true,
-            arrowLink: '#/game-menu',
+            arrowLink: () => navigateTo('/game-menu'),
             arrowColor: theme.text_first_color,
             isHeaderBackground: true,
             headerBackground: theme.background_color,

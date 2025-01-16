@@ -22,7 +22,7 @@ function GroupList(){
             iconColor: theme.icon_color,
             titleColor: theme.text_first_color,
             showArrow: false,
-            arrowLink: '#/list-menu',
+            arrowLink: () => navigateTo(`/search`),
             arrowColor: theme.text_first_color,
             isHeaderBackground: true,
             headerBackground: theme.background_color,

@@ -12,6 +12,7 @@ import EmojiPanel from "./EmojiPanel.jsx";
 import MessageInput from "../../components/inputs/messageInput/MessageInput.jsx";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import ImageViewer from "../../components/modal-windows/image-viewer/ImageViewer.jsx";
+import { useNavigate } from "react-router-dom";
 
 
 function Messenger(){
@@ -35,6 +36,7 @@ function Messenger(){
         index: null
     })  
 
+    const navigateTo = useNavigate()
     
     const handleMessageChange = (event) => {
         setMessage(event.target.value);
@@ -69,7 +71,7 @@ function Messenger(){
             iconColor: theme.icon_color,
             titleColor: theme.text_first_color,
             showArrow: true,
-            arrowLink: '#/menu',
+            arrowLink: () => navigateTo('/menu'),
             arrowColor: theme.text_first_color,
             isHeaderBackground: true,
             headerBackground: theme.background_color,

@@ -36,7 +36,7 @@ function QuizGame({ mode }){
             iconColor: theme.icon_color,
             titleColor: theme.text_first_color,
             showArrow: true,
-            arrowLink: '#/quiz',
+            arrowLink: () => navigateTo('/quiz'),
             arrowColor: theme.text_first_color,
             isHeaderBackground: true,
             headerBackground: theme.background_color,

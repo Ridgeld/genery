@@ -291,14 +291,15 @@ function AuthUserGroup() {
         index: null,
     });
     const [posts, setPosts] = useState([]);
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(false);
+    const [showSubscribers, setShowSubscribers] = useState(false)
 
     useEffect(() => {
         setElementColors({
             iconColor: theme.text_first_color,
             titleColor: theme.text_first_color,
             showArrow: true,
-            arrowLink: '#/list-menu',
+            arrowLink: () => navigateTo('/search'),
             arrowColor: theme.text_first_color,
             isHeaderBackground: false,
             headerBackground: theme.background_color,
@@ -606,7 +607,7 @@ function AuthUserGroup() {
                 isShow={slipData.isShow}
                 text={slipData.text}/>
             {isEdit ? (
-                <EditGroup handleEdit={handleEditState} fetchGroupData={fetchGroupData} />
+                <EditGroup handleEdit={handleEditState} fetchGroupData={fetchGroupData} id={groupData.userId} />
             ) : (
                 <div className={styles['profile-container']}>
                     <div className={styles['cover-container']}>
@@ -691,6 +692,7 @@ function AuthUserGroup() {
                     <div
                         className={styles['item-body']}
                         style={{ border: `2px solid ${theme.element_first_color}` }}
+                        onClick={() => navigateTo(`/subscribers/${id}?isGroup=true`)}
                     >
                         <div className={styles['item-info']}>
                             <div
@@ -811,8 +813,7 @@ function AuthUserGroup() {
                         ))
                     }   
                     </div>
-                </div>
-            )}
+                </div> )}
         </div>
     );
 }

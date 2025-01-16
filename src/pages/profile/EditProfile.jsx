@@ -58,7 +58,7 @@ function EditProfile({fetchUserPreferences, handleEdit}){
             iconColor: theme.icon_color,
             titleColor: theme.text_first_color,
             showArrow: true,
-            arrowLink: '#/profile',
+            arrowLink: () => handleEdit(),
             arrowColor: theme.text_first_color,
             isHeaderBackground: false,
             headerBackground: theme.background_color,

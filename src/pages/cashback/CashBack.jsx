@@ -5,6 +5,7 @@ import Input from '../../components/inputs/Input.jsx';
 import MainButton from '../../components/buttons/MainButton/MainButton.jsx';
 import AlertNotification from '../../components/notifictions/AlertNotification/AlertNotification.jsx';
 import SlipNotification from '../../components/notifictions/SlipNotification/SlipNotification.jsx';
+import { useNavigate } from 'react-router-dom';
 
 function CashBack(){
     const { theme, elementColors, setElementColors } = useContext(ElementContext);
@@ -12,6 +13,7 @@ function CashBack(){
     const [sum, setSum] = useState('');
     const [koeff, setKoeff] = useState('');
     const [show, setShow] = useState(false);
+    const navigateTo = useNavigate();
 
     const calculateWin = () => {
         setShow(true);
@@ -41,7 +43,7 @@ function CashBack(){
             iconColor: theme.icon_color,
             titleColor: theme.text_first_color,
             showArrow: true,
-            arrowLink: '#/list-menu',
+            arrowLink: () => navigateTo('/list-menu'),
             arrowColor: theme.background_color,
             isHeaderBackground: true,
             headerBackground: theme.background_color,

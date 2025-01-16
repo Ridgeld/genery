@@ -13,11 +13,13 @@ import ImageViewer from '../../components/modal-windows/image-viewer/ImageViewer
 import LoadingPost from './LoadingPost.jsx';
 import AlertNotification from '../../components/notifictions/AlertNotification/AlertNotification.jsx';
 import SlipNotification from '../../components/notifictions/SlipNotification/SlipNotification.jsx';
+import { useNavigate } from 'react-router-dom';
 
 function PostContainer(){
     const [posts, setPosts] = useState([]);
     // const [textPost, setTextPost] = useState('');
     // const [image, setImage] = useState(null);
+    const navigateTo = useNavigate()
     const inputBodyRef = useRef(null);
     const { theme, elementColors, setElementColors } = useContext(ElementContext);
     const { authUser } = useAuth();
@@ -58,9 +60,9 @@ function PostContainer(){
         setElementColors({
             iconColor: theme.icon_color,
             titleColor: theme.text_first_color,
-            showArrow: true,
+            showArrow: false,
             arrowColor: theme.text_first_color,
-            arrowLink: '#/menu',
+            arrowLink: () => navigateTo('/menu'),
             isHeaderBackground: true,
             headerBackground: theme.background_color,
             isHeader: true,

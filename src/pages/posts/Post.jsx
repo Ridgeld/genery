@@ -7,9 +7,11 @@ import { ElementContext } from '../../providers/ElementProvider.jsx';
 import { motion } from 'framer-motion';
 import parser from 'html-react-parser';
 import DropMenu from '../../components/modal-windows/drop-menu/DropMenu.jsx';
+import { useNavigate } from 'react-router-dom';
 
 
 function Post({postId, userPhoto, groupOwnerId, userId, userName, postData, postText, postPhotos, likesArray, photoClick, postAction}){
+    const navigateTo = useNavigate();
     const [like, setLike] = useState(false);
     const {theme, setThemeById, elementColors, setElementColors } = useContext(ElementContext);
     const { authUser } = useAuth();
@@ -102,6 +104,16 @@ function Post({postId, userPhoto, groupOwnerId, userId, userName, postData, post
         const parsed = parser(html);
         return processNode(parsed);
     };
+    const showUserProfile = () =>{
+
+        if(groupOwnerId){
+            // alert('Группу')
+            navigateTo(`/group/${userId}`)
+        } else{
+            // alert('Личный пост')
+            navigateTo(`/profile/${userId}`)
+        }
+    }
     return(
         <div className={styles['post-body']}
         style={{
@@ -113,7 +125,8 @@ function Post({postId, userPhoto, groupOwnerId, userId, userName, postData, post
             onClick={DropMenuClick}/>
 
         <div className={styles['post-info']}>
-            <div className={styles['post-author']}>
+            <div className={styles['post-author']} 
+                onClick={() => showUserProfile()}>
                 <div className={styles['author-photo']}>
                     <img src={userPhoto} className={styles['user-avatar']}/>
                     {/* <svg width="9" height="15" viewBox="0 0 9 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -178,6 +191,10 @@ function Post({postId, userPhoto, groupOwnerId, userId, userName, postData, post
                     color: theme.text_first_color
                 }}>{postData}</div>
             <div className={styles['post-buttons']}>
+                <div className={styles['like-count']}
+                    style={{
+                        color: theme.text_first_color
+                    }}>{likesArray.length}</div>
                 <div className={styles['action-like']}
                     style={{
                         background: theme.third_color
