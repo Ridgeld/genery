@@ -4,7 +4,7 @@ import '../../themes/default.scss'
 import { ElementContext } from '../../providers/ElementProvider.jsx';
 
 
-function RemoveBody({color, backgroundColor, textColor, lessonName, lessonTimeStart, lessonTimeEnd, lessonRoom, onRemove }){
+function RemoveBody({color, backgroundColor, textColor, arrowColor, lessonName, lessonTimeStart, lessonTimeEnd, lessonRoom, onRemove }){
     const { theme, elementColors, setElementColors } = useContext(ElementContext);
     const [circleColor, setCircleColor] = useState('var(--first-color)');
     const [iconColor, setIconColor] = useState('var(--text-first-color)');
@@ -35,7 +35,7 @@ function RemoveBody({color, backgroundColor, textColor, lessonName, lessonTimeSt
                 }}
                 onClick={onRemove}>
                 <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M11.8031 1.1967L6.49984 6.5M1.19654 11.8033L6.49984 6.5M6.49984 6.5L11.8031 11.8033M6.49984 6.5L1.19654 1.1967" stroke={theme.text_first_color} stroke-width="2" stroke-linecap="round"/>
+                    <path d="M11.8031 1.1967L6.49984 6.5M1.19654 11.8033L6.49984 6.5M6.49984 6.5L11.8031 11.8033M6.49984 6.5L1.19654 1.1967" stroke={arrowColor} stroke-width="2" stroke-linecap="round"/>
                 </svg>
             </circle>
             <div className={styles['lesson-info']}>
