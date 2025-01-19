@@ -280,6 +280,15 @@ function EditTimetable({id, handleEdit}){
             const brightness = (r * 299 + g * 587 + b * 114) / 1000;
             return brightness > 180;
         }
+        const getDateForDay = (dayIndex) => {
+            const currentDate = new Date();
+            const currentDay = currentDate.getDay(); // 0 (воскресенье) - 6 (суббота)
+            const normalizedDay = currentDay === 0 ? 6 : currentDay - 1; // Преобразуем, чтобы неделя начиналась с понедельника
+            const diff = dayIndex - normalizedDay;
+            const targetDate = new Date(currentDate);
+            targetDate.setDate(currentDate.getDate() + diff);
+            return targetDate.toLocaleDateString('ru-RU', { day: 'numeric' }); // Отображаем только число
+        };
         return (
             <>
             <AlertNotification
@@ -303,6 +312,7 @@ function EditTimetable({id, handleEdit}){
                             }}
                         >
                             {dayData.day}
+                            <div className={styles['day-date']}>{getDateForDay(index)}</div>
                         </div>
                     ))}
                 </div>
