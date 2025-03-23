@@ -219,6 +219,16 @@ function GameMenu(){
             arrowColor = {theme.text_first_color}
             arrowBackgroundColor = {theme.block_arrow_third_color}
             linkTo = "/rating"/>
+        <Block 
+            name = "Угадай линию" 
+            description = "Ну могу 2 балла поставить" 
+            backgroundColor = {theme.element_first_color}
+            isBorder={true}
+            borderColor={theme.block_border_color} 
+            textColor = {theme.text_first_color}
+            arrowColor = {theme.text_first_color}
+            arrowBackgroundColor = {theme.block_arrow_third_color}
+            linkTo = "/guessline"/>
     </div>
   )
 }

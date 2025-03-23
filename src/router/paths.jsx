@@ -29,6 +29,7 @@ import { auth } from '../../firebase.js';
 import FlippyBird from '../pages/flippyBird/FlippyBird.jsx';
 import Rating from '../pages/rating/Rating.jsx';
 import Subscribers from '../pages/subscribers/Subscribers.jsx';
+import GuessLine from '../pages/guess-line/GuessLine.jsx';
 
 export const routes = [
     {
@@ -204,5 +205,11 @@ export const routes = [
         exact: true,
         component: <Rating/>,
         auth: false
-    }
+    },
+    {
+        path: '/guessline',
+        exact: true,
+        component: <GuessLine/>,
+        auth: false
+    },
 ]
