@@ -148,6 +148,23 @@ function GameMenu(){
   }
   return (
     <div className={styles.container}>
+        <style>{`
+                ::-webkit-scrollbar {
+                  width: 5px; /* Ширина ползунка */
+                }
+
+                /* Стилизация ползунка скроллбара */
+                ::-webkit-scrollbar-thumb {
+                  background: ${theme.element_first_color}; /* Цвет ползунка */
+                  border-radius: 5px; /* Закругление углов ползунка */
+                  cursor: pointer;
+                }
+
+                /* Стилизация фона скроллбара */
+                ::-webkit-scrollbar-track {
+                  background-color: rgba($color: #000000, $alpha: 0.3); /* Цвет фона */
+                }
+        `}</style>
         <SlipNotification
             isShow={slipData.isShow}
             text={slipData.text}/>
