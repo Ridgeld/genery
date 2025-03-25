@@ -6,7 +6,7 @@ import emojis from './emojiPanel/Emojies';
 import parser from 'html-react-parser'
 import SlipNotification from '../../notifictions/SlipNotification/SlipNotification';
 
-function MessageInput({isPanelTop, placeholder, onSend}){
+function MessageInput({isPanelTop, placeholder, Addtext,onClearText, onSend, addFiles}){
     const { theme, setElementColors } = useContext(ElementContext);
     const inputBodyRef = useRef(null);
     const textareaRef = useRef(null);
@@ -21,7 +21,12 @@ function MessageInput({isPanelTop, placeholder, onSend}){
         isShow: false,
         text: ''
     });
-
+    useEffect(() => {
+      if (Addtext) {
+          setText(Addtext + '\u200B');
+      }
+  }, [Addtext]);
+  
     useEffect(() => {
         if (slipProp.isShow) {
           const timer = setTimeout(() => {
@@ -34,7 +39,8 @@ function MessageInput({isPanelTop, placeholder, onSend}){
         }
       }, [slipProp]);
 
-    const replacements = [
+
+    const replacements = [  
         { pattern: /\\uE007/g, replacement: '<span class="emoji">😄</span>' },
         { pattern: /\\uE002/g, replacement: '<span class="emoji">😀</span>' },
         // Добавьте другие замены по необходимости
@@ -100,6 +106,7 @@ function MessageInput({isPanelTop, placeholder, onSend}){
     // }, [text])
     useEffect(() => {
         if (text === '') {
+          onClearText && onClearText()
           inputBodyRef.current.style.height = 'auto';
           contentEditableRef.current.style.height = '10px';
           setMarginTop(50);
@@ -274,7 +281,7 @@ function MessageInput({isPanelTop, placeholder, onSend}){
                     marginTop = {`${marginTop}px`}
                     isImages={images.length > 0 && true}
                     onEmojiSelect={addEmoji}/>
-                    <button className={styles['button-circle']}
+                    {addFiles && <button className={styles['button-circle']}
                         style={{
                             background: theme.element_first_color
                         }}
@@ -290,7 +297,7 @@ function MessageInput({isPanelTop, placeholder, onSend}){
                             style={{ display: 'none' }}
                             onChange={handleAddImage}
                         />
-                    </button>
+                    </button>}
                     <div className={styles['input-message-body']}
                         style={{
                             background: theme.element_first_color

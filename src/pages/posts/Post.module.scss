@@ -1,4 +1,5 @@
 .container{
+    position: relative;
     margin-top: 60px;
     padding-bottom: 50px;
     display: flex;
@@ -8,6 +9,14 @@
     width: 100%;
     gap: 5px;
 }
+.fixed-post-input{
+    display: flex;
+    position: sticky;
+    top: 40px;
+    width: 102%;
+    padding-block: 10px;
+    z-index: 2;
+}
 .post-body{
     position: relative;
     display: flex;
@@ -15,6 +24,17 @@
     align-items: center;
     justify-content: flex-start;
     width: 100%;
+    // border-radius: 20px;
+}
+.fixed-post{
+    position: sticky;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    top:40px;
+    z-index: 2;
     // border-radius: 20px;
 }
 .post-body-empty{
@@ -178,6 +198,19 @@
         }
     }
 }
+.action-comment{
+    display: flex;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    svg{
+        max-width: 22px;
+        max-height: 22px;
+    }
+}
 .action-send{
     display: flex;
     width: 32px;
@@ -191,6 +224,70 @@
         max-height: 22px;
     }
 }
+
+// КОММЕНТАРИИ
+.comments-container{
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    gap: 4px;
+    padding-bottom: 70px;
+    margin-top: 20px;
+}
+.comments-container-preview{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+.fixed-input{
+    display: flex;
+    padding-block: 20px;
+    position: sticky;
+    bottom:40px;
+    width: 100%;
+}
+.comment{
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 20px);
+    padding: 10px;
+    // background: red;
+    gap: 14px;
+    border-radius: 0 0 20px 20px;    
+}
+.author-info{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+}
+.comment-text{
+    font-size: 16px;
+    font-weight: 500;
+}
+.comment-actions{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    justify-content: flex-end;
+}
+.answer-button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+
+
+
 //  \|/ УДАЛИТЬ 
 .input-container{
     position: fixed;
@@ -204,6 +301,7 @@
     gap: 10px;
     z-index: 5000;
 }
+
 .message-action{
     display: flex;
     align-items: flex-end;

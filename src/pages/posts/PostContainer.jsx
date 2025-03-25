@@ -73,43 +73,118 @@ function PostContainer(){
         document.body.style.background = theme.background_color
         },[ElementContext]);
 
-        useEffect(() => {
-            const unlisten = onSnapshot(
-                query(collection(db, 'posts'), orderBy('timestamp', 'desc')),
-                snapshot => {
-                    const postsArray = [];
+    //     useEffect(() => {
+    //         const unlisten = onSnapshot(
+    //             query(collection(db, 'posts'), orderBy('timestamp', 'desc')),
+    //             snapshot => {
+    //                 const postsArray = [];
     
-                    snapshot.forEach((doc) => {
-                        const postData = doc.data();
-                        const postDate = new Date(postData.timestamp);
-                        const postUsersLike = postData.likesArray;
-                        // Преобразование даты в формат "дд месяц"
-                        const dateString = postDate.toLocaleDateString('ru-RU', { day: '2-digit', month: 'long' });
+    //                 snapshot.forEach((doc) => {
+    //                     const postData = doc.data();
+    //                     const postDate = new Date(postData.timestamp);
+    //                     const postUsersLike = postData.likesArray;
+    //                     // Преобразование даты в формат "дд месяц"
+    //                     const dateString = postDate.toLocaleDateString('ru-RU', { day: '2-digit', month: 'long' });
     
-                        // Добавление нового сообщения в массив
-                        postsArray.push({
-                            id: doc.id,  // добавляем уникальный идентификатор документа
-                            userId: postData.userId,
-                            groupOwnerId: postData.groupOwnerId,
-                            userName: postData.userName,
-                            userPhoto: postData.userPhoto,
-                            postText: postData.text,
-                            postPhoto: postData.photos,
-                            postData: dateString,
-                            likesArray: postUsersLike,
-                        });
-                    });
+    //                     // Добавление нового сообщения в массив
+    //                     postsArray.push({
+    //                         id: doc.id,  // добавляем уникальный идентификатор документа
+    //                         userId: postData.userId,
+    //                         groupOwnerId: postData.groupOwnerId,
+    //                         userName: postData.userName,
+    //                         userPhoto: postData.userPhoto,
+    //                         postText: postData.text,
+    //                         postPhoto: postData.photos,
+    //                         postData: dateString,
+    //                         likesArray: postUsersLike,
+    //                         commentsArray: postData.commentsArray,
+    //                     });
+    //                 });
     
-                    setPosts(postsArray);
-                    setIsLoading(false);
-                }
-            );
+    //                 setPosts(postsArray);
+    //                 setIsLoading(false);
+    //             }
+    //         );
     
-            return () => {
-                unlisten();
-            };
-        }, []);
+    //         return () => {
+    //             unlisten();
+    //         };
+    //     }, []);
         
+    // useEffect(() => {
+    //     const commentsRef = collection(db, "posts", id, "comments");
+    //     const q = query(commentsRef, orderBy("timestamp", "asc"));
+    
+    //     const unsubscribe = onSnapshot(q, (snapshot) => {
+    //         const loadedComments = snapshot.docs.map(doc => ({
+    //             commentId: doc.id,
+    //             ...doc.data()
+    //         }));
+    //         setComments(loadedComments);
+    //     });
+    
+    //     return () => unsubscribe();
+    // }, []);
+    useEffect(() => {
+        const unlisten = onSnapshot(
+            query(collection(db, 'posts'), orderBy('timestamp', 'desc')),
+            async (snapshot) => {
+                const postsArray = [];
+    
+                const postPromises = snapshot.docs.map(async (doc) => {
+                    const postData = doc.data();
+                    const postDate = new Date(postData.timestamp);
+                    const dateString = postDate.toLocaleDateString('ru-RU', { day: '2-digit', month: 'long' });
+    
+                    // Загружаем комментарии из Firestore
+                    const commentsRef = collection(db, "posts", doc.id, "comments");
+                    const commentsSnapshot = await getDocs(commentsRef);
+                    const comments = commentsSnapshot.docs.map(commentDoc => ({
+                        commentId: commentDoc.id,
+                        ...commentDoc.data(),
+                    }));
+
+    
+                    // Подсчитываем количество ответов для каждого комментария
+                    const commentsWithReplies = comments.map(comment => ({
+                        ...comment,
+                        replyCount: comments.filter(c => c.replyTo === comment.commentId).length, // Считаем ответы
+                    }));
+    
+                    // Находим комментарий с наибольшим числом ответов
+                    let topComment = null;
+                    if (commentsWithReplies.length) {
+                        topComment = commentsWithReplies.reduce((max, comment) =>
+                            comment.replyCount > max.replyCount ? comment : max,
+                            commentsWithReplies[0]
+                        );
+                    }
+    
+                    return {
+                        id: doc.id,
+                        userId: postData.userId,
+                        groupOwnerId: postData.groupOwnerId,
+                        userName: postData.userName,
+                        userPhoto: postData.userPhoto,
+                        postText: postData.text,
+                        postPhoto: postData.photos,
+                        postData: dateString,
+                        likesArray: postData.likesArray,
+                        commentsArray: commentsWithReplies, // Все комментарии с учетом replyCount
+                        topComment, // Комментарий с наибольшим числом ответов
+                    };
+                });
+    
+                const updatedPosts = await Promise.all(postPromises);
+                setPosts(updatedPosts);
+                setIsLoading(false);
+            }
+        );
+    
+        return () => unlisten();
+    }, []);
+    
+
     const handlePostChange = (event) =>{
         setTextPost(event.target.value);
         event.target.style.height = '25px'; // Сброс высоты
@@ -171,6 +246,7 @@ function PostContainer(){
                 userName: authUser.name,
                 userPhoto: authUser.avatar,
                 likesArray: [],
+                commentsArray: [],
             });
             console.log("Message saved successfully.");
         } catch (error) {
@@ -254,10 +330,15 @@ function PostContainer(){
                 images={viewData.images}
                 index={viewData.index}
                 onClose={()=> setViewData({isShow: false})}/>
-            <MessageInput 
-                placeholder={'Что у вас нового?'}
-                isPanelTop={true}
-                onSend={handleSend}/>
+            <div className={styles['fixed-post-input']}
+                style={{
+                    background: theme.background_color
+                }}>
+                <MessageInput 
+                    placeholder={'Что у вас нового?'}
+                    isPanelTop={true}
+                    onSend={handleSend}/>
+            </div>
             <AlertNotification
                 title={alertProp.title}
                 text={alertProp.text}
@@ -356,6 +437,8 @@ function PostContainer(){
                         likesArray={post.likesArray}
                         photoClick={openViewer}
                         postAction={handleActionPost}
+                        commentCount={post.commentsArray.length}
+                        commentsArray={post.commentsArray ? post.topComment : []}
                     />
                 ))
             }

@@ -8,14 +8,15 @@ import { motion } from 'framer-motion';
 import parser from 'html-react-parser';
 import DropMenu from '../../components/modal-windows/drop-menu/DropMenu.jsx';
 import { useNavigate } from 'react-router-dom';
+import Comment from '../../components/comment/Comment.jsx';
 
 
-function Post({postId, userPhoto, groupOwnerId, userId, userName, postData, postText, postPhotos, likesArray, photoClick, postAction}){
+function Post({postId, userPhoto, groupOwnerId, userId, userName, postData, postText, postPhotos, likesArray, commentCount, photoClick, postAction, commentsArray}){
     const navigateTo = useNavigate();
     const [like, setLike] = useState(false);
     const {theme, setThemeById, elementColors, setElementColors } = useContext(ElementContext);
     const { authUser } = useAuth();
-    console.log(postPhotos);
+    // console.log(postPhotos);
     const [DropIsShow, setDropIsShow] = useState(false)
 
     useEffect(() => {
@@ -104,16 +105,22 @@ function Post({postId, userPhoto, groupOwnerId, userId, userName, postData, post
         const parsed = parser(html);
         return processNode(parsed);
     };
-    const showUserProfile = () =>{
+    const showUserProfile = (id) =>{
 
         if(groupOwnerId){
             // alert('Группу')
-            navigateTo(`/group/${userId}`)
+            navigateTo(`/group/${id}`)
         } else{
             // alert('Личный пост')
-            navigateTo(`/profile/${userId}`)
+            navigateTo(`/profile/${id}`)
         }
     }
+
+
+    const handleCommentsClick = () => {
+        navigateTo(`/post/${postId}`);
+    };
+
     return(
         <div className={styles['post-body']}
         style={{
@@ -126,7 +133,7 @@ function Post({postId, userPhoto, groupOwnerId, userId, userName, postData, post
 
         <div className={styles['post-info']}>
             <div className={styles['post-author']} 
-                onClick={() => showUserProfile()}>
+                onClick={() => showUserProfile(userId)}>
                 <div className={styles['author-photo']}>
                     <img src={userPhoto} className={styles['user-avatar']}/>
                     {/* <svg width="9" height="15" viewBox="0 0 9 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -226,6 +233,19 @@ function Post({postId, userPhoto, groupOwnerId, userId, userName, postData, post
                         )}
                     </motion.svg>
                 </div>
+                <div className={styles['like-count']}
+                    style={{
+                        color: theme.text_first_color
+                    }}>{commentCount}</div>
+                <div className={styles['action-comment']}
+                    style={{
+                        background: theme.second_color
+                    }}
+                    onClick={handleCommentsClick}>
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 19C11.78 19 13.5201 18.4722 15.0001 17.4832C16.4802 16.4943 17.6337 15.0887 18.3149 13.4442C18.9961 11.7996 19.1743 9.99002 18.8271 8.24419C18.4798 6.49836 17.6226 4.89471 16.364 3.63604C15.1053 2.37737 13.5016 1.5202 11.7558 1.17294C10.01 0.82567 8.20038 1.0039 6.55585 1.68509C4.91131 2.36628 3.50571 3.51983 2.51677 4.99987C1.52784 6.47991 1 8.21997 1 10C1 11.488 1.36 12.891 2 14.127L1 19L5.873 18C7.109 18.64 8.513 19 10 19Z" stroke={theme.background_color} stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
                 <div className={styles['action-send']}
                     style={{
                         background: theme.first_color
@@ -235,6 +255,45 @@ function Post({postId, userPhoto, groupOwnerId, userId, userName, postData, post
                     </svg>
                 </div>
             </div>
+        </div>
+        <div className={styles['comments-container-preview']}>
+                {/* {commentsArray && commentsArray.length != 0 && 
+                <Comment 
+                    userId={commentsArray.userId}
+                    isPreview={true}
+                    userPhoto={commentsArray.userPhoto}
+                    userName={commentsArray.userName}
+                    text={commentsArray.text}
+                    showUserProfile={showUserProfile} /> } */}
+            {commentsArray && 
+                 <div className={styles['comment']}
+                    style={{
+                        background: theme.element_first_color
+                    }}>
+                    <div className={styles['author-info']}>
+                        <div className={styles['author-photo']}>
+                            <img className={styles['avatar']}
+                                src={commentsArray.userPhoto}/>
+                        </div>
+                        <div className={styles['author-name']}
+                            style={{
+                                color: theme.text_first_color
+                            }}>{commentsArray.userName}</div>
+                    </div>
+                    <div className={styles['comment-text']}
+                        style={{
+                            color: theme.text_first_color
+                        }}>{commentsArray.text}</div>
+                    
+                    <div className={styles['comment-actions']}>
+                        <div className={styles['answer-button']}
+                            style={{
+                                color: theme.element_second_color
+                            }}
+                            onClick={() => navigateTo(`/post/${postId}`)}>Ответить</div>
+                    </div>
+                </div>
+            }
         </div>
     </div>
     )

@@ -30,6 +30,7 @@ import FlippyBird from '../pages/flippyBird/FlippyBird.jsx';
 import Rating from '../pages/rating/Rating.jsx';
 import Subscribers from '../pages/subscribers/Subscribers.jsx';
 import GuessLine from '../pages/guess-line/GuessLine.jsx';
+import PostPage from '../pages/posts/PostPage.jsx';
 
 export const routes = [
     {
@@ -84,6 +85,12 @@ export const routes = [
         path:'/posts',
         exact: true,
         component: <PostContainer/>,
+        auth: true,
+    },
+    {
+        path:'/post/:id?',
+        exact: true,
+        component: <PostPage/>,
         auth: true,
     },
     {
