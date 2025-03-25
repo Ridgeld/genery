@@ -337,6 +337,7 @@ function PostContainer(){
                 <MessageInput 
                     placeholder={'Что у вас нового?'}
                     isPanelTop={true}
+                    addFiles={true}
                     onSend={handleSend}/>
             </div>
             <AlertNotification
