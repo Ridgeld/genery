@@ -439,6 +439,7 @@ function PostContainer(){
                         postAction={handleActionPost}
                         commentCount={post.commentsArray.length}
                         commentsArray={post.commentsArray ? post.topComment : []}
+                        onSend={''}
                     />
                 ))
             }

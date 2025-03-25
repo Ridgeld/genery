@@ -51,6 +51,22 @@ const PostPage = () => {
     }, [slipProp]);
 
     useEffect(() => {
+        if (post) {
+            document.title = `${post.title} - "Этот крутой пост создан в Genery!"`;
+            // document.querySelector('meta[name="description"]').setAttribute('content', post.description || 'Описание поста');
+            document.querySelector('meta[name="author"]').setAttribute('content', post.userName || 'Автор неизвестен');
+            document.querySelector('meta[property="og:title"]').setAttribute('content', post.text);
+            // document.querySelector('meta[property="og:description"]').setAttribute('content', post.description || 'Описание поста');
+            document.querySelector('meta[property="og:image"]').setAttribute('content', post.postPhotos[0] || 'default-image-url');
+            document.querySelector('meta[property="og:url"]').setAttribute('content', `https://ridgeld.github.io/genery/#/posts/${id}`);
+            document.querySelector('meta[name="twitter:title"]').setAttribute('content', post.title);
+            // document.querySelector('meta[name="twitter:description"]').setAttribute('content', post.description || 'Описание поста');
+            document.querySelector('meta[name="twitter:image"]').setAttribute('content', post.postPhotos[0] || 'default-image-url');
+            // document.querySelector('meta[name="twitter:card"]').setAttribute('content', 'summary_large_image');
+        }
+    }, [id]);
+
+    useEffect(() => {
         setElementColors({
             iconColor: theme.icon_color,
             titleColor: theme.text_first_color,
@@ -324,6 +340,9 @@ const PostPage = () => {
     const handleClearAddText = () => {
         setMessageInput('')
     };
+
+
+
     return (
         <div className={styles['container']}>
             <style>{`
