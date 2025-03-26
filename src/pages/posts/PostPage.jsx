@@ -50,21 +50,49 @@ const PostPage = () => {
         }
     }, [slipProp]);
 
+    // useEffect(() => {
+    //     if (post) {
+    //         document.title = `${post.title} - "Этот крутой пост создан в Genery!"`;
+    //         // document.querySelector('meta[name="description"]').setAttribute('content', post.description || 'Описание поста');
+    //         document.querySelector('meta[name="author"]').setAttribute('content', post.userName || 'Автор неизвестен');
+    //         document.querySelector('meta[property="og:title"]').setAttribute('content', post.text);
+    //         // document.querySelector('meta[property="og:description"]').setAttribute('content', post.description || 'Описание поста');
+    //         document.querySelector('meta[property="og:image"]').setAttribute('content', post.postPhotos[0] || 'default-image-url');
+    //         document.querySelector('meta[property="og:url"]').setAttribute('content', `https://ridgeld.github.io/genery/#/posts/${id}`);
+    //         document.querySelector('meta[name="twitter:title"]').setAttribute('content', post.title);
+    //         // document.querySelector('meta[name="twitter:description"]').setAttribute('content', post.description || 'Описание поста');
+    //         document.querySelector('meta[name="twitter:image"]').setAttribute('content', post.postPhotos[0] || 'default-image-url');
+    //         // document.querySelector('meta[name="twitter:card"]').setAttribute('content', 'summary_large_image');
+    //     }
+    // }, [id]);
     useEffect(() => {
-        if (post) {
-            document.title = `${post.title} - "Этот крутой пост создан в Genery!"`;
-            // document.querySelector('meta[name="description"]').setAttribute('content', post.description || 'Описание поста');
-            document.querySelector('meta[name="author"]').setAttribute('content', post.userName || 'Автор неизвестен');
-            document.querySelector('meta[property="og:title"]').setAttribute('content', post.text);
-            // document.querySelector('meta[property="og:description"]').setAttribute('content', post.description || 'Описание поста');
-            document.querySelector('meta[property="og:image"]').setAttribute('content', post.postPhotos[0] || 'default-image-url');
-            document.querySelector('meta[property="og:url"]').setAttribute('content', `https://ridgeld.github.io/genery/#/posts/${id}`);
-            document.querySelector('meta[name="twitter:title"]').setAttribute('content', post.title);
-            // document.querySelector('meta[name="twitter:description"]').setAttribute('content', post.description || 'Описание поста');
-            document.querySelector('meta[name="twitter:image"]').setAttribute('content', post.postPhotos[0] || 'default-image-url');
-            // document.querySelector('meta[name="twitter:card"]').setAttribute('content', 'summary_large_image');
-        }
-    }, [id]);
+        if (!post) return;
+
+        document.title = `${post.title} - "Этот крутой пост создан в Genery!"`;
+
+        const setMeta = (name, content) => {
+            let element = document.querySelector(`meta[${name.includes("og:") || name.includes("twitter:") ? "property" : "name"}="${name}"]`);
+            if (!element) {
+                element = document.createElement("meta");
+                element.setAttribute(name.includes("og:") || name.includes("twitter:") ? "property" : "name", name);
+                document.head.appendChild(element);
+            }
+            element.setAttribute("content", content);
+        };
+
+        setMeta("description", post.description || "Описание поста");
+        setMeta("author", post.userName || "Автор неизвестен");
+        setMeta("og:title", post.text);
+        setMeta("og:description", post.description || "Описание поста");
+        setMeta("og:image", post.postPhotos[0] || "default-image-url");
+        setMeta("og:url", `https://ridgeld.github.io/genery/#/posts/${id}`);
+        setMeta("twitter:title", post.text);
+        setMeta("twitter:image", post.postPhotos[0] || "default-image-url");
+
+        return () => {
+            document.title = "Genery - Социальная сеть"; // Сброс заголовка при выходе
+        };
+    }, [post, id]);
 
     useEffect(() => {
         setElementColors({
