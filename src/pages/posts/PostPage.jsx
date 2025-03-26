@@ -68,7 +68,7 @@ const PostPage = () => {
     useEffect(() => {
         if (!post) return;
 
-        document.title = `${post.title} - "Этот крутой пост создан в Genery!"`;
+        // document.title = `${post.title} - "Этот крутой пост создан в Genery!"`;
 
         const setMeta = (name, content) => {
             let element = document.querySelector(`meta[${name.includes("og:") || name.includes("twitter:") ? "property" : "name"}="${name}"]`);
@@ -85,13 +85,13 @@ const PostPage = () => {
         setMeta("og:title", post.text);
         setMeta("og:description", post.description || "Описание поста");
         setMeta("og:image", post.postPhotos[0] || "default-image-url");
-        setMeta("og:url", `https://ridgeld.github.io/genery/#/posts/${id}`);
+        setMeta("og:url", `https://ridgeld.github.io/genery/#/post/${id}`);
         setMeta("twitter:title", post.text);
         setMeta("twitter:image", post.postPhotos[0] || "default-image-url");
 
-        return () => {
-            document.title = "Genery - Социальная сеть"; // Сброс заголовка при выходе
-        };
+        // return () => {
+        //     document.title = pa; // Сброс заголовка при выходе
+        // };
     }, [post, id]);
 
     useEffect(() => {
