@@ -127,7 +127,7 @@ function MessageInput({isPanelTop, placeholder, Addtext,onClearText, onSend, add
     const sendText = () =>{
         if (text === '' && images.length === 0) return
         onSend(text, images);
-        setText('');
+        setText('')
         setImages([])
         setIsShow(false);
         contentEditableRef.current.style.lineHeight = '30px';

@@ -319,7 +319,7 @@ const PostPage = () => {
     };
     
 
-    const [messageInput, setMessageInput] = useState('');
+    const [messageInput, setMessageInput] = useState(null);
 
     const showUserProfile = (id) =>{
         navigateTo(`/profile/${id}`)
@@ -427,7 +427,7 @@ const PostPage = () => {
                     }}>
                     <MessageInput 
                         placeholder={'Оставьте комментарий'}
-                        Addtext={`<div style="color: ${theme.first_color};">${messageInput}</div>`}
+                        Addtext={messageInput && `<div style="color: ${theme.first_color};">${messageInput}</div>`}
                         onClearText={handleClearAddText}
                         isPanelTop={false}
                         onSend={handleSend}

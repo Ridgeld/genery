@@ -15,6 +15,9 @@ import AlertNotification from '../../components/notifictions/AlertNotification/A
 import SlipNotification from '../../components/notifictions/SlipNotification/SlipNotification.jsx';
 import { useNavigate } from 'react-router-dom';
 
+
+import parser from 'html-react-parser';
+
 function PostContainer(){
     const [posts, setPosts] = useState([]);
     // const [textPost, setTextPost] = useState('');
@@ -42,6 +45,40 @@ function PostContainer(){
         secondButtonName: 'играть',
 
     });
+    const wrapHashtags = (text) => {
+        if (typeof text === 'string') {
+            // Заменяем хештеги и обрабатываем невидимые символы
+            return text
+                .replace(/(#[\wа-яА-Я_]+)/g, (match) => `<div class="${styles.hashtags}">${match}</div>`)
+                .split(/(<div class=".*?">.*?<\/div>)/g)
+                .map((part, index) => {
+                    // Возвращаем элемент если это див с хештегом
+                    if (part.startsWith('<div')) {
+                        return parser(part);
+                    }
+                    return part;
+                });
+        }
+        return text;
+    };
+
+    const processNode = (node) => {
+        if (typeof node === 'string') {
+            return wrapHashtags(node);
+        }
+    
+        if (React.isValidElement(node)) {
+            const newChildren = React.Children.map(node.props.children, processNode);
+            return React.cloneElement(node, { children: newChildren });
+        }
+    
+        return node;
+    };
+
+    const processContent = (html) => {
+        const parsed = parser(html);
+        return processNode(parsed);
+    };
 
     useEffect(() => {
         if (slipProp.isShow) {

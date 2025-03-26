@@ -300,7 +300,7 @@ function Post({postId, userPhoto, groupOwnerId, userId, userName, postData, post
                     <div className={styles['comment-text']}
                         style={{
                             color: theme.text_first_color
-                        }}>{commentsArray.text}</div>
+                        }}>{processContent(commentsArray.text)}</div>
                     
                     <div className={styles['comment-actions']}>
                         <div className={styles['answer-button']}
