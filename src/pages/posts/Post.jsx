@@ -128,7 +128,7 @@ function Post({postId, userPhoto, groupOwnerId, userId, userName, postData, post
           // Используем Web Share API для открытия диалогового окна
           navigator.share({
             title: postText, // Заголовок поста
-            url: window.location.href, // URL текущей страницы
+            url: `https://ridgeld.github.io/genery/#/post/${postId}`, // URL текущей страницы
           })
           .then(() => console.log('Успешно поделились!'))
           .catch((err) => console.error('Ошибка при попытке поделиться: ', err));
