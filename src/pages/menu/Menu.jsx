@@ -76,55 +76,57 @@ function About(){
     },[ElementContext]);
 
   return (
-    <div className={styles.container}>
-      {/* <button onClick={() => signOut(ga)}>Выйти</button> */}
+    <div className={styles['wrapper']}>
       <BannerBlock/>
-      <InfoBlock
-          name={'Ежедневная цитата'}
-          text={quote}
-          circleColor={theme.block_arrow_first_color}
-      />
-      <Block 
-          name = "Обновления" 
-          description = "Будь в курсе событий" 
-          backgroundColor = {theme.block_first_color}
-          isBorder={true}
-          borderColor={theme.block_border_color} 
-          textColor = {theme.text_first_color}
-          arrowColor = {theme.text_first_color}
-          arrowBackgroundColor = {theme.block_arrow_first_color}
-          linkTo = "/updates"/>
-      <Block 
-          name = "Меню игр" 
-          description = "Сделаешь ставку?" 
-          backgroundColor = {theme.block_second_color} 
-          isBorder={false}
-          borderColor={theme.block_border_color} 
-          textColor = {theme.text_second_color} 
-          arrowColor = {theme.text_second_color}  
-          arrowBackgroundColor = {theme.block_arrow_second_color} 
-          linkTo = "/game-menu"/>
-      <Block 
-          name = "Расписание" 
-          description = "Какой сейчас урок?" 
-          backgroundColor = {theme.block_third_color} 
-          isBorder={false}
-          borderColor={theme.block_border_color} 
-          textColor = {theme.text_first_color} 
-          arrowColor = {theme.text_first_color} 
-          arrowBackgroundColor = {theme.block_arrow_third_color} 
-          linkTo = {`/timetable/${authUser.mainGroup}`}/>
-      <Block 
-          name = "Магазин" 
-          description = "Прояви себя" 
-          backgroundColor = {theme.block_first_color} 
-          isBorder={true}
-          borderColor={theme.block_border_color} 
-          textColor = {theme.text_first_color}
-          isCircleArrow = {false}
-          arrowColor = {theme.text_first_color}
-          arrowBackgroundColor = {theme.block_arrow_first_color}
-          linkTo = "/shop"/>
+      <div className={styles.container}>
+        {/* <button onClick={() => signOut(ga)}>Выйти</button> */}
+        <InfoBlock
+            name={'Ежедневная цитата'}
+            text={quote}
+            circleColor={theme.block_arrow_first_color}
+        />
+        <Block 
+            name = "Обновления" 
+            description = "Будь в курсе событий" 
+            backgroundColor = {theme.block_first_color}
+            isBorder={true}
+            borderColor={theme.block_border_color} 
+            textColor = {theme.text_first_color}
+            arrowColor = {theme.text_first_color}
+            arrowBackgroundColor = {theme.block_arrow_first_color}
+            linkTo = "/updates"/>
+        <Block 
+            name = "Меню игр" 
+            description = "Сделаешь ставку?" 
+            backgroundColor = {theme.block_second_color} 
+            isBorder={false}
+            borderColor={theme.block_border_color} 
+            textColor = {theme.text_second_color} 
+            arrowColor = {theme.text_second_color}  
+            arrowBackgroundColor = {theme.block_arrow_second_color} 
+            linkTo = "/game-menu"/>
+        <Block 
+            name = "Расписание" 
+            description = "Какой сейчас урок?" 
+            backgroundColor = {theme.block_third_color} 
+            isBorder={false}
+            borderColor={theme.block_border_color} 
+            textColor = {theme.text_first_color} 
+            arrowColor = {theme.text_first_color} 
+            arrowBackgroundColor = {theme.block_arrow_third_color} 
+            linkTo = {`/timetable/${authUser.mainGroup}`}/>
+        <Block 
+            name = "Магазин" 
+            description = "Прояви себя" 
+            backgroundColor = {theme.block_first_color} 
+            isBorder={true}
+            borderColor={theme.block_border_color} 
+            textColor = {theme.text_first_color}
+            isCircleArrow = {false}
+            arrowColor = {theme.text_first_color}
+            arrowBackgroundColor = {theme.block_arrow_first_color}
+            linkTo = "/shop"/>
+      </div>
     </div>
   )
 }

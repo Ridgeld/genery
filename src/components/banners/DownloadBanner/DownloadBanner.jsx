@@ -128,12 +128,12 @@ export default function DownloadBanner() {
     const [isBannerShow, setIsBannerShow] = useState(localStorage.getItem('isBannerShow'))
     const navigateTo = useNavigate()
 
-    useEffect(() => {
-        if (!isBannerShow){
-            console.log(9)
-            navigateTo(`/menu`);
-        }
-    },[])
+    // useEffect(() => {
+    //     if (!isBannerShow){
+    //         console.log(9)
+    //         navigateTo(`/menu`);
+    //     }
+    // },[])
 
     useEffect(() => {
         // Пытаемся найти кнопку
