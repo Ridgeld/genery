@@ -73,3 +73,37 @@ textarea::-webkit-scrollbar-track {
 //   border-radius: 0 0 50px 0;
 //   background-color: rgba($color: #000000, $alpha: 0.3); /* Цвет фона */
 // }
+.install_button{
+  border: none;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  top: 80%;
+  left: 5%;
+  width: calc(100% - 10%);
+  padding: 10px 10px 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  gap: 10px;
+  border-radius: 30px;
+  background: #fff;
+  color: #0040F9;
+  &:hover{
+    .circle{
+      scale: 1.2;
+    }
+  }
+}
+.circle{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+  background: #0040F9;
+  border-radius: 50%;
+  transition: 0.3s;
+
+}

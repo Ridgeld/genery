@@ -785,7 +785,8 @@ function AuthUserGroup() {
                     <MessageInput
                         placeholder={'Что нового?'}
                         isPanelTop={false}
-                        onSend={handleSend}/>
+                        onSend={handleSend}
+                        addFiles={true}/>
                     <div className={styles['posts-container']}>
                     {isLoading ? 
                         <>

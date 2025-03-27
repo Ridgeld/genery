@@ -7,7 +7,7 @@ import {motion } from 'framer-motion'
 import parser from 'html-react-parser';
 
 function MessageContainer({messages, backgroundColor,textColor, date, photoClick }) {
-    console.log(messages.photos);
+    // console.log(messages.photos);
 
     const handlePhotoClick = (photos, index) => {
         photoClick(photos, index)

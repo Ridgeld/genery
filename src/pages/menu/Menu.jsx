@@ -9,6 +9,7 @@ import { signOut } from 'firebase/auth';
 import InfoBlock from '../../components/blocks/info-block/InfoBlock.jsx';
 // import { useTheme } from '../../providers/ElementProvider.jsx';
 import quotes from './qoutes.js';
+import BannerBlock from '../../components/blocks/banner-block/BannerBlock.jsx';
 
 function About(){
   const [quote, setQuote] = useState('')
@@ -77,6 +78,7 @@ function About(){
   return (
     <div className={styles.container}>
       {/* <button onClick={() => signOut(ga)}>Выйти</button> */}
+      <BannerBlock/>
       <InfoBlock
           name={'Ежедневная цитата'}
           text={quote}

@@ -1,0 +1,71 @@
+.body{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: row;
+    grid-column: 1/4;
+    // height: 120px;
+    // padding: 20px;
+    gap: 10px;
+}
+// .stroke-fill{
+//     max-width: 100px;
+//     max-height: 100px;
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//     padding: 3px;
+//     border-radius: 20px;
+// }
+// .stories-body{
+//     min-width: calc(100% - 8px);
+//     min-height: calc(100% - 8px);
+//     // background: gold;
+//     border-radius: 18px;
+//     padding: 4px;
+//     overflow: hidden;
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//     cursor: pointer;
+//     overflow: hidden;
+//     img{
+//         background: #0070cf;
+//         object-fit: cover;
+//         min-width: 100%;
+//         min-height: 100%;
+//         border-radius: 14px;
+//     }
+// }
+.stroke-fill {
+    width: 100px; /* Фиксированная ширина */
+    height: 100px; /* Фиксированная высота */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px;
+    border-radius: 20px;
+    transition: 0.3s;
+    &:hover{
+        scale: 1.1;
+    }
+}
+
+.stories-body {
+    width: calc(100% - 8px); /* Фиксируем размер относительно stroke-fill */
+    height: calc(100% - 8px);
+    border-radius: 18px;
+    padding: 4px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.stories-body img {
+    width: 100%; /* Заполняет .stories-body */
+    height: 100%;
+    object-fit: cover; /* Обрезает изображение, чтобы заполнить контейнер */
+    border-radius: 14px;
+}

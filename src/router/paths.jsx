@@ -31,6 +31,8 @@ import Rating from '../pages/rating/Rating.jsx';
 import Subscribers from '../pages/subscribers/Subscribers.jsx';
 import GuessLine from '../pages/guess-line/GuessLine.jsx';
 import PostPage from '../pages/posts/PostPage.jsx';
+import Banner from '../pages/banner/Banner.jsx';
+import DownloadBanner from '../components/banners/DownloadBanner/DownloadBanner.jsx';
 
 export const routes = [
     {
@@ -217,6 +219,13 @@ export const routes = [
         path: '/guessline',
         exact: true,
         component: <GuessLine/>,
+        auth: false
+    },
+    {
+        path: '/banner',
+        exact: true,
+        component: <Banner/>,
+        banner: true,
         auth: false
     },
 ]
