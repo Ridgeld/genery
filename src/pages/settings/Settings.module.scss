@@ -161,6 +161,22 @@
     justify-content: flex-end;
     width: 100%;
 }
+.reset-password{
+    display: flex;
+    border: none;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px 10px 10px 20px;
+    border-radius: 20px;
+}
+.circle{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 20px;
+    min-width: 20px;
+}
 @media(min-width: 700px){
     .container{
         width: calc(60% - 20px);

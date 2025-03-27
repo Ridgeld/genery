@@ -27,7 +27,8 @@ export const AuthProvider = ({ children }) => {
                     avatar: userData.photo,
                     name: userData.name,
                     cover: userData.cover,
-                    mainGroup: userData.mainGroup
+                    mainGroup: userData.mainGroup,
+                    email: user.email,
                   });
               } else {
                   console.log("No such document!");

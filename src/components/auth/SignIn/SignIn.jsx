@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import React, { useContext, useEffect, useState } from "react";
 import { auth } from "../../../../firebase";
 import '../../../themes/default.scss';
@@ -111,8 +111,10 @@ function SignIn(){
                         style={{
                             color: theme.text_first_color
                         }}
+                        onClick={() => navigateTo('/resetpassword')}
                         >Забыли пароль?</button>
                 </div>
+                
                 <div className={styles['button-container']}>
                     <button onClick={login} className={styles['continue-button']}
                     style={{

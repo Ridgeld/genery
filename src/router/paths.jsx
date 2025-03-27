@@ -33,6 +33,9 @@ import GuessLine from '../pages/guess-line/GuessLine.jsx';
 import PostPage from '../pages/posts/PostPage.jsx';
 import Banner from '../pages/banner/Banner.jsx';
 import DownloadBanner from '../components/banners/DownloadBanner/DownloadBanner.jsx';
+import ResetPassword from '../components/auth/ResetPassword/ResetPassword.jsx';
+import NewPassword from '../components/auth/NewPassword/NewPassword.jsx';
+import ResetPasswordAuthUser from '../components/auth/ResetPasswordAuthUser/ResetPasswordAuthUser.jsx';
 
 export const routes = [
     {
@@ -52,6 +55,27 @@ export const routes = [
         exact: false,
         component: <SignIn/>,
         auth: true,
+    },
+    {
+        path: '/resetpassword',
+        exact: true,
+        component: <ResetPassword/>,
+        banner: true,
+        auth: false
+    },
+    {
+        path: '/authresetpassword',
+        exact: true,
+        component: <ResetPasswordAuthUser/>,
+        banner: true,
+        auth: true
+    },
+    {
+        path: '/setnewpassword/*',
+        exact: false,
+        component: <NewPassword/>,
+        banner: true,
+        auth: false
     },
     {
         path: '/about',
