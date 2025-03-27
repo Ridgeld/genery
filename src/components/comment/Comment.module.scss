@@ -1,9 +1,30 @@
-.comment-info{
+.comment-wrapper{
     display: flex;
+    position: relative;
     flex-direction: column;
     width: 100%;
 }
-
+.comment-info{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+}
+.post-delete{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    // width: 100%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+.post-more{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+}
 .author-info{
     display: flex;
     flex-direction: row;
@@ -33,6 +54,7 @@
 }
 .comment-body{
     display: flex;
+    position: relative;
     flex-direction: column;
     width: calc(100% - 20px);
     padding: 10px;

@@ -285,7 +285,24 @@
     font-weight: 500;
 }
 
-
+.replies-container{
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 20px);
+    margin-left: 20px;
+}
+.show-answers{
+    border: none;
+    display: flex;
+    max-width: 60%;
+    padding: 10px 20px 10px 20px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 20px;
+}
 
 
 //  \|/ УДАЛИТЬ 

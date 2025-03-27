@@ -4,7 +4,7 @@ import styles from './Post.module.scss'
 import { ElementContext } from '../../providers/ElementProvider.jsx';
 import Post from './Post.jsx';
 import { useAuth } from "../../providers/Authprovired.jsx";
-import { doc, getDoc, updateDoc, arrayUnion, collection, query, orderBy, onSnapshot, serverTimestamp, addDoc, setDoc, increment  } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, arrayUnion, collection, query, orderBy, onSnapshot, serverTimestamp, addDoc, setDoc, increment, deleteDoc, getDocs, where  } from 'firebase/firestore';
 import { db } from '../../../firebase.js';
 import MessageInput from '../../components/inputs/messageInput/MessageInput.jsx';
 import ImageViewer from '../../components/modal-windows/image-viewer/ImageViewer.jsx';
@@ -40,6 +40,8 @@ const PostPage = () => {
         secondButtonName: 'играть',
     });
 
+    const [showReplies, setShowReplies] = useState(false);
+
     useEffect(() => {
         if (slipProp.isShow) {
           const timer = setTimeout(() => {
@@ -65,34 +67,6 @@ const PostPage = () => {
     //         // document.querySelector('meta[name="twitter:card"]').setAttribute('content', 'summary_large_image');
     //     }
     // }, [id]);
-    useEffect(() => {
-        if (!post) return;
-
-        // document.title = `${post.title} - "Этот крутой пост создан в Genery!"`;
-
-        const setMeta = (name, content) => {
-            let element = document.querySelector(`meta[${name.includes("og:") || name.includes("twitter:") ? "property" : "name"}="${name}"]`);
-            if (!element) {
-                element = document.createElement("meta");
-                element.setAttribute(name.includes("og:") || name.includes("twitter:") ? "property" : "name", name);
-                document.head.appendChild(element);
-            }
-            element.setAttribute("content", content);
-        };
-
-        setMeta("description", post.description || "Описание поста");
-        setMeta("author", post.userName || "Автор неизвестен");
-        setMeta("og:title", post.text);
-        setMeta("og:description", post.description || "Описание поста");
-        setMeta("og:image", post.postPhotos[0] || "default-image-url");
-        setMeta("og:url", `https://ridgeld.github.io/genery/#/post/${id}`);
-        setMeta("twitter:title", post.text);
-        setMeta("twitter:image", post.postPhotos[0] || "default-image-url");
-
-        // return () => {
-        //     document.title = pa; // Сброс заголовка при выходе
-        // };
-    }, [post, id]);
 
     useEffect(() => {
         setElementColors({
@@ -132,7 +106,6 @@ const PostPage = () => {
                         postPhotos: postData.photos,
                         postData: dateString,
                         likesArray: postData.likesArray,
-                        // commentsArray: postData.commentsArray,
                         // commentsArray: (postData.commentsArray || []).sort((a, b) => b.replies.length - a.replies.length),
                     });
                 }
@@ -153,7 +126,7 @@ const PostPage = () => {
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const loadedComments = snapshot.docs.map(doc => ({
                 commentId: doc.id,
-                ...doc.data()
+                ...doc.data(),
             }));
             setComments(loadedComments);
         });
@@ -173,6 +146,24 @@ const PostPage = () => {
             isShow: false,
         })
     }
+    const deletePost = async (postId) =>{
+        // alert(postId)
+        setAlertProp({
+            isShow: false,
+        })
+        try {
+            await deleteDoc(doc(db, 'posts', postId));
+        } catch (error) {
+            console.error('Error deleting post: ', error);
+        } finally{
+            setSlipProp({
+                isShow: true,
+                text: 'Пост удален'
+            })
+        }
+        
+    }
+
     const handleActionPost = (id, postId) =>{
         switch(id){
             case 'delete':
@@ -184,6 +175,78 @@ const PostPage = () => {
                     secondButtonName: 'Удалить',
                     firstButtonOnClick: closeAlert,
                     secondButtonOnClick: () => deletePost(postId),
+                })
+            default:
+                return setAlertProp({
+                    isShow: true,
+                    title: 'Заголовок',
+                    text: `текст`,
+                    firstButtonName: 'Кнопка',
+                    secondButtonName: 'Кнопка',
+                    firstButtonOnClick: null,
+                    secondButtonOnClick: null,
+                })
+        }
+    }
+    // const deleteComment = async (commentId) =>{
+    //     // alert(postId)
+    //     setAlertProp({
+    //         isShow: false,
+    //     })
+    //     try {
+    //         await deleteDoc(doc(db, 'posts', id, 'comments', commentId));
+    //     } catch (error) {
+    //         console.error('Error deleting post: ', error);
+    //     } finally{
+    //         setSlipProp({
+    //             isShow: true,
+    //             text: 'Комментарий удален'
+    //         })
+    //     }
+        
+    // }
+    const deleteComment = async (commentId) => {
+        setAlertProp({
+            isShow: false,
+        });
+        try {
+            // Удаляем основной комментарий
+    
+            // Получаем все ответы, привязанные к основному комментарию
+            const repliesSnapshot = await getDocs(query(
+                collection(db, 'posts', id, 'comments'),
+                where('replyTo', '==', commentId)  // предполагается, что у каждого ответа есть поле replyTo, которое указывает на commentId
+            ));
+    
+            // Удаляем все ответы
+            repliesSnapshot.forEach(async (replyDoc) => {
+                await deleteDoc(doc(db, 'posts', id, 'comments', replyDoc.id));
+            });
+
+            await deleteDoc(doc(db, 'posts', id, 'comments', commentId));
+    
+        } catch (error) {
+            console.error('Error deleting comment: ', error);
+        } finally {
+            setSlipProp({
+                isShow: true,
+                text: 'Комментарий и ответы удалены',
+            });
+        }
+    };
+    
+
+    const handleActionComment = (id, commentId) =>{
+        switch(id){
+            case 'delete':
+                return setAlertProp({
+                    isShow: true,
+                    title: 'Удаление поста',
+                    text: `Вы действительно хотите удалить комментарий?`,
+                    firstButtonName: 'Отмена',
+                    secondButtonName: 'Удалить',
+                    firstButtonOnClick: closeAlert,
+                    secondButtonOnClick: () => deleteComment(commentId),
                 })
             default:
                 return setAlertProp({
@@ -245,106 +308,43 @@ const PostPage = () => {
     //     };
 
     const [replyTo, setReplyTo] = useState(null);
-
-    // const handleSend = async (text) => {
-    //     try {
-    //         if (!text.trim()) return; // Проверка на пустой текст
     
-    //         const comment = {
-    //             text,
-    //             timestamp: Date.now(), // Используем новый timestamp
-    //             userId: authUser._id,
-    //             userName: authUser.name,
-    //             userPhoto: authUser.avatar,
-    //             replies: [],
-    //         };
-    
-    //         let updatedComments = [...(post.commentsArray || [])];
-    
-    //         if (replyTo) {
-    //             updatedComments = updatedComments.map((c) => {
-    //                 if (c.userName === replyTo.userName && c.timestamp === replyTo.timestamp) {
-    //                     return { 
-    //                         ...c, 
-    //                         replies: [...c.replies, { ...comment, replyTo: replyTo.userName }]
-    //                     };
-    //                 }
-    //                 return c;
-    //             });
-    //             setReplyTo(null); // Сбросить `replyTo` после ответа
-    //         } else {
-    //             updatedComments.push(comment);
-    //         }
-    
-    //         const postRef = doc(db, 'posts', id);
-    //         await updateDoc(postRef, { commentsArray: updatedComments });
-    
-    //         setPost((prev) => ({
-    //             ...prev,
-    //             commentsArray: updatedComments
-    //         }));
-    
-    //     } catch (error) {
-    //         console.error("Ошибка при добавлении комментария: ", error);
-    //     }
-    // }; 
-
-
-    // const handleSend = async (text) => {
-    //     try {
-    //         const commentData = {
-    //             text,
-    //             timestamp: serverTimestamp(),
-    //             userId: authUser._id,
-    //             userName: authUser.name,
-    //             userPhoto: authUser.avatar,
-    //             replyTo: replyTo ? replyTo.commentId : null, // Меняем undefined на null
-    //         };
-    
-    //         const commentsRef = collection(db, "posts", id, "comments");
-    //         await addDoc(commentsRef, commentData);
-    
-    //         setReplyTo(null); // Сбросить состояние ответа
-    //     } catch (error) {
-    //         console.error("Ошибка при добавлении комментария: ", error);
-    //     }
-    // };  
-
     const handleSend = async (text) => {
-        const cleanedText = replyTo ? text.replace(`@${replyTo.userName} `, '') : text;
-    
+        // Добавляем ник пользователя, на которого отвечаем, в начале текста
+        // const updatedText = replyTo ? `@${replyTo.userName} ${text}` : text;
+        
         try {
-            const newCommentRef = doc(collection(db, "posts", id, "comments")); // Создаём ссылку на будущий документ
-            const commentId = newCommentRef.id; // Получаем уникальный ID
-    
+            const newCommentRef = doc(collection(db, "posts", id, "comments"));
+            const commentId = newCommentRef.id;
+        
             const comment = {
-                commentId,  // Добавляем ID в объект комментария
-                text: cleanedText,
+                commentId,
+                text: text,  // Теперь отправляем полный текст с ником
                 timestamp: Date.now(),
                 userId: authUser._id,
                 userName: authUser.name,
                 userPhoto: authUser.avatar,
-                replyTo: replyTo ? replyTo.commentId : null, // Если это ответ — сохраняем ID родителя
+                replyTo: replyTo ? replyTo.commentId : null,
                 isReply: !!replyTo,
             };
-    
-            await setDoc(newCommentRef, comment); // Добавляем комментарий в Firestore
-    
-            // Если это ответ на комментарий, увеличиваем `replyCount` у родителя
+        
+            await setDoc(newCommentRef, comment);
+        
             if (replyTo) {
                 const parentCommentRef = doc(db, "posts", id, "comments", replyTo.commentId);
                 await updateDoc(parentCommentRef, {
-                    replyCount: increment(1) // Увеличиваем счётчик ответов
+                    replyCount: increment(1)
                 });
             }
-    
-            setReplyTo(null); // Сбрасываем состояние ответа
-            setMessageInput('');
+        
+            setReplyTo(null);  // Сбрасываем состояние ответа
+            setMessageInput('');  // Очищаем input
     
         } catch (error) {
             console.error("Ошибка при добавлении комментария: ", error);
         }
     };
+    
     
 
     const [messageInput, setMessageInput] = useState(null);
@@ -369,6 +369,17 @@ const PostPage = () => {
         setMessageInput('')
     };
 
+    const hexToRgb = (hex) => {
+        // Убираем решётку в начале HEX-кода
+        hex = hex.replace('#', '');
+        
+        // Конвертируем HEX в RGB
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        
+        return `rgba(${r}, ${g}, ${b}, 0.2)`; // Добавляем прозрачность
+    };
 
 
     return (
@@ -425,30 +436,85 @@ const PostPage = () => {
                     postText={post.postText}
                     postPhotos={post.postPhotos}
                     likesArray={post.likesArray}
-                    // commentsArray={[]}
+                    commentCount={comments.length}
                     photoClick={openViewer}
                     postAction={handleActionPost}
                 />
                 {/* } */}
             {/* </div> */}
             <div className={styles['comments-container']}>
-                {comments && 
-                comments.filter(comment => !comment.isReply) 
-                .map((comment) => (
-                    <Comment 
-                        key={comment.commentId} 
-                        userId={comment.userId}
-                        userPhoto={comment.userPhoto}
-                        userName={comment.userName}
-                        text={comment.text}
-                        showUserProfile={showUserProfile} 
-                        onReply={handleReply}
-                        replies={getReplies(comment.commentId)}
-                        timestamp={comment.timestamp}
-                        commentId={comment.commentId}
-                        
-                        />
-                ))}
+                {/* {comments && 
+                    comments.filter(comment => !comment.isReply) 
+                    .map((comment) => (
+                        <Comment 
+                            key={comment.commentId} 
+                            userId={comment.userId}
+                            userPhoto={comment.userPhoto}
+                            userName={comment.userName}
+                            text={comment.text}
+                            showUserProfile={showUserProfile} 
+                            onReply={handleReply}
+                            replies={getReplies(comment.commentId)}
+                            timestamp={comment.timestamp}
+                            commentId={comment.commentId}
+                            commentAction={handleActionComment}
+                            />
+                    ))} */}
+                    {comments && 
+                        comments.filter(comment => !comment.isReply)
+                        .map((comment) => {
+                            // Состояние для управления видимостью ответов
+                            
+                            return (
+                            <>
+                                <Comment 
+                                userId={comment.userId}
+                                userPhoto={comment.userPhoto}
+                                userName={comment.userName}
+                                text={comment.text}
+                                showUserProfile={showUserProfile}
+                                onReply={handleReply}
+                                timestamp={comment.timestamp}
+                                commentId={comment.commentId}
+                                commentAction={handleActionComment}
+                                />
+                                
+                                {/* Кнопка для отображения/скрытия ответов */}
+                                {getReplies(comment.commentId).length > 0 && (
+                                <button onClick={() => setShowReplies(!showReplies)}
+                                    className={styles['show-answers']}
+                                        style={{
+                                            color: theme.first_color,
+                                            background: hexToRgb(theme.first_color)
+                                        }}>
+                                     {showReplies ? 'Скрыть ответы' : `Показать ответы (${getReplies(comment.commentId).length})`}
+                                </button>
+                                )}
+
+                                {/* Рендерим ответы, если showReplies равно true */}
+                                {showReplies && getReplies(comment.commentId).length > 0 && (
+                                <div className={styles['replies-container']}>
+                                    {getReplies(comment.commentId).map(reply => (
+                                    <Comment 
+                                        key={reply.commentId}
+                                        userId={reply.userId}
+                                        userPhoto={reply.userPhoto}
+                                        userName={reply.userName}
+                                        text={reply.text}
+                                        showUserProfile={showUserProfile}
+                                        timestamp={reply.timestamp}
+                                        commentId={reply.commentId}
+                                        commentAction={handleActionComment}
+                                        isReply={true}
+                                    />
+                                    ))}
+                                </div>
+                                )}
+                            </>
+                            );
+                        })
+                        }
+
                 <div className={styles['fixed-input']}
                     style={{
                         background: theme.background_color
