@@ -309,14 +309,22 @@ function OtherUserProfile({id}){
                                 color: theme.text_first_color
                             }}>{userData.biography}</div>
                         <div className={styles['button-container']}>
-                        <button className={styles['quit-button']}
-                            style={{
-                            background: userData.followers.includes(authUser._id) ? theme.element_second_color : theme.first_color,
-                            color: theme.text_first_color
-                            }}
-                            onClick={followUser}>
-                            {userData.followers && userData.followers.includes(authUser._id) ? 'Отписаться' : 'Подписаться'}
-                        </button>
+                            <button className={styles['quit-button']}
+                                style={{
+                                background: userData.followers.includes(authUser._id) ? theme.element_second_color : theme.first_color,
+                                color: theme.text_first_color
+                                }}
+                                onClick={followUser}>
+                                {userData.followers && userData.followers.includes(authUser._id) ? 'Отписаться' : 'Подписаться'}
+                            </button>
+                                <button className={styles['quit-button']}
+                                    style={{
+                                    background: theme.element_second_color,
+                                    color: theme.text_first_color
+                                    }}
+                                    onClick={() => navigateTo(`/chat/${id}_${authUser._id}`)}>
+                                    {'Сообщение'}
+                                </button>
                         </div>
                     </div> 
                 :

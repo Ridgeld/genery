@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import styles from './UserItem.module.scss';
 import { ElementContext } from '../../../providers/ElementProvider';
 
-function UserItem({ id, name, photo, onClick, canDelete, removeUser}){
+function UserItem({ id, name, photo, onClick, canDelete, removeUser, isSelect}){
     const { theme, setElementColors } = useContext(ElementContext);
 
     const handleClick = (e) =>{
@@ -33,6 +33,16 @@ function UserItem({ id, name, photo, onClick, canDelete, removeUser}){
                         }}>{name}</div>
                 </div>
             </div>
+            {isSelect && 
+                <div className={styles['selected']}
+                    style={{
+                        background: theme.first_color
+                    }}>
+                    <div className={styles['inside-circle']}
+                        style={{
+                            background: theme.text_first_color
+                        }}/>
+                </div>}
             {canDelete && 
                 <button className={styles['delete-button']}
                     style={{

@@ -36,6 +36,9 @@ import DownloadBanner from '../components/banners/DownloadBanner/DownloadBanner.
 import ResetPassword from '../components/auth/ResetPassword/ResetPassword.jsx';
 import NewPassword from '../components/auth/NewPassword/NewPassword.jsx';
 import ResetPasswordAuthUser from '../components/auth/ResetPasswordAuthUser/ResetPasswordAuthUser.jsx';
+import Chats from '../pages/chats/Chats.jsx';
+import Chat from '../pages/chats/Chat.jsx';
+import CreateChat from '../pages/chats/CreateChat.jsx';
 
 export const routes = [
     {
@@ -249,6 +252,27 @@ export const routes = [
         path: '/banner',
         exact: true,
         component: <Banner/>,
+        banner: true,
+        auth: false
+    },
+    {
+        path: '/chats',
+        exact: true,
+        component: <Chats/>,
+        banner: true,
+        auth: false
+    },
+    {
+        path: '/chat/:id?',
+        exact: true,
+        component: <Chat/>,
+        banner: true,
+        auth: false
+    },
+    {
+        path: '/create-chat/:id?',
+        exact: true,
+        component: <CreateChat/>,
         banner: true,
         auth: false
     },

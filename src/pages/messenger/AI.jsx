@@ -266,6 +266,7 @@ export async function run(userInput, images) {
         { text: "output: Эу, братишка, проще общайся" },
         { text: `input: ${userInput}` },
     ];
+    
 
     try {
         const imageParts = await Promise.all(images.map(fileToGenerativePart));
@@ -275,7 +276,7 @@ export async function run(userInput, images) {
             result = await model.generateContent([userInput, ...imageParts]);
         } else {
             result = await model.generateContent({
-                contents: [{ role: "user", parts }],
+                contents: [{ role: "user", userInput }],
                 generationConfig,
                 safetySettings,
             });
