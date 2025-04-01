@@ -49,8 +49,8 @@
     gap: 2px;
     padding: 4px 8px;
     overflow: hidden;
-    word-break: break-word; /* Разрывает длинные слова */
-    overflow-wrap: break-word; /* Переносит слова, если нужно */
+    word-break: break-word;
+    overflow-wrap: break-word; 
 }
 .text-empty{
     display: flex;
