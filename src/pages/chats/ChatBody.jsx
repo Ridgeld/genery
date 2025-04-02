@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import styles from './Chats.module.scss'
 import { ElementContext } from '../../providers/ElementProvider';
-
+import parsedText from "../../functions/parsed-text/parsedText.jsx";
 
 
 
@@ -32,7 +32,7 @@ export default function ChatBody({id, name, photo, lastMessage, onClick}) {
                     style={{
                         color: theme.element_second_color
                     }}>
-                    {lastMessage}
+                    {parsedText(lastMessage)}
                 </div>
             </div>
         </div>
