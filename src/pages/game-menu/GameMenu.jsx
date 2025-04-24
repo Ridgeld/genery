@@ -187,6 +187,16 @@ function GameMenu(){
             arrowBackgroundColor = {theme.block_arrow_first_color}
             linkTo = "/casino"/>
         <Block 
+            name = "Генератор цитат" 
+            description = "Легенда вернулась" 
+            backgroundColor = {theme.first_color}
+            isBorder={true}
+            borderColor={theme.block_border_color} 
+            textColor = {theme.text_first_color}
+            arrowColor = {theme.text_first_color}
+            arrowBackgroundColor = {theme.block_arrow_third_color}
+            linkTo = "/generate-quote"/>
+        <Block 
             name = "GCOIN" 
             description = "тапай по экрану" 
             backgroundColor = {theme.element_first_color}

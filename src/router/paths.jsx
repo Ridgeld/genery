@@ -40,6 +40,7 @@ import Chats from '../pages/chats/Chats.jsx';
 import Chat from '../pages/chats/Chat.jsx';
 import CreateChat from '../pages/chats/CreateChat.jsx';
 import Qoutes from '../pages/qoutes/Qoutes.jsx';
+import QuoteGenerate from '../pages/quotegenerate/QuoteGenerate.jsx';
 
 export const routes = [
     {
@@ -281,6 +282,13 @@ export const routes = [
         path: '/qoutes',
         exact: true,
         component: <Qoutes/>,
+        banner: true,
+        auth: false
+    },
+    {
+        path: '/generate-quote',
+        exact: true,
+        component: <QuoteGenerate/>,
         banner: true,
         auth: false
     },
