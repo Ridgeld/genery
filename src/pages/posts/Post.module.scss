@@ -152,6 +152,8 @@
     font-size: 15px;
     font-weight: 500;
     gap: 2px;
+    word-break: break-word;
+    overflow-wrap: break-word; 
 }
 .post-text-empty{
     display: flex;
@@ -488,7 +490,7 @@
     justify-content: center;
     width: 100%;
     // border-radius: 15px;
-    overflow: hidden;
+    // overflow: hidden;
     grid-template-columns: repeat(2, 1fr);
     grid-auto-rows: 300px;
     grid-gap: 5px;
@@ -587,7 +589,7 @@
     width: 100%;
     height: 100%;
     display: flex;
-    overflow: hidden;
+    // overflow: hidden;
     grid-area: third;
     // background: yellowgreen;
     cursor: pointer;

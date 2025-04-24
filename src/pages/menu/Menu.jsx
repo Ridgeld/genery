@@ -84,6 +84,7 @@ function About(){
             name={'Ежедневная цитата'}
             text={quote}
             circleColor={theme.block_arrow_first_color}
+            onClick={() => navigateTo('/qoutes')}
         />
         <Block 
             name = "Обновления" 

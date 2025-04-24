@@ -80,13 +80,14 @@
 //         ];
 //     }
 
-//     const MODEL_NAME = images.length > 0 ? "gemini-2.0-flash-lite" : 'gemini-1.0-pro';
+//     // const MODEL_NAME = images.length > 0 ? "gemini-2.0-flash-lite" : 'gemini-1.0-pro';
+//     const MODEL_NAME = 'gemini-1.0-pro'
 
 //     // gemini-1.0-pro
 //     // gemini-1.5-flash
 //     // gemini-1.5-pro
 
-//     const API_KEY = "AIzaSyDXQzULiPw4hRAKK7iRUrJCIXkMZmwmDfc";
+//     const API_KEY = import.meta.env.VITE_GOOGLE_GENAI_API_KEY;
 //     // const API_KEY = 'AIzaSyCrwZYzbLz5KHLsrt-uskLMQ6J2va7R6As'
 
 //     // AIzaSyDXQzULiPw4hRAKK7iRUrJCIXkMZmwmDfc
@@ -212,82 +213,193 @@
 //     console.log(response.text());
 //     return [response.text(), false]
 // }
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
 
-async function fileToGenerativePart(file) {
-    const base64EncodedDataPromise = new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result.split(',')[1]);
-        reader.readAsDataURL(file);
-    });
-    return {
-        inlineData: { data: await base64EncodedDataPromise, mimeType: file.type },
-    };
-}
 
-export async function run(userInput, images) {
-    const storedCensor = localStorage.getItem('censor') === 'true';
 
-    const safetySettings = storedCensor ? [
-        { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
-        { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
-        { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
-        { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
-    ] : [
-        { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-        { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
-        { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
-        { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-    ];
+// import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
 
-    // const MODEL_NAME = images.length > 0 ? "gemini-2.0-flash-lite" : "gemini-1.0-pro";
-    const MODEL_NAME ="tunedModels/untitled-tuned-model-br14g0ftksw6"; 
-    const API_KEY = 'AIzaSyCkA6qe0gFiRJctb3l9iGnI7YTyyN3kTkg'; // Используй переменные окружения
+// async function fileToGenerativePart(file) {
+//     const base64EncodedDataPromise = new Promise((resolve) => {
+//         const reader = new FileReader();
+//         reader.onloadend = () => resolve(reader.result.split(',')[1]);
+//         reader.readAsDataURL(file);
+//     });
+//     return {
+//         inlineData: { data: await base64EncodedDataPromise, mimeType: file.type },
+//     };
+// }
 
-    if (!API_KEY) {
-        console.error("API_KEY не найден. Убедись, что он задан в .env");
-        return ["Ошибка: API-ключ отсутствует", true];
-    }
+// export async function run(userInput, images) {
+//     const storedCensor = localStorage.getItem('censor') === 'true';
 
-    const genAI = new GoogleGenerativeAI(API_KEY);
-    const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+//     const safetySettings = storedCensor ? [
+//         { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
+//         { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
+//         { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
+//         { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
+//     ] : [
+//         { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+//         { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+//         { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+//         { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+//     ];
 
-    const generationConfig = {
-        temperature: 0.5,
-        topK: 1,
-        topP: 1,
-        maxOutputTokens: 2048,
-    };
+//     const MODEL_NAME = images.length > 0 ? "gemini-2.0-flash-lite" : "gemini-1.0-pro";
+//     // const MODEL_NAME ="tunedModels/untitled-tuned-model-br14g0ftksw6"; 
+//     // const API_KEY = 'AIzaSyCkA6qe0gFiRJctb3l9iGnI7YTyyN3kTkg'; // Используй переменные окружения
+//     const API_KEY = process.env.VITE_GOOGLE_GENAI_API_KEY
 
-    const parts = storedCensor ? [
-        { text: `input: ${userInput}` },
-    ] : [
-        { text: "input: Заебал" },
-        { text: "output: Эу, братишка, проще общайся" },
-        { text: `input: ${userInput}` },
-    ];
+//     if (!API_KEY) {
+//         console.error("API_KEY не найден. Убедись, что он задан в .env");
+//         return ["Ошибка: API-ключ отсутствует", true];
+//     }
+
+//     const genAI = new GoogleGenerativeAI(API_KEY);
+//     const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+
+//     const generationConfig = {
+//         temperature: 0.5,
+//         topK: 1,
+//         topP: 1,
+//         maxOutputTokens: 2048,
+//     };
+
+//     const parts = storedCensor ? [
+//         { text: `input: ${userInput}` },
+//     ] : [
+//         { text: "input: Заебал" },
+//         { text: "output: Эу, братишка, проще общайся" },
+//         { text: `input: ${userInput}` },
+//     ];
     
 
-    try {
-        const imageParts = await Promise.all(images.map(fileToGenerativePart));
-        let result;
+//     try {
+//         const imageParts = await Promise.all(images.map(fileToGenerativePart));
+//         let result;
 
-        if (images.length > 0) {
-            result = await model.generateContent([userInput, ...imageParts]);
-        } else {
-            result = await model.generateContent({
-                contents: [{ role: "user", userInput }],
-                generationConfig,
-                safetySettings,
-            });
-        }
+//         if (images.length > 0) {
+//             result = await model.generateContent([userInput, ...imageParts]);
+//         } else {
+//             result = await model.generateContent({
+//                 contents: [{ role: "user", userInput }],
+//                 generationConfig,
+//                 safetySettings,
+//             });
+//         }
 
-        const responseText = await result.response.text();
-        console.log(responseText);
-        return [responseText, false];
+//         const responseText = result.response.text();
+//         console.log(responseText);
+//         return [responseText, false];
 
-    } catch (error) {
-        console.error("Ошибка при запросе к Google Generative AI:", error);
-        return ["Ошибка при генерации ответа", false];
-    }
+//     } catch (error) {
+//         console.error("Ошибка при запросе к Google Generative AI:", error);
+//         return ["Ошибка при генерации ответа", false];
+//     }
+// }
+
+
+
+
+
+// import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
+
+// async function fileToGenerativePart(file) {
+//     return new Promise((resolve, reject) => {
+//         const reader = new FileReader();
+//         reader.onloadend = () => resolve({ inlineData: { data: reader.result.split(',')[1], mimeType: file.type } });
+//         reader.onerror = reject; // Добавлена обработка ошибки
+//         reader.readAsDataURL(file);
+//     });
+// }
+
+// export async function run(userInput, images) {
+//     const storedCensor = localStorage.getItem('censor') === 'true';
+
+//     const safetySettings = storedCensor ? [
+//         { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
+//         { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
+//         { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
+//         { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
+//     ] : [
+//         { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+//         { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+//         { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+//         { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+//     ];
+
+//     const MODEL_NAME = images.length > 0 ? "gemini-1.0-flash" : 'gemini-2.0-flash';
+//     const API_KEY = import.meta.env.VITE_GOOGLE_GENAI_API_KEY;
+//     console.log("Значение API_KEY:", API_KEY); // Добавьте эту строку
+
+//     if (!API_KEY) {
+//         console.error("API_KEY не найден. Убедись, что он задан в .env файле (с префиксом VITE_) и сервер разработки перезапущен.");
+//         return ["Ошибка: API-ключ отсутствует", false];
+//     }
+
+//     const genAI = new GoogleGenerativeAI(API_KEY);
+//     const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+
+//     const generationConfig = {
+//         temperature: 0.5,
+//         topK: 1,
+//         topP: 1,
+//         maxOutputTokens: 2048,
+//     };
+
+//     const parts = storedCensor ? [
+//         { role: "user", parts: [{ text: `input: ${userInput}` }] },
+//     ] : [
+//         { role: "user", parts: [{ text: "Заебал" }] },
+//         { role: "model", parts: [{ text: "Эу, братишка, проще общайся" }] },
+//         { role: "user", parts: [{ text: `input: ${userInput}` }] },
+//     ];
+
+
+//     try {
+//         const imageParts = await Promise.all(images.map(fileToGenerativePart));
+//         let result;
+
+//         if (images.length > 0) {
+//             const textPart = { role: "user", parts: [{ text: userInput }] };
+//             result = await model.generateContent([textPart, ...imageParts]);
+//         } else {
+//             result = await model.generateContent({
+//                 contents: parts,
+//                 generationConfig,
+//                 safetySettings,
+//             });
+//         }
+
+//         const responseText = result.response.text();
+//         console.log(responseText);
+//         return [responseText, false];
+
+//     } catch (error) {
+//         console.error("Ошибка при запросе к Google Generative AI:", error);
+//         return [`Ошибка при генерации ответа API: ${API_KEY}`, false];
+//     }
+// }
+
+
+
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+const API_KEY = import.meta.env.VITE_GOOGLE_GENAI_API_KEY; // Предполагается, что вы настроили переменную окружения
+
+export async function run() {
+  if (!API_KEY) {
+    console.error("API_KEY не найден. Убедитесь, что он задан в .env файле (с префиксом VITE_) и сервер разработки перезапущен.");
+    return;
+  }
+
+  const genAI = new GoogleGenerativeAI(API_KEY);
+  const model = genAI.getGenerativeModel({ model: "gemini-1.0-pro" }); // Используем стабильную текстовую модель
+
+  try {
+    const response = await model.generateContent("Как работает ИИ?");
+    const text = await response.response.text();
+    console.log("Ответ модели:", text);
+  } catch (error) {
+    console.error("Произошла ошибка:", error);
+  }
 }

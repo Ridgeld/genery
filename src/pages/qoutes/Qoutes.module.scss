@@ -1,0 +1,58 @@
+.container{
+    margin-top: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 90%;
+    gap: 10px;
+    padding-bottom: 70px;
+}
+.qoute-body{
+    width: calc(100% - 20px);
+    padding: 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    &:hover{
+        svg{
+            transform: rotate(45deg);
+        }
+    }
+}
+.qoute-text{
+    font-size: 16px;
+    font-weight: 550;
+    padding: 10px;
+}
+.qoute-author{
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px;
+}
+.qoute-info{
+    font-size: 14px;
+    font-weight: 500;
+    padding-inline: 10px;
+    font-style: italic;
+    overflow: 'hidden';
+    margin-top: '12px';
+}
+.item-circle{
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    svg{
+        transition: 0.5s ease;
+    }
+    &:hover{
+        svg{
+            transform: rotate(45deg);
+        }
+    }
+}

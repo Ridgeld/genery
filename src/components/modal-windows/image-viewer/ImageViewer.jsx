@@ -325,33 +325,28 @@ function ImageViewer({isShow, images, index, onClose}){
                         </svg>
                     </button>
                 }
-                {/* <AnimatePresence initial={false}> */}
-                    <motion.div className={styles['image-view']}
-                        variants={variants}
-                        style={{ x: dragX }}
-                        drag ='x'
-                        dragConstraints={{
-                            left: 0,
-                            right: 0
-                        }}
-                        onDragStart={onDragStart}
-                        onDragEnd={onDragEnd}
+                {/* <AnimatePresence> */}
+                <motion.div
+                    className={styles['image-view']}
+                    style={{ x: dragX, originX: 0.5, originY: 0.5 }}
+                    drag="x"
+                    dragConstraints={{ left: 0, right: 0 }}
+                    onDragStart={onDragStart}
+                    onDragEnd={onDragEnd}
+                    key={imageUrls[currentIndex]}
+                    initial={{ scale: 0.3, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.3, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    >
+                    <div className={styles['image-view-bg']}>
+                        <div className={styles['image-no-select']}></div>
+                        <img
                         key={imageUrls[currentIndex]}
-                        initial='enter' 
-                        animate='center'
-                        exit='exit'
-                        transition={{
-                            type: 'tween',
-                        }}
-                        >
-                        <div className={styles['image-view-bg']}>
-                            <div className={styles['image-no-select']}></div>
-                            <img 
-                                key={imageUrls[currentIndex]}
-                                src={imageUrls && imageUrls[currentIndex]}
-                                />
-                        </div>
-                    </motion.div>
+                        src={imageUrls && imageUrls[currentIndex]}
+                        />
+                    </div>
+                </motion.div>
                 {/* </AnimatePresence> */}
                 {imageUrls.length > 1 && 
                     <button className={styles['next-button']}

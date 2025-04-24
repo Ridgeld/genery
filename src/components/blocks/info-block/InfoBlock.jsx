@@ -2,13 +2,14 @@ import React, { useContext } from 'react';
 import styles from './InfoBlock.module.scss'
 import { ElementContext } from '../../../providers/ElementProvider';
 
-function InfoBlock({name, text, circleColor}){
+function InfoBlock({name, text, circleColor, onClick}){
     const { theme, setThemeById, elementColors, setElementColors } = useContext(ElementContext);
     return(
         <div className={styles['block-body']}
             style={{
                 background: theme.element_first_color
-            }}>
+            }}
+            onClick={onClick}>
             <div className={styles['block-name']}
                 style={{
                     color: theme.text_first_color

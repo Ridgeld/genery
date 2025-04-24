@@ -10,13 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@genkit-ai/googleai": "^1.6.0",
     "@google/genai": "^0.6.1",
     "@google/generative-ai": "^0.10.0",
     "canvas": "^2.11.2",
     "cors": "^2.8.5",
     "firebase": "^9.23.0",
     "framer-motion": "^11.2.11",
+    "genkit": "^1.6.0",
     "html-react-parser": "^5.1.10",
+    "lodash.camelcase": "^4.3.0",
     "openai": "^4.80.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

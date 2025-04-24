@@ -39,6 +39,7 @@ import ResetPasswordAuthUser from '../components/auth/ResetPasswordAuthUser/Rese
 import Chats from '../pages/chats/Chats.jsx';
 import Chat from '../pages/chats/Chat.jsx';
 import CreateChat from '../pages/chats/CreateChat.jsx';
+import Qoutes from '../pages/qoutes/Qoutes.jsx';
 
 export const routes = [
     {
@@ -260,19 +261,26 @@ export const routes = [
         exact: true,
         component: <Chats/>,
         banner: true,
-        auth: false
+        auth: true
     },
     {
         path: '/chat/:id?',
         exact: true,
         component: <Chat/>,
         banner: true,
-        auth: false
+        auth: true
     },
     {
         path: '/create-chat/:id?',
         exact: true,
         component: <CreateChat/>,
+        banner: true,
+        auth: true
+    },
+    {
+        path: '/qoutes',
+        exact: true,
+        component: <Qoutes/>,
         banner: true,
         auth: false
     },

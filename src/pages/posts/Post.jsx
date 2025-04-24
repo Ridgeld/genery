@@ -4,7 +4,7 @@ import { useAuth } from "../../providers/Authprovired.jsx";
 import { doc, updateDoc, arrayUnion, arrayRemove  } from "firebase/firestore"; 
 import { db } from '../../../firebase.js';
 import { ElementContext } from '../../providers/ElementProvider.jsx';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import parser from 'html-react-parser';
 import DropMenu from '../../components/modal-windows/drop-menu/DropMenu.jsx';
 import { useNavigate } from 'react-router-dom';
@@ -193,18 +193,22 @@ function Post({postId, userPhoto, groupOwnerId, userId, userName, postData, post
                 <div className={styles['post-photo']}>
                     <img src={postPhotos} loading='lazy'/>
                 </div> } */}
-                {postPhotos && 
-                    <div className={styles['images-body']}>
-                        <div className={styles[`images-wrapper_${postPhotos.length}`]}>
-                            {postPhotos.map((image, index)=> (
-                                <motion.div className={styles[`image_${index}`]}
-                                whileTap={{scale: 1.5}}>
-                                    <img src={image}
-                                    onClick={() => handlePhotoClick(postPhotos, index)}/> 
-                                </motion.div>
-                            ))}
-                        </div>
-                    </div> }
+                <AnimatePresence>
+                    {postPhotos && 
+                        <div className={styles['images-body']}>
+                            <div className={styles[`images-wrapper_${postPhotos.length}`]}>
+                                {postPhotos.map((image, index)=> (
+                                    <motion.div className={styles[`image_${index}`]}
+                                    whileTap={{scale: 1.5, overflow:'none'}}
+                                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}>
+                                        <img src={image}
+                                        onClick={() => handlePhotoClick(postPhotos, index)}
+                                        /> 
+                                    </motion.div>
+                                ))}
+                            </div>
+                        </div> }
+                </AnimatePresence>
             {postText && 
                 <div className={styles['post-text']}
                     style={{
