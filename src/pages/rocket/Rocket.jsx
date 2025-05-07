@@ -198,7 +198,7 @@ function Rocket(){
             titleColor: theme.text_first_color,
             showArrow: true,
             arrowColor: theme.text_first_color,
-            arrowLink: () => navigateTo('game-menu'),
+            arrowLink: () => navigateTo('/game-menu'),
             isHeaderBackground: true,
             headerBackground: theme.background_color,
             isHeader: true,

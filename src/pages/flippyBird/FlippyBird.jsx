@@ -14,7 +14,7 @@ export default function FlippyBird(){
             iconColor: theme.icon_color,
             titleColor: theme.text_first_color,
             showArrow: true,
-            arrowLink: () => navigateTo(`/group-list`),
+            arrowLink: () => navigateTo(`/game-menu`),
             arrowColor: theme.text_first_color,
             isHeaderBackground: true,
             headerBackground: theme.background_color,
