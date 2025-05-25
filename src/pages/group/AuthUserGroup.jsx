@@ -661,7 +661,7 @@ function AuthUserGroup() {
                             <button
                                 className={styles['circle-button']}
                                 style={{
-                                    color: theme.text_first_color,
+                                    color: theme.text_third_color,
                                     background: theme.first_color,
                                 }}
                                 onClick={copyId}
@@ -679,7 +679,7 @@ function AuthUserGroup() {
                             <button className={styles['quit-button']}
                                 style={{
                                 background: groupData.members && groupData.members.includes(authUser._id) ? theme.element_second_color : theme.first_color,
-                                color: theme.text_first_color
+                                color: groupData.members && groupData.members.includes(authUser._id) ? theme.text_first_color : theme.text_third_color,
                                 }}
                                 onClick={followUser}>
                                 {groupData.members && groupData.members.includes(authUser._id) ? 'Отписаться' : 'Подписаться'}
@@ -701,7 +701,7 @@ function AuthUserGroup() {
                                 >
                                     <path
                                         d="M14.7563 3.36828C15.0812 3.04333 15.0812 2.50174 14.7563 2.19345L12.8066 0.243716C12.4983 -0.0812387 11.9567 -0.0812387 11.6317 0.243716L10.0986 1.7685L13.2232 4.89307M0 11.8754V15H3.12457L12.34 5.77628L9.21539 2.65171L0 11.8754Z"
-                                        fill={theme.text_first_color}
+                                        fill={theme.text_third_color}
                                     />
                                 </svg>
                             </button>
@@ -721,7 +721,7 @@ function AuthUserGroup() {
                         <div className={styles['item-info']}>
                             <div
                                 className={styles['item-name']}
-                                style={{ color: theme.text_first_color }}
+                                style={{ color: theme.text_third_color }}
                             >
                                 {isGroupCreated ? 'Открыть чат' : 'Создать чат'}
                             </div>
@@ -739,7 +739,7 @@ function AuthUserGroup() {
                             >
                                 <path
                                     d="M1.70711 10.7071C1.31658 11.0976 0.683418 11.0976 0.292893 10.7071C-0.0976311 10.3166 -0.0976311 9.68342 0.292893 9.29289L1.70711 10.7071ZM10 4.72575e-08C10.5523 -3.74211e-07 11 0.447715 11 1L11 10C11 10.5523 10.5523 11 10 11C9.44772 11 9 10.5523 9 10L9 2L1 2C0.447715 2 2.8711e-07 1.55228 2.8711e-07 1C2.8711e-07 0.447715 0.447715 -1.63477e-07 1 -1.63477e-07L10 4.72575e-08ZM0.292893 9.29289L9.29289 0.292893L10.7071 1.70711L1.70711 10.7071L0.292893 9.29289Z"
-                                    fill={theme.text_first_color}
+                                    fill={theme.text_third_color}
                                 />
                             </svg>
                         </div>
@@ -770,7 +770,7 @@ function AuthUserGroup() {
                             >
                                 <path
                                     d="M1.70711 10.7071C1.31658 11.0976 0.683418 11.0976 0.292893 10.7071C-0.0976311 10.3166 -0.0976311 9.68342 0.292893 9.29289L1.70711 10.7071ZM10 4.72575e-08C10.5523 -3.74211e-07 11 0.447715 11 1L11 10C11 10.5523 10.5523 11 10 11C9.44772 11 9 10.5523 9 10L9 2L1 2C0.447715 2 2.8711e-07 1.55228 2.8711e-07 1C2.8711e-07 0.447715 0.447715 -1.63477e-07 1 -1.63477e-07L10 4.72575e-08ZM0.292893 9.29289L9.29289 0.292893L10.7071 1.70711L1.70711 10.7071L0.292893 9.29289Z"
-                                    fill={theme.text_first_color}
+                                    fill={theme.text_third_color}
                                 />
                             </svg>
                         </div>
@@ -801,7 +801,7 @@ function AuthUserGroup() {
                             >
                                 <path
                                     d="M1.70711 10.7071C1.31658 11.0976 0.683418 11.0976 0.292893 10.7071C-0.0976311 10.3166 -0.0976311 9.68342 0.292893 9.29289L1.70711 10.7071ZM10 4.72575e-08C10.5523 -3.74211e-07 11 0.447715 11 1L11 10C11 10.5523 10.5523 11 10 11C9.44772 11 9 10.5523 9 10L9 2L1 2C0.447715 2 2.8711e-07 1.55228 2.8711e-07 1C2.8711e-07 0.447715 0.447715 -1.63477e-07 1 -1.63477e-07L10 4.72575e-08ZM0.292893 9.29289L9.29289 0.292893L10.7071 1.70711L1.70711 10.7071L0.292893 9.29289Z"
-                                    fill={theme.text_first_color}
+                                    fill={theme.text_third_color}
                                 />
                             </svg>
                         </div>
@@ -832,7 +832,7 @@ function AuthUserGroup() {
                             >
                                 <path
                                     d="M1.70711 10.7071C1.31658 11.0976 0.683418 11.0976 0.292893 10.7071C-0.0976311 10.3166 -0.0976311 9.68342 0.292893 9.29289L1.70711 10.7071ZM10 4.72575e-08C10.5523 -3.74211e-07 11 0.447715 11 1L11 10C11 10.5523 10.5523 11 10 11C9.44772 11 9 10.5523 9 10L9 2L1 2C0.447715 2 2.8711e-07 1.55228 2.8711e-07 1C2.8711e-07 0.447715 0.447715 -1.63477e-07 1 -1.63477e-07L10 4.72575e-08ZM0.292893 9.29289L9.29289 0.292893L10.7071 1.70711L1.70711 10.7071L0.292893 9.29289Z"
-                                    fill={theme.text_first_color}
+                                    fill={theme.text_third_color}
                                 />
                             </svg>
                         </div>

@@ -249,7 +249,7 @@ function EditProfile({fetchUserPreferences, handleEdit}){
                         onClick={() => handleCoverChange(color)}
                         >
                         {cover === color && (
-                            <div className={styles['active-circle']} style={{ borderColor: isLightColor(color) ? "#0A0B10" : '#fff' }}></div>
+                            <div className={styles['active-circle']} style={{ borderColor: isLightColor(color) ? "#000" : '#fff' }}></div>
                         )}
                         </div>
                     ))}

@@ -24,7 +24,7 @@ function PromoBlock({name, buttonText, onClick}){
                 onClick={onClick}>
                 <h4 className={styles['button-name']}
                     style={{
-                        color: theme.text_first_color
+                        color: theme.text_third_color
                     }}>{buttonText}</h4>
                 <div className={styles['button-circle']}
                     style={{

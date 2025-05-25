@@ -435,7 +435,7 @@ function isLightColor(color) {
                     <div className={styles['button-container']}>
                         <button className={styles['quit-button']}
                             style={{
-                                color: theme.text_first_color,
+                                color: theme.text_third_color,
                                 background: theme.first_color
                             }}
                             onClick={handleGroupCreate}>Создать</button>

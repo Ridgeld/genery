@@ -30,7 +30,7 @@ export default function ChatBody({id, name, photo, lastMessage, onClick}) {
                 </div>
                 <div className={styles['chat-last-message']}
                     style={{
-                        color: theme.element_second_color
+                        color: theme.text_second_color
                     }}>
                     {parsedText(lastMessage)}
                 </div>

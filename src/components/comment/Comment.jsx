@@ -116,7 +116,7 @@ function Comment({isReply, userId, userPhoto, userName, text, showUserProfile, o
                     {!isReply && 
                         <button className={styles['answer-button']}
                             style={{
-                                color: theme.element_second_color
+                                color: theme.text_second_color
                             }}
                             onClick={() => onReply({ userName, commentId })}>Ответить</button> }
                 </div>

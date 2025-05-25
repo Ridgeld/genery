@@ -181,6 +181,7 @@ function EmojiPanel({isShow, isImages, isTop, marginTop, onEmojiSelect}) {
                             background: currentCategory === category.name ? theme.element_second_color : 'none',
                             // fontFamily: category.fontFamily,
                             '--font': category.fontFamily,
+                            color: theme.text_first_color
                         }}>
                         {category.emojiIcon ? category.icon : category.emojiIconImg ? <img src={category.icon} className={styles['emoji-img']}/>: parse(iconWithThemeColor)}
                     </button>
@@ -216,7 +217,8 @@ function EmojiPanel({isShow, isImages, isTop, marginTop, onEmojiSelect}) {
                                         className={styles.emoji}
                                         key={index}
                                         style={{
-                                            fontFamily: category.fontFamily
+                                            fontFamily: category.fontFamily,
+                                            color: theme.text_first_color
                                         }}
                                         onClick={() => handleEmojiClick(emoji, category.isImgEmoji, category.fontFamily)}
                                         onMouseEnter={(e) => {

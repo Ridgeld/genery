@@ -11,40 +11,40 @@ function SelectMode(){
 
     const blocks = [
         {
-            blockColor: theme.second_color,
+            blockColor: theme.block_second_color,
             name: 'English',
             labelName: '5 секунд',
-            textColor: theme.background_color,
+            textColor: theme.text_first_color,
             labelcolor: theme.background_color,
             labelTextColor: theme.text_first_color,
             arrowBackground: theme.block_arrow_first_color,
             onClick: () => navigateTo('/quiz/english')
         },
         {
-            blockColor: theme.third_color,
+            blockColor: theme.block_third_color,
             name: 'Кыргызский язык',
             labelName: '20 секунд',
             textColor: theme.text_first_color,
             labelcolor: theme.text_first_color,
             labelTextColor: theme.background_color,
-            arrowBackground: theme.block_arrow_first_color,
+            arrowBackground: theme.block_arrow_second_color,
             onClick:  () => navigateTo('/quiz/kyrgyz')
         },
         {
-            blockColor: theme.first_color,
+            blockColor: theme.block_first_color,
             name: 'Русский язык',
             labelName: '15 секунд',
             textColor: theme.text_first_color,
             labelcolor: theme.text_first_color,
             labelTextColor: theme.background_color,
-            arrowBackground: theme.block_arrow_first_color,
+            arrowBackground: theme.block_arrow_third_color,
             onClick:  () => navigateTo('/quiz/russian')
         },
         {
-            blockColor: theme.second_color,
+            blockColor: theme.block_second_color,
             name: 'Математика',
             labelName: '20 секунд',
-            textColor: theme.background_color,
+            textColor: theme.text_first_color,
             labelcolor: theme.background_color,
             labelTextColor: theme.text_first_color,
             arrowBackground: theme.block_arrow_first_color,

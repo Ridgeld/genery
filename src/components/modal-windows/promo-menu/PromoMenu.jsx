@@ -189,7 +189,7 @@ function PromoMenu({isShow, setShow, onClick}){
                     <button className={styles['main-button']}
                         style={{
                             background: disable ? theme.element_second_color : theme.first_color,
-                            color: theme.text_first_color,
+                            color: theme.text_third_color,
                             // '--disableColor': theme.element_second_color
                         }}
                         disabled={disable}

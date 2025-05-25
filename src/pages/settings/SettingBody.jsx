@@ -54,7 +54,7 @@ function SettingBody({itemName, itemIcon, authUserCensor, onCensorChange}){
                 onClick={handleClick}>
                 <div className={styles['check-box-circle']}
                 style={{
-                    background: theme.text_first_color,
+                    background: authUserCensor && itemName === 'Цензура' ? theme.text_third_color : theme.text_first_color,
                     marginLeft: authUserCensor && itemName === 'Цензура' ? '29px' : '0',
                 }}></div>
             </div>

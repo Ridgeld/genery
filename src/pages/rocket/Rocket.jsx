@@ -342,7 +342,7 @@ function Rocket(){
                     <button className={styles['add-bet']}
                         style={{
                             background: theme.first_color,
-                            color: theme.text_first_color
+                            color: theme.text_third_color
                         }}
                         onClick={buttonName==='Ставка' ? addBet : addWin }>{buttonName}</button>
                 </div>

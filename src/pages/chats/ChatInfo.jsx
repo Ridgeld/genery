@@ -212,7 +212,7 @@ function ChatInfo({ id, handleShowInfo }) {
                         {groupData.name}
                     </div>
                 </div>
-                <div className={styles['group-biography']} style={{ color: theme.element_second_color}}>
+                <div className={styles['group-biography']} style={{ color: theme.text_second_color}}>
                     {groupData.description}
                 </div>
             </div>

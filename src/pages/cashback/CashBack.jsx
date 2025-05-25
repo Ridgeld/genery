@@ -113,7 +113,7 @@ function CashBack(){
             <MainButton
                 name="Рассчитать"
                 backgroundColor={theme.first_color}
-                textColor={theme.text_first_color}
+                textColor={theme.text_third_color}
                 onButtonClick={calculateWin}/>
         </div>
     )

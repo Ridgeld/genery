@@ -14,7 +14,17 @@ const colorCircles = [
     {
         name: 'winter_2024',
         colors: ['#CBE0FF', '#85AFED']
+    },
+    {
+        name: 'simple_light',
+        colors: ['#E8E8E8', '#000000']
+    },
+    {
+        name: 'material_ui',
+        colors: ['#97C5E7', '#D297E7', '#A2E797']
     }
+
+    
 
 ]
 export default colorCircles

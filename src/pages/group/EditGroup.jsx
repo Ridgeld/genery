@@ -428,6 +428,57 @@ function EditGroup({ fetchGroupData, handleEdit}) {
     const handleCoverChange = (color) =>{
         setCover(color);
     };
+    function isLightColor(color) {
+        if (!color) return false; // Проверка на null или undefined
+
+        let r, g, b;
+
+        if (color.startsWith("#")) {
+            if (color.length === 4) { // Обработка коротких hex кодов (#RGB)
+                r = parseInt(color[1] + color[1], 16);
+                g = parseInt(color[2] + color[2], 16);
+                b = parseInt(color[3] + color[3], 16);
+            } else if (color.length === 7) { // Обработка полных hex кодов (#RRGGBB)
+                r = parseInt(color.slice(1, 3), 16);
+                g = parseInt(color.slice(3, 5), 16);
+                b = parseInt(color.slice(5, 7), 16);
+            } else {
+                return false; // Некорректный формат hex
+            }
+        } else if (color.startsWith("rgb")) {
+            const values = color.substring(color.indexOf('(') + 1, color.lastIndexOf(')')).split(',').map(Number);
+            if (values.length === 3) {
+                r = values[0];
+                g = values[1];
+                b = values[2];
+            } else {
+                return false; // Некорректный формат rgb
+            }
+        } else {
+          // Попробуем преобразовать именованный цвет с помощью CSS
+          const tempDiv = document.createElement('div');
+          tempDiv.style.color = color;
+          document.body.appendChild(tempDiv);
+          const computedColor = window.getComputedStyle(tempDiv).color;
+          document.body.removeChild(tempDiv);
+
+          if (computedColor.startsWith("rgb")) {
+            const values = computedColor.substring(computedColor.indexOf('(') + 1, computedColor.lastIndexOf(')')).split(',').map(Number);
+            if (values.length === 3) {
+                r = values[0];
+                g = values[1];
+                b = values[2];
+            } else {
+                return false; // Некорректный формат rgb
+            }
+          } else {
+            return false; // Неподдерживаемый формат цвета
+          }
+        }
+
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        return brightness > 180;
+    }
 
     const handleDataChange = async () => {
         let photoUrl = null;
@@ -526,7 +577,7 @@ function EditGroup({ fetchGroupData, handleEdit}) {
                         onClick={() => handleCoverChange(color)}
                         >
                         {cover === color && (
-                            <div className={styles['active-circle']} style={{ borderColor: theme.text_first_color }}></div>
+                            <div className={styles['active-circle']} style={{ borderColor: isLightColor(color) ? "#000" : '#fff' }}></div>
                         )}
                         </div>
                     ))}
@@ -565,7 +616,7 @@ function EditGroup({ fetchGroupData, handleEdit}) {
                     <button className={styles['quit-button']}
                         style={{
                             background: theme.first_color,
-                            color: theme.text_first_color,
+                            color: theme.text_third_color,
                         }}
                         onClick={handleDataChange}>Сохранить</button>
                 </div>

@@ -281,7 +281,7 @@ const handleDelete = async (file) => {
                         <button className={styles['button']}
                             style={{
                                 background: theme.first_color,
-                                color: theme.text_first_color
+                                color: theme.text_third_color
                             }}
                             onClick={handleEdit}>
                             Сохранить

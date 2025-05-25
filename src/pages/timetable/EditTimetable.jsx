@@ -308,7 +308,7 @@ function EditTimetable({id, handleEdit}){
                             className={`${styles['day']} ${activeDay === index ? styles['active'] : ''}`}
                             style={{
                                 background: activeDay === index ? theme.first_color : theme.element_first_color,
-                                color: theme.text_first_color,
+                                color: activeDay === index ? theme.text_third_color : theme.text_first_color,
                             }}
                         >
                             {dayData.day}
@@ -354,7 +354,7 @@ function EditTimetable({id, handleEdit}){
             <button className={styles['button']}
                 style={{
                     background: theme.first_color,
-                    color: theme.text_first_color
+                    color: theme.text_third_color
                 }}
                 onClick={handleEdit}>
                 Сохранить

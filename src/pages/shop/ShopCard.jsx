@@ -46,7 +46,7 @@ function ShopCard({category, id, photo, name, label, labelTextColor, labelColor,
                     <button className={styles['buy-button']}
                         style={{
                             background: theme.first_color,
-                            color: theme.text_first_color
+                            color: theme.text_third_color
                         }}
                         onClick={() => onBuyItem(category, id, price)}>
                             {isFree ? <>Бесплатно</> 

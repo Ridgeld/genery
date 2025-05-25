@@ -46,7 +46,7 @@ export default function QuoteGenerate() {
         <MainButton 
           name={'Сгенерировать'}
           backgroundColor={theme.first_color}
-          textColor={'white'}
+          textColor={theme.text_third_color}
           onButtonClick={() => setQoute(qoutes[Math.floor(Math.random() * qoutes.length)])}/>
       </div>
     );

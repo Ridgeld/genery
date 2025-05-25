@@ -29,7 +29,7 @@ function SearchInput({value, onChange, placeholder}){
                 onChange={onChange}
                 style={{
                     '--caret-color': theme.first_color,
-                    '--placeholder-color': theme.text_third_color,
+                    '--placeholder-color': theme.text_second_color,
                     color: theme.text_first_color
                 }}/>
             {/* <button className={styles['button']}

@@ -61,7 +61,7 @@ function AlertNotification({title, text, isShow, firstButtonName, secondButtonNa
                     <button className={styles['second-button']}
                         style={{
                             background: theme.first_color,
-                            color: theme.text_first_color
+                            color: theme.text_third_color
                         }}
                         onClick={secondButtonOnClick}>
                         {secondButtonName}

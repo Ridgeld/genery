@@ -82,7 +82,7 @@ export default function Message({userId, userName, nameColor, userPhoto,photos,h
                 {text && 
                     <div className={styles['text']}
                         style={{
-                            color: theme.text_first_color
+                            color: theme.text_third_color
                         }}>
                         {/* {text} */}
                         {parsedText(text)}
@@ -90,7 +90,7 @@ export default function Message({userId, userName, nameColor, userPhoto,photos,h
                 }
                 <div className={styles['time']}
                     style={{
-                        color: theme.text_first_color,
+                        color: theme.text_third_color,
                         marginLeft: 'auto'
                     }}>
                     {time}
@@ -140,7 +140,7 @@ export default function Message({userId, userName, nameColor, userPhoto,photos,h
                 </div>
                 <div className={styles['time']}
                     style={{
-                        color: theme.element_second_color,
+                        color: theme.text_first_color,
                         marginLeft: userId === authUser._id ? '9' : 'auto'
                     }}>
                     {time}

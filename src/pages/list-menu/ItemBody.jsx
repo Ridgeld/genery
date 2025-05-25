@@ -32,7 +32,7 @@ function ItemBody({name, textColor, icon, link, category}){
     };
 
     const categoryColors = {
-        first: { circle: theme.first_color, icon: theme.text_first_color },
+        first: { circle: theme.first_color, icon: theme.text_third_color },
         second: { circle: theme.second_color, icon: theme.text_second_color },
         third: { circle: theme.third_color, icon: theme.text_first_color },
         contact: { circle: theme.element_first_color, icon: theme.text_first_color }

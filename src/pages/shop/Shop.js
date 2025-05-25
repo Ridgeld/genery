@@ -1,5 +1,87 @@
 const items = [
     {
+        category: 'material_ui',
+        img: 'shop/material_ui/cover.png',
+        textImg: 'shop/material_ui/text-img.png',
+        items: [
+            {   
+                id: "material_ui",
+                category: 'theme',
+                img: 'shop/material_ui/img-1.png',
+                name: 'Material UI',
+                label: 'MAXIMILIAN',
+                labelTextColor: '#000',
+                labelColor: '#97C5E7',
+                isFree: true,
+                price: 0,
+            },
+            {   
+                id: "material_ui",
+                category: 'colors',
+                img: 'shop/material_ui/img-2.png',
+                name: 'Material colors',
+                label: 'MAXIMILIAN',
+                labelTextColor: '#000',
+                labelColor: '#97C5E7',
+                isFree: true,
+                price: 500,
+            },
+        ]
+    },
+
+    {
+        category: 'simple_light',
+        img: 'shop/simple_light/cover.png',
+        textImg: 'shop/simple_light/text-img.png',
+        items: [
+            {   
+                id: "simple_light",
+                category: 'theme',
+                img: 'shop/simple_light/img-1.png',
+                name: 'Светлая простота',
+                label: 'Тест',
+                labelTextColor: '#000',
+                labelColor: '#fff',
+                isFree: true,
+                price: 0,
+            },
+            {   
+                id: "simple_light",
+                category: 'colors',
+                img: 'shop/simple_light/img-2.png',
+                name: 'Светлые краски',
+                label: 'Тест',
+                labelTextColor: '#000',
+                labelColor: '#fff',
+                isFree: true,
+                price: 0,
+            },
+            {   
+                id: "simple_light",
+                category: 'emojies',
+                img: 'shop/simple_light/img-3.png',
+                name: 'Просто эмодзи',
+                label: 'Тест',
+                labelTextColor: '#000',
+                labelColor: '#fff',
+                isFree: true,
+                price: 0,
+            },
+            {   
+                id: "simple_light",
+                category: 'all',
+                img: 'shop/simple_light/img-4.png',
+                name: 'Просто набор',
+                label: 'Тест',
+                labelTextColor: '#000',
+                labelColor: '#fff',
+                isFree: true,
+                price: 0,
+            },
+        ]
+    }, 
+
+    {
         category: 'winter_2024',
         img: 'shop/winter_2024/cover.png',
         textImg: 'shop/winter_2024/text-img.png',

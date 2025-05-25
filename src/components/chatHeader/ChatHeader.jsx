@@ -25,7 +25,7 @@ export default function ChatHeader({id, photo, name, members, onClick, onHeaderC
                     }}>{name}</h4>
                 <h6 className={styles['members']}
                     style={{
-                        color: theme.element_second_color
+                        color: theme.text_second_color
                     }}>{`${members} участника`}</h6>
             </div>
             <button className={styles['arrow']}

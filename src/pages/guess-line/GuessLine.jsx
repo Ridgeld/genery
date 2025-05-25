@@ -292,7 +292,7 @@ const handleResize = () => {
       currentLine.frontalProjection, 
       cellSize, 
       frontalArea,
-      theme.third_color
+      theme.text_first_color
     );
     
     // Рисуем горизонтальную проекцию
@@ -515,13 +515,13 @@ const drawProjection = (ctx, points, cellSize, area, color) => {
                 color: theme.text_first_color,
                 caretColor: theme.first_color,
                 backgroundColor: theme.element_first_color,
-                '--placeholder-color': theme.text_third_color,
+                '--placeholder-color': theme.text_second_color,
 
             }}
             onChange={handleAnswerChange}/>
             <button className={styles['check-button']}
                 style={{
-                    color: theme.text_first_color,
+                    color: theme.text_third_color,
                     background: theme.first_color
                 }}
                 onClick={checkAnswer}>Проверить</button>
@@ -536,7 +536,7 @@ const drawProjection = (ctx, points, cellSize, area, color) => {
                 onClick={showCorrectAnswer}>Показать название</button>
           <button className={styles['next-button']}
                 style={{
-                    color: theme.text_first_color,
+                    color: theme.text_third_color,
                     background: theme.first_color
                 }}
                 onClick={goToNextLine}>Далее</button>

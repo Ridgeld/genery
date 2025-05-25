@@ -93,7 +93,7 @@ function About(){
             isBorder={true}
             borderColor={theme.block_border_color} 
             textColor = {theme.text_first_color}
-            arrowColor = {theme.text_first_color}
+            arrowColor = {theme.text_third_color}
             arrowBackgroundColor = {theme.block_arrow_first_color}
             linkTo = "/updates"/>
         <Block 
@@ -103,7 +103,7 @@ function About(){
             isBorder={false}
             borderColor={theme.block_border_color} 
             textColor = {theme.text_second_color} 
-            arrowColor = {theme.text_second_color}  
+            arrowColor = {theme.text_third_color}  
             arrowBackgroundColor = {theme.block_arrow_second_color} 
             linkTo = "/game-menu"/>
         <Block 
@@ -113,7 +113,7 @@ function About(){
             isBorder={false}
             borderColor={theme.block_border_color} 
             textColor = {theme.text_first_color} 
-            arrowColor = {theme.text_first_color} 
+            arrowColor = {theme.text_third_color} 
             arrowBackgroundColor = {theme.block_arrow_third_color} 
             linkTo = {`/timetable/${authUser.mainGroup}`}/>
         <Block 
@@ -124,7 +124,7 @@ function About(){
             borderColor={theme.block_border_color} 
             textColor = {theme.text_first_color}
             isCircleArrow = {false}
-            arrowColor = {theme.text_first_color}
+            arrowColor = {theme.text_third_color}
             arrowBackgroundColor = {theme.block_arrow_first_color}
             linkTo = "/shop"/>
       </div>

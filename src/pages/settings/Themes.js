@@ -17,6 +17,14 @@ const themes = {
         name: "winter_2024",
         img: 'themes/winter_2024/preview.png',
     },
+    simple_light: {
+        name: "simple_light",
+        img: 'themes/simple_light/preview.png',
+    },
+    material_ui: {
+        name: "material_ui",
+        img: 'themes/material_ui/preview.png',
+    },
 };
 
 

@@ -416,7 +416,7 @@ const fetchUsers = async () => {
                 }}
                 onClick={() => navigateTo('/create-group')}>
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M1 9H9M17 9L9 9M9 9V1M9 9L9 17" stroke={theme.text_first_color} strokeWidth="2" strokeLinecap="round"/>
+                    <path d="M1 9H9M17 9L9 9M9 9V1M9 9L9 17" stroke={theme.text_third_color} strokeWidth="2" strokeLinecap="round"/>
                 </svg>
             </button>
         </div>
