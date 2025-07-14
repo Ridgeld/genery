@@ -48,8 +48,10 @@ function Post({postId, userPhoto, groupOwnerId, userId, userName, postData, post
         postAction(id, postId)
         setDropIsShow(false)
     }
-    const handlePhotoClick = (photos, index) => {
-        photoClick(photos, index)
+    const handlePhotoClick = (photos, index, postId) => {
+        photoClick(photos, index, postId)
+        console.log(postId)
+        // console.log(`image-${postId}-${index}`)
         // setViewData({
         //     isShow: true,
         //     images: photos,
@@ -193,22 +195,30 @@ function Post({postId, userPhoto, groupOwnerId, userId, userName, postData, post
                 <div className={styles['post-photo']}>
                     <img src={postPhotos} loading='lazy'/>
                 </div> } */}
-                <AnimatePresence>
                     {postPhotos && 
                         <div className={styles['images-body']}>
                             <div className={styles[`images-wrapper_${postPhotos.length}`]}>
                                 {postPhotos.map((image, index)=> (
-                                    <motion.div className={styles[`image_${index}`]}
-                                    whileTap={{scale: 1.5, overflow:'none'}}
-                                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}>
-                                        <img src={image}
-                                        onClick={() => handlePhotoClick(postPhotos, index)}
-                                        /> 
-                                    </motion.div>
+                                    // <motion.div className={styles[`image_${index}`]}
+                                    // whileTap={{scale: 1.5, overflow:'none'}}
+                                    // transition={{ type: 'spring', stiffness: 300, damping: 20 }}>
+                                    //     <motion.img src={image}
+                                    //         onClick={() => handlePhotoClick(postPhotos, index)}
+                                    //         layoutId="image"
+                                    //     /> 
+                                    // </motion.div>
+
+                                    <div className={styles[`image_${index}`]}>
+                                            <motion.img src={image}
+                                                onClick={() => handlePhotoClick(postPhotos, index, postId)}
+                                                layoutId={`image-${postId}-${index}`}
+                                                layout transition={{ type: 'spring', stiffness: 180, damping: 16 }}
+                                
+                                            /> 
+                                    </div>
                                 ))}
                             </div>
                         </div> }
-                </AnimatePresence>
             {postText && 
                 <div className={styles['post-text']}
                     style={{

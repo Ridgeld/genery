@@ -647,3 +647,26 @@
         width: calc(60% - 20px);
     }
 }
+
+.imageWrapper {
+  width: 100%;
+  height: 100%;
+  overflow: hidden; // <-- обрезаем визуально
+  border-radius: 12px;
+  position: relative;
+}
+
+.motionWrapper {
+  position: absolute; // <-- нужно, чтобы motion точно знал реальную позицию
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.motionWrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; // или contain — как тебе удобнее
+  border-radius: 12px;
+}

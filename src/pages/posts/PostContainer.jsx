@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 import parser from 'html-react-parser';
+import { AnimatePresence } from 'framer-motion';
 
 function PostContainer(){
     const [posts, setPosts] = useState([]);
@@ -290,11 +291,12 @@ function PostContainer(){
             console.error("Error adding document: ", error);
         }
     };
-    const openViewer = (photos, index) =>{
+    const openViewer = (photos, index, postId) =>{
         setViewData({
             isShow: true,
             images: photos,
-            index: index
+            index: index,
+            postId: postId
         })
     }
     const closeAlert = () =>{
@@ -362,11 +364,23 @@ function PostContainer(){
                   background-color: rgba($color: #000000, $alpha: 0.3); /* Цвет фона */
                 }
             `}</style>
-            <ImageViewer
-                isShow={viewData.isShow}
-                images={viewData.images}
-                index={viewData.index}
-                onClose={()=> setViewData({isShow: false})}/>
+            {/* <AnimatePresence>
+                <ImageViewer
+                    isShow={viewData.isShow}
+                    images={viewData.images}
+                    index={viewData.index}
+                    postId={viewData.postId}
+                    onClose={()=> setViewData({isShow: false})}/>
+            </AnimatePresence> */}
+            <AnimatePresence>
+                <ImageViewer
+                    isShow={viewData.isShow}
+                    images={viewData.images}
+                    index={viewData.index}
+                    postId={viewData.postId}
+                    onClose={() => setViewData({ isShow: false })}
+                />
+            </AnimatePresence>
             <div className={styles['fixed-post-input']}
                 style={{
                     background: theme.background_color

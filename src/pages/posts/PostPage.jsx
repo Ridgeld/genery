@@ -26,7 +26,8 @@ const PostPage = () => {
     const [viewData, setViewData] = useState({
         isShow: false,
         images: [],
-        index: null
+        index: null,
+        postId: ''
     });
     const [slipProp, setSlipProp] = useState({
         isShow: false,
@@ -134,11 +135,13 @@ const PostPage = () => {
         return () => unsubscribe();
     }, [id]);
 
-    const openViewer = (photos, index) =>{
+    const openViewer = (photos, index, postId) =>{
+        console.log(postId)
         setViewData({
             isShow: true,
             images: photos,
-            index: index
+            index: index,
+            postId: postId
         })
     }
     const closeAlert = () =>{
@@ -401,12 +404,15 @@ const PostPage = () => {
                   background-color: rgba($color: #000000, $alpha: 0.3); /* Цвет фона */
                 }
             `}</style>
-            <ImageViewer
-                isShow={viewData.isShow}
-                images={viewData.images}
-                index={viewData.index}
-                onClose={() => setViewData({ isShow: false })}
-            />
+            <AnimatePresence>
+                <ImageViewer
+                    isShow={viewData.isShow}
+                    images={viewData.images}
+                    index={viewData.index}
+                    postId={viewData.postId}
+                    onClose={() => setViewData({ isShow: false })}
+                />
+            </AnimatePresence>
             <AlertNotification
                 title={alertProp.title}
                 text={alertProp.text}
