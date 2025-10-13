@@ -141,7 +141,7 @@ const themes = {
         gradient_first_color: '#000',
         gradient_second_color: '#000',
         light_color: 'green',
-        block_first_color: 'none',
+        block_first_color: '#FCFCFC',
         block_second_color: '#E8E8E8',
         block_third_color: '#E8E8E8',
         block_border_color: '#E8E8E8',
