@@ -57,8 +57,8 @@ export default function Analysis(){
 
     return(
         <div className={styles['container']}>
-            {/* <iframe className={styles['game']} src="https://students-rating-private.vercel.app/home"></iframe> */}
-            <div className={''}>Колесо</div>
+            <iframe className={styles['game']} src="https://ridgeld.github.io/engenering_analysis/"></iframe>
+            {/* <div className={''}>Колесо</div> */}
         </div>
     )
 }
