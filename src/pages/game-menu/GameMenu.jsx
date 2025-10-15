@@ -187,7 +187,7 @@ function GameMenu(){
             arrowBackgroundColor = {theme.block_arrow_first_color}
             linkTo = "/casino"/>
         <Block 
-            name = "Расчет удара" 
+            name = "Построение механизма" 
             description = "256 м/c  - ответ верный" 
             backgroundColor = {theme.first_color}
             isBorder={true}

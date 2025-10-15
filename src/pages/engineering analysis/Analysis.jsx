@@ -57,7 +57,7 @@ export default function Analysis(){
 
     return(
         <div className={styles['container']}>
-            <iframe className={styles['game']} src="https://ridgeld.github.io/engenering_analysis/"></iframe>
+            <iframe className={styles['game']} src="https://genery-lab.vercel.app/"></iframe>
             {/* <div className={''}>Колесо</div> */}
         </div>
     )
