@@ -6,6 +6,7 @@ import Post from './Post.jsx';
 import { useAuth } from "../../providers/Authprovired.jsx";
 import { doc, getDoc, updateDoc, arrayUnion, collection, query, orderBy, onSnapshot, serverTimestamp, addDoc, setDoc, increment, deleteDoc, getDocs, where  } from 'firebase/firestore';
 import { db } from '../../../firebase.js';
+import { AnimatePresence, motion } from 'framer-motion';
 import MessageInput from '../../components/inputs/messageInput/MessageInput.jsx';
 import ImageViewer from '../../components/modal-windows/image-viewer/ImageViewer.jsx';
 import LoadingPost from './LoadingPost.jsx';

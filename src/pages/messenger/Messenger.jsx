@@ -66,6 +66,7 @@ function Messenger(){
     //         setMessage('');
     //     }
     // };
+    
     useEffect(() => {
         setElementColors({
             iconColor: theme.icon_color,
@@ -165,6 +166,7 @@ function Messenger(){
     //         }
     //     }
     // };
+    
     const handleSend = async (text, images) => {
         // setShowEmoji(false)
         // alert(text)
@@ -267,6 +269,8 @@ function Messenger(){
             index: index
         })
     }
+    
+
 
 
     return(
@@ -276,6 +280,7 @@ function Messenger(){
                         background: theme.background_color
                     }}>
                 <MessageInput 
+                    addFiles={true}
                     placeholder={'Сообщение'}
                     isPanelTop={false}
                     onSend={handleSend}/>

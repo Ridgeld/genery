@@ -197,6 +197,16 @@ function GameMenu(){
             arrowBackgroundColor = {theme.block_arrow_third_color}
             linkTo = "/analysis"/>
         <Block 
+            name = "Genery AI" 
+            description = "Миллион причин съесть кебаб" 
+            backgroundColor = {theme.second_color}
+            isBorder={true}
+            borderColor={theme.block_border_color} 
+            textColor = {theme.text_first_color}
+            arrowColor = {theme.text_first_color}
+            arrowBackgroundColor = {theme.block_arrow_third_color}
+            linkTo = "/messenger"/>
+        <Block 
             name = "Генератор цитат" 
             description = "Легенда вернулась" 
             backgroundColor = {theme.first_color}

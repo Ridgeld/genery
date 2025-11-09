@@ -8,6 +8,24 @@ import parser from 'html-react-parser';
 
 function MessageContainer({messages, backgroundColor,textColor, date, photoClick }) {
     // console.log(messages.photos);
+    const  formatMessage = (text) => {
+        if (!text) return '';
+
+        // 1. Замена **жирного** текста (используем <b> или <strong>)
+        // /g - глобальный поиск, $1 - то, что находится внутри скобок (сам текст)
+        let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+
+        // 2. Замена _курсивного_ текста (используем <i> или <em>)
+        formattedText = formattedText.replace(/_(.*?)_/g, '<i>$1</i>');
+
+        // 3. Замена переносов строки \n на HTML-тег <br>
+        // Используйте \\n, если в исходном тексте это буквально два символа: обратный слеш и n.
+        // Если же в тексте уже есть реальный перенос строки, используйте просто \n.
+        // Для текста из примера "** жирный текст** _косой текст_ \n - перенос текст" подойдет \n.
+        formattedText = formattedText.replace(/\n/g, '<br>');
+
+        return formattedText;
+    }
 
     const handlePhotoClick = (photos, index) => {
         photoClick(photos, index)
@@ -70,7 +88,9 @@ function MessageContainer({messages, backgroundColor,textColor, date, photoClick
                     <div className={styles['message-text']}
                         style={{
                             color: textColor
-                        }}>{parser(message.text)}
+                        }}
+                        dangerouslySetInnerHTML={{ __html: formatMessage(message.text) }}>
+                            {/* {parser(message.text)} */}
                         {/* {message.text.split('**').map((part, i) => {
                             return i % 2 === 0 ? (
                                 <span key={i}>{part}</span>
