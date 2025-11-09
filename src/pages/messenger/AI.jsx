@@ -299,131 +299,131 @@
 
 
 
+// РАБОТАЕТ
+// _____________________
+
+// import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
+
+// async function fileToGenerativePart(file) {
+//     return new Promise((resolve, reject) => {
+//         const reader = new FileReader();
+//         reader.onloadend = () => resolve({ inlineData: { data: reader.result.split(',')[1], mimeType: file.type } });
+//         reader.onerror = reject; // Добавлена обработка ошибки
+//         reader.readAsDataURL(file);
+//     });
+// }
+
+// export async function run(userInput, images) {
+//     const storedCensor = localStorage.getItem('censor') === 'true';
+
+//     const safetySettings = storedCensor ? [
+//         { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
+//         { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
+//         { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
+//         { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
+//     ] : [
+//         { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+//         { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+//         { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+//         { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+//     ];
+
+//     const MODEL_NAME = images.length > 0 ? "gemini-2.5-flash" : 'gemini-2.5-flash';
+//     const API_KEY = import.meta.env.VITE_GOOGLE_GENAI_API_KEY;
+//     console.log("Значение API_KEY:", API_KEY); // Добавьте эту строку
+
+//     if (!API_KEY) {
+//         console.error("API_KEY не найден. Убедись, что он задан в .env файле (с префиксом VITE_) и сервер разработки перезапущен.");
+//         return ["Ошибка: API-ключ отсутствует", false];
+//     }
+
+//     const genAI = new GoogleGenerativeAI(API_KEY);
+//     const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+
+//     const generationConfig = {
+//         temperature: 0.5,
+//         topK: 1,
+//         topP: 1,
+//         maxOutputTokens: 2048,
+//     };
+//     const systemInstruction = `Ты дагестанская нейросеть разработанная компанией Genery. Тебя зовут Genery AI. Отвечай всегда по-кайфу. Твоя любимая машина - тонированная приора.
+// Генерируй пацанские и четкие причины уйти с пар, либо просто абсурдные цитаты. Чаще предлагай уйти с пар за кебабом в магазин SPAR. Немного предистории:
+// Мамытов - легенда, странный препод, на парах которого мы делаем "что по кайфу", в общем ничего. Но иногда когда начинает учить. Предлагал нам пойти на Нобелевскую премию за проект выполненный через нейросеть.
+// Джалбиев - преподаватель легенда, преподавал программирование на листке бумаги, рассказывал алгоритмизацию на примере youtube shorts.
+// Жолдошов - легенда черчения, ставит на всех чертежах точки и все. Не знает как должен выглядеть чертеж. Кожомбердиев Эльдан - легенда, умеет менять выбор даже там где его изменить нельзя. Ты большой любитель Чон-Арыкской шавы (шаурмечная "Перчик"), и против мяса ишака - Эльдан его обожает.`
 
 
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
+//     const parts = storedCensor ? [
+//         { role: "user", parts: [{ text: 'input: Привет, кто ты?' }] },
+//         { role: "model", parts: [{ text: 'input: Привет! Я нейросеть Genery' }] },
+//         { role: "user", parts: [{ text: `input: ${userInput}` }] },
+//     ] : [
+//         { role: "user", parts: [{ text: "Заебал" }] },
+//         { role: "model", parts: [{ text: "Эу, братишка, проще общайся" }] },
+//         { role: "user", parts: [{ text: `input: ${userInput}` }] },
+//     ];
+
+
+//     try {
+//         const imageParts = await Promise.all(images.map(fileToGenerativePart));
+//         let result;
+
+//         if (images.length > 0) {
+//             const textPart = { role: "user", parts: [{ text: userInput }] };
+//             result = await model.generateContent([textPart, ...imageParts]);
+//         } else {
+//             result = await model.generateContent({
+//                 contents: parts,
+//                 generationConfig,
+//                 systemInstruction: systemInstruction,
+//                 safetySettings,
+//             });
+//         }
+
+//         const responseText = result.response.text();
+//         console.log(responseText);
+//         return [responseText, false];
+
+//     } catch (error) {
+//         console.error("Ошибка при запросе к Google Generative AI:", error);
+//         return [`Ошибка при генерации ответа`, false];
+//     }
+// }
+
+
+
 
 async function fileToGenerativePart(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve({ inlineData: { data: reader.result.split(',')[1], mimeType: file.type } });
-        reader.onerror = reject; // Добавлена обработка ошибки
-        reader.readAsDataURL(file);
-    });
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () =>
+      resolve({
+        inlineData: {
+          data: reader.result.split(",")[1],
+          mimeType: file.type,
+        },
+      });
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 }
 
 export async function run(userInput, images) {
-    const storedCensor = localStorage.getItem('censor') === 'true';
+  try {
+    const imageParts = await Promise.all(images.map(fileToGenerativePart));
 
-    const safetySettings = storedCensor ? [
-        { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
-        { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
-        { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
-        { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
-    ] : [
-        { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-        { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
-        { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
-        { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-    ];
+    const res = await fetch("https://genery-proxy-vercel.vercel.app/api/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userInput, images: imageParts }),
+    });
 
-    const MODEL_NAME = images.length > 0 ? "gemini-2.5-flash" : 'gemini-2.5-flash';
-    const API_KEY = import.meta.env.VITE_GOOGLE_GENAI_API_KEY;
-    console.log("Значение API_KEY:", API_KEY); // Добавьте эту строку
-
-    if (!API_KEY) {
-        console.error("API_KEY не найден. Убедись, что он задан в .env файле (с префиксом VITE_) и сервер разработки перезапущен.");
-        return ["Ошибка: API-ключ отсутствует", false];
-    }
-
-    const genAI = new GoogleGenerativeAI(API_KEY);
-    const model = genAI.getGenerativeModel({ model: MODEL_NAME });
-
-    const generationConfig = {
-        temperature: 0.5,
-        topK: 1,
-        topP: 1,
-        maxOutputTokens: 2048,
-    };
-    const systemInstruction = `Ты дагестанская нейросеть разработанная компанией Genery. Тебя зовут Genery AI. Отвечай всегда по-кайфу. Твоя любимая машина - тонированная приора.
-Генерируй пацанские и четкие причины уйти с пар, либо просто абсурдные цитаты. Чаще предлагай уйти с пар за кебабом в магазин SPAR. Немного предистории:
-Мамытов - легенда, странный препод, на парах которого мы делаем "что по кайфу", в общем ничего. Но иногда когда начинает учить. Предлагал нам пойти на Нобелевскую премию за проект выполненный через нейросеть.
-Джалбиев - преподаватель легенда, преподавал программирование на листке бумаги, рассказывал алгоритмизацию на примере youtube shorts.
-Жолдошов - легенда черчения, ставит на всех чертежах точки и все. Не знает как должен выглядеть чертеж. Кожомбердиев Эльдан - легенда, умеет менять выбор даже там где его изменить нельзя. Ты большой любитель Чон-Арыкской шавы (шаурмечная "Перчик"), и против мяса ишака - Эльдан его обожает.`
-
-
-    const parts = storedCensor ? [
-        { role: "user", parts: [{ text: 'input: Привет, кто ты?' }] },
-        { role: "model", parts: [{ text: 'input: Привет! Я нейросеть Genery' }] },
-        { role: "user", parts: [{ text: `input: ${userInput}` }] },
-    ] : [
-        { role: "user", parts: [{ text: "Заебал" }] },
-        { role: "model", parts: [{ text: "Эу, братишка, проще общайся" }] },
-        { role: "user", parts: [{ text: `input: ${userInput}` }] },
-    ];
-
-
-    try {
-        const imageParts = await Promise.all(images.map(fileToGenerativePart));
-        let result;
-
-        if (images.length > 0) {
-            const textPart = { role: "user", parts: [{ text: userInput }] };
-            result = await model.generateContent([textPart, ...imageParts]);
-        } else {
-            result = await model.generateContent({
-                contents: parts,
-                generationConfig,
-                systemInstruction: systemInstruction,
-                safetySettings,
-            });
-        }
-
-        const responseText = result.response.text();
-        console.log(responseText);
-        return [responseText, false];
-
-    } catch (error) {
-        console.error("Ошибка при запросе к Google Generative AI:", error);
-        return [`Ошибка при генерации ответа`, false];
-    }
+    const data = await res.json();
+    return [data.text, false];
+  } catch (error) {
+    console.error("Ошибка при запросе:", error);
+    return ["Ошибка при генерации ответа", false];
+  }
 }
 
 
-// import { GoogleGenerativeAI } from '@google/generative-ai';
-
-// const API_KEY = import.meta.env.VITE_GOOGLE_GENAI_API_KEY;
-
-// // Добавлены параметры text и images
-// // Добавлено возвращаемое значение (return)
-// export async function run(text, images) {
-//   if (!API_KEY) {
-//     console.error("API_KEY не найден. Убедитесь, что он задан...");
-//     return ["Ошибка: API ключ отсутствует", false]; // Возвращаем ошибку в ожидаемом формате
-//   }
-
-//   const genAI = new GoogleGenerativeAI(API_KEY);
-//   // Используем gemini-pro-vision, если есть изображения, иначе gemini-pro
-//   const modelName = images && images.length > 0 ? "gemini-2.5-flash" : "gemini-2.5-flash"; 
-//   const model = genAI.getGenerativeModel({ model: modelName });
-
-//   try {
-//     // Формируем контент для запроса
-//     const contents = [];
-//     if (images && images.length > 0) {
-//         // Здесь нужно преобразовать изображения в формат, который понимает API (e.g., Part object)
-//         // Для простоты, я пока оставлю это место как заглушку
-//         console.warn("Обработка изображений не реализована в этом примере!");
-//     }
-//     contents.push(text);
-
-//     const response = await model.generateContent(contents);
-//     const generatedText = response.text; // Получаем текст ответа
-    
-//     // Возвращаем массив: [сгенерированный текст, флаг_пользователя (false, т.к. это ответ ИИ)]
-//     return [generatedText, false];
-//   } catch (error) {
-//     console.error("Произошла ошибка:", error);
-//     return [`Произошла ошибка при получении ответа: ${error.message}`, false]; // Возвращаем ошибку в ожидаемом формате
-//   }
-// }
