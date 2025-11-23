@@ -42,6 +42,7 @@ import CreateChat from '../pages/chats/CreateChat.jsx';
 import Qoutes from '../pages/qoutes/Qoutes.jsx';
 import QuoteGenerate from '../pages/quotegenerate/QuoteGenerate.jsx';
 import Analysis from '../pages/engineering analysis/Analysis.jsx';
+import AboutEldan from './../pages/eldan-about/AboutEldan';
 
 export const routes = [
     {
@@ -297,6 +298,13 @@ export const routes = [
         path: '/analysis',
         exact: true,
         component: <Analysis/>,
+        banner: true,
+        auth: false
+    },
+    {
+        path: '/eldan-about',
+        exact: true,
+        component: <AboutEldan/>,
         banner: true,
         auth: false
     },
