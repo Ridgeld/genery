@@ -9,6 +9,8 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../../firebase.js';
 import { useAuth } from '../../providers/Authprovired.jsx';
 import EditTimetable from './EditTimetable.jsx';
+import ShowInfo from '../../components/modal-windows/show-info/ShowInfo.jsx';
+import { RoomsData } from './RoomsInfo.js';
 
 function Timetable(){
     const { theme, elementColors, setElementColors } = useContext(ElementContext);
@@ -19,6 +21,9 @@ function Timetable(){
     const { authUser } = useAuth()
     const navigateTo = useNavigate();
     const [ isEdit, setIsEdit ] = useState(false)
+
+    const [ isQRshow, setIsQRShow ] = useState(false)
+    const [ QRinfo, setQRinfo ] = useState({})
 
     useEffect(() => {
         const today = new Date().getDay(); // 0 (воскресенье) - 6 (суббота)
@@ -173,12 +178,43 @@ function Timetable(){
             return targetDate.toLocaleDateString('ru-RU', { day: 'numeric' }); // Отображаем только число
         };
 
+        const handleShowRoomQR = (room) => {
+        // 1. Достаем информацию об аудитории. 
+        // Если аудитории нет в RoomsInfo.js, используем fallback-объект, чтобы приложение не упало.
+        const roomDetails = RoomsData[room] || {
+            info: 'Нахуй надо',
+            sticker: 'mobla.png'
+        };
+
+        // 2. Генерация данных для QR.
+        // Оборачиваем room (например, "1/340") в encodeURIComponent, чтобы слэш превратился в "%2F" для безопасности URL        
+        // Если вы не используете React-библиотеку для QR, а хотите получить сразу ссылку на картинку:
+
+        // 3. Обновляем стейт
+        setQRinfo({
+            header: `Информация об аудитории ${room}`,
+            info: roomDetails.info,
+            sticker: roomDetails.sticker,      // Передаем объект с описанием, вместимостью и т.д.
+            room: room,    // Готовая ссылка на изображение QR-кода
+        });
+
+        setIsQRShow(true);
+        };
         return (
             <div className={styles.container}>
                 {isEdit ? (
                     <EditTimetable id={id} handleEdit={handleEdit}/>
                 ) : (
                 <>
+                <ShowInfo 
+                    isShow={isQRshow}
+                    header={QRinfo.header}
+                    sticker={QRinfo.sticker}
+                    room={QRinfo.room}
+                    info={QRinfo.info}
+                    onCloseWindow={() => setIsQRShow(false)}
+                    />
+
                 <div className={styles.week}>
                     {timetable && timetable.length > 0 && timetable.map((dayData, index) => (
                         <div
@@ -209,6 +245,7 @@ function Timetable(){
                                 lessonTimeStart={lesson.timeStart}
                                 lessonTimeEnd={lesson.timeEnd}
                                 lessonRoom={lesson.room}
+                                onClick={handleShowRoomQR}
                             />
                         ))
                     ) : (

@@ -262,12 +262,14 @@ function Post({postId, userPhoto, groupOwnerId, userId, userName, postData, post
                                     // </motion.div>
 
                                     <div className={styles[`image_${index}`]}>
+                                        <AnimatePresence>
                                             <motion.img src={image}
                                                 onClick={() => handlePhotoClick(postPhotos, index, postId)}
                                                 layoutId={`image-${postId}-${index}`}
                                                 layout transition={{ type: 'spring', stiffness: 180, damping: 16 }}
                                 
                                             /> 
+                                        </AnimatePresence>
                                     </div>
                                 ))}
                             </div>

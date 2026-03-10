@@ -301,6 +301,7 @@ function ImageViewer({isShow, images, index, onClose, postId}){
     }
     return(
         <>
+    <AnimatePresence>
     {isShow && (
       <motion.div
         className={styles['viewer-area']}
@@ -356,7 +357,7 @@ function ImageViewer({isShow, images, index, onClose, postId}){
                   key={imageUrls[currentIndex]}
                   src={imageUrls[currentIndex]}
                   layout
-                  ыtransition={{ type: 'spring', stiffness: 180, damping: 16 }}    
+                  transition={{ type: 'spring', stiffness: 180, damping: 16 }}    
                   className={styles['your-image-style']}
                 />
               </div>
@@ -376,6 +377,7 @@ function ImageViewer({isShow, images, index, onClose, postId}){
         </div>
       </motion.div>
     )}
+    </AnimatePresence>
   </>)
 }
 export default ImageViewer

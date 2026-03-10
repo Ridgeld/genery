@@ -4,7 +4,7 @@ import '../../themes/default.scss'
 import { ElementContext } from '../../providers/ElementProvider.jsx';
 
 
-function LessonBody({color, backgroundColor, textColor, lessonName, lessonTimeStart, lessonTimeEnd, lessonRoom, arrowColor }){
+function LessonBody({color, backgroundColor, textColor, lessonName, lessonTimeStart, lessonTimeEnd, lessonRoom, arrowColor, onClick }){
     const { theme, elementColors, setElementColors } = useContext(ElementContext);
     const [circleColor, setCircleColor] = useState('var(--first-color)');
     const [iconColor, setIconColor] = useState('var(--text-first-color)');
@@ -28,7 +28,8 @@ function LessonBody({color, backgroundColor, textColor, lessonName, lessonTimeSt
         <div className={styles['lesson-body']}
         style={{
             background: backgroundColor
-        }}>
+        }}
+        onClick={() => onClick(lessonRoom)}>
             <circle className={styles['lesson-circle']}
                     style={{
                         background: color
