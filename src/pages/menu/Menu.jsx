@@ -127,6 +127,16 @@ function About(){
             arrowColor = {theme.text_third_color}
             arrowBackgroundColor = {theme.block_arrow_first_color}
             linkTo = "/shop"/>
+        <Block 
+            name = "Калькулятор заказа" 
+            description = "Собери свой заказ" 
+            backgroundColor = {theme.block_second_color} 
+            isBorder={false}
+            borderColor={theme.block_border_color} 
+            textColor = {theme.text_second_color} 
+            arrowColor = {theme.text_third_color}  
+            arrowBackgroundColor = {theme.block_arrow_second_color} 
+            linkTo = "/order-calculator"/>
       </div>
     </div>
   )

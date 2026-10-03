@@ -1,0 +1,166 @@
+.container {
+    margin-top: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 90%;
+    gap: 20px;
+    padding-bottom: 100px;
+}
+
+.headerTitle {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: -10px;
+}
+
+.addButtonsBlock {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+}
+
+.addButton {
+    border: 1px solid transparent;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    &:active {
+        transform: scale(0.95);
+    }
+}
+
+.receiptContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.lessonBody {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px;
+    width: calc(100% - 20px);
+    gap: 15px;
+    border-radius: 20px;
+}
+
+.lessonCircle {
+    display: flex;
+    min-width: 32px;
+    min-height: 32px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.lessonInfo {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.lessonName {
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.priceEditContainer {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.priceInput {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid;
+    width: 50px;
+    text-align: right;
+    font-size: 15px;
+    font-weight: 500;
+    outline: none;
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    -moz-appearance: textfield;
+}
+
+.removeBtn {
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+}
+
+.infoBody {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+}
+
+.totalContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: calc(100% - 40px);
+    padding: 15px 20px;
+    border-radius: 20px;
+    margin-top: 10px;
+}
+
+.totalText {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.totalValue {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.drinksContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - 40px);
+    padding: 15px 20px;
+    border-radius: 20px;
+    gap: 5px;
+    margin-top: -10px;
+}
+
+.drinksTitle {
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.drinksValue {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+@media(min-width: 700px){
+    .container {
+        width: 60%;
+    }
+}

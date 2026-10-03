@@ -43,8 +43,15 @@ import Qoutes from '../pages/qoutes/Qoutes.jsx';
 import QuoteGenerate from '../pages/quotegenerate/QuoteGenerate.jsx';
 import Analysis from '../pages/engineering analysis/Analysis.jsx';
 import AboutEldan from './../pages/eldan-about/AboutEldan';
+import OrderCalculator from '../pages/order-calculator/OrderCalculator.jsx';
 
 export const routes = [
+    {
+        path: '/order-calculator',
+        exact: true,
+        component: <OrderCalculator/>,
+        auth: true
+    },
     {
         path: '/',
         exact: true,
