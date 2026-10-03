@@ -1,8 +1,10 @@
 .container{
     position: relative;
     margin-top: 70px;
+    margin-left: auto;
+    margin-right: auto;
     display: grid;
-    justify-content: flex-start;
+    justify-content: center;
     grid-template-columns: repeat(2, 147px);
     grid-auto-rows: 147px;
     grid-gap: 10px;
@@ -13,49 +15,49 @@
 }
 @media(min-width: 700px){
     .container{
-        justify-content: flex-start;
+        justify-content: center;
         grid-template-columns: repeat(3, 150px);
         grid-auto-rows: 150px;
     }
 }
 @media(min-width: 850px){
     .container{
-        justify-content: flex-start;
+        justify-content: center;
         grid-template-columns: repeat(4, 160px);
         grid-auto-rows: 160px;
     }
 }
 @media(min-width: 1100px){
     .container{
-        justify-content: flex-start;
+        justify-content: center;
         grid-template-columns: repeat(5, 165px);
         grid-auto-rows: 165px;
     }
 }
 @media(min-width: 1300px){
     .container{
-        justify-content: flex-start;
+        justify-content: center;
         grid-template-columns: repeat(6, 165px);
         grid-auto-rows: 165px;
     }
 }
 @media(min-width: 1500px){
     .container{
-        justify-content: flex-start;
+        justify-content: center;
         grid-template-columns: repeat(7, 165px);
         grid-auto-rows: 165px;
     }
 }
 @media(min-width: 1700px){
     .container{
-        justify-content: flex-start;
+        justify-content: center;
         grid-template-columns: repeat(8, 165px);
         grid-auto-rows: 165px;
     }
 }
 @media(min-width: 1900px){
     .container{
-        justify-content: flex-start;
+        justify-content: center;
         grid-template-columns: repeat(9, 165px);
         grid-auto-rows: 165px;
     }
