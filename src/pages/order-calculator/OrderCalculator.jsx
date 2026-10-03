@@ -92,7 +92,7 @@ function OrderCalculator() {
                                     value={item.price} 
                                     onChange={(e) => updatePrice(item.id, e.target.value)}
                                 />
-                                <span style={{ color: theme.text_first_color }}>₽</span>
+                                <span style={{ color: theme.text_first_color }}>с</span>
                             </div>
                             <button className={styles.removeBtn} onClick={() => removeItem(item.id)} style={{ color: theme.text_first_color }}>
                                 ✕
@@ -108,7 +108,7 @@ function OrderCalculator() {
 
             <div className={styles.totalContainer} style={{ background: theme.element_first_color, color: theme.text_first_color }}>
                 <div className={styles.totalText}>Итого:</div>
-                <div className={styles.totalValue}>{totalPrice} ₽</div>
+                <div className={styles.totalValue}>{totalPrice} с</div>
             </div>
 
             <div className={styles.drinksContainer} style={{ background: theme.block_third_color }}>

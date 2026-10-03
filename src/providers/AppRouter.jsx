@@ -11,19 +11,9 @@ import NotFound from "../pages/not-found/NotFount.jsx";
 
 function AppRouter(){
     const { theme, elementColors, setElementColors } = useContext(ElementContext);
-    const { authUser } = useAuth();
-    const isAuth = false;
-    const [authChecked, setAuthChecked] = useState(false);
+    const { authUser, isAuthLoading } = useAuth();
 
-    useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(user => {
-            setAuthChecked(true);
-        });
-
-        return () => unsubscribe();
-    }, []);
-
-    if (!authChecked) {
+    if (isAuthLoading) {
         return <Loader color={theme.icon_color}/>; // Показываем прелоадер, пока проверка аутентификации не завершена
     }
 

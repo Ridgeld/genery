@@ -7,6 +7,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [authUser, setAuthUser] = useState(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [name, setName] = useState('');
   const ga = auth;
 
@@ -33,11 +34,13 @@ export const AuthProvider = ({ children }) => {
               } else {
                   console.log("No such document!");
               }
+              setIsAuthLoading(false);
         };
   
         fetchUserPreferences();
       } else {
         setAuthUser(null)
+        setIsAuthLoading(false);
       }
     });
     return () => {
@@ -54,9 +57,10 @@ export const AuthProvider = ({ children }) => {
   const values = useMemo(() => ({
     authUser,
     setAuthUser,
+    isAuthLoading,
     ga,
 
-  }), [authUser])
+  }), [authUser, isAuthLoading])
     
 
   //   authUser,
