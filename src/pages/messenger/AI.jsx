@@ -351,6 +351,7 @@
 // Мамытов - легенда, странный препод, на парах которого мы делаем "что по кайфу", в общем ничего. Но иногда когда начинает учить. Предлагал нам пойти на Нобелевскую премию за проект выполненный через нейросеть.
 // Джалбиев - преподаватель легенда, преподавал программирование на листке бумаги, рассказывал алгоритмизацию на примере youtube shorts.
 // Жолдошов - легенда черчения, ставит на всех чертежах точки и все. Не знает как должен выглядеть чертеж. Кожомбердиев Эльдан - легенда, умеет менять выбор даже там где его изменить нельзя. Ты большой любитель Чон-Арыкской шавы (шаурмечная "Перчик"), и против мяса ишака - Эльдан его обожает.`
+<<<<<<< HEAD
 
 
 //     const parts = storedCensor ? [
@@ -403,6 +404,61 @@ async function fileToGenerativePart(file) {
           mimeType: file.type,
         },
       });
+=======
+
+
+//     const parts = storedCensor ? [
+//         { role: "user", parts: [{ text: 'input: Привет, кто ты?' }] },
+//         { role: "model", parts: [{ text: 'input: Привет! Я нейросеть Genery' }] },
+//         { role: "user", parts: [{ text: `input: ${userInput}` }] },
+//     ] : [
+//         { role: "user", parts: [{ text: "Заебал" }] },
+//         { role: "model", parts: [{ text: "Эу, братишка, проще общайся" }] },
+//         { role: "user", parts: [{ text: `input: ${userInput}` }] },
+//     ];
+
+
+//     try {
+//         const imageParts = await Promise.all(images.map(fileToGenerativePart));
+//         let result;
+
+//         if (images.length > 0) {
+//             const textPart = { role: "user", parts: [{ text: userInput }] };
+//             result = await model.generateContent([textPart, ...imageParts]);
+//         } else {
+//             result = await model.generateContent({
+//                 contents: parts,
+//                 generationConfig,
+//                 systemInstruction: systemInstruction,
+//                 safetySettings,
+//             });
+//         }
+
+//         const responseText = result.response.text();
+//         console.log(responseText);
+//         return [responseText, false];
+
+//     } catch (error) {
+//         console.error("Ошибка при запросе к Google Generative AI:", error);
+//         return [`Ошибка при генерации ответа`, false];
+//     }
+// }
+
+
+
+
+const SYSTEM_PROMPT = `Ты — полезный и умный ИИ-ассистент. 
+Твоя задача — отвечать на вопросы пользователя, помогать с учебой и поддерживать беседу.
+Если пользователь просит отправить изображение, ты можешь использовать markdown-синтаксис для вставки изображений (например: ![описание](ссылка)).`;
+
+const ELDAN_PROMPT = `Ты — Эльдан, лучший друг пользователя. Общайся с ним как братишка, используй сленг, будь расслабленным и веселым. 
+Подкалывай, но по-доброму. Можешь предлагать пойти поесть шаурму или просто поболтать о жизни.`;
+
+async function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+>>>>>>> 6982197 (update canteen)
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
@@ -410,6 +466,7 @@ async function fileToGenerativePart(file) {
 
 export async function run(userInput, images) {
   try {
+<<<<<<< HEAD
     const imageParts = await Promise.all(images.map(fileToGenerativePart));
 
     const res = await fetch("https://genery-proxy-vercel.vercel.app/api/generate", {
@@ -420,6 +477,64 @@ export async function run(userInput, images) {
 
     const data = await res.json();
     return [data.text, false];
+=======
+    let currentSystemPrompt = SYSTEM_PROMPT;
+    let textToSend = userInput;
+
+    // Проверяем наличие команды /eldan
+    if (userInput.trim().startsWith('/eldan')) {
+      currentSystemPrompt = ELDAN_PROMPT;
+      textToSend = userInput.replace('/eldan', '').trim();
+    }
+
+    let userContent = [];
+    if (textToSend) {
+      userContent.push({ type: "text", text: textToSend });
+    }
+
+    if (images && images.length > 0) {
+      const base64Images = await Promise.all(images.map(fileToBase64));
+      base64Images.forEach((base64) => {
+        userContent.push({
+          type: "image_url",
+          image_url: {
+            url: base64,
+          },
+        });
+      });
+    }
+
+    // Если только текст, отправляем как строку для совместимости с простыми моделями
+    let messageContent = userContent.length === 1 && userContent[0].type === "text" 
+      ? textToSend 
+      : userContent;
+
+    const messages = [
+      { role: "system", content: currentSystemPrompt },
+      { role: "user", content: messageContent }
+    ];
+
+    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY || ''}` // Добавьте ваш ключ в .env
+      },
+      body: JSON.stringify({ 
+        model: "apodex/apodex-1.1-mini:free",
+        messages: messages
+      }),
+    });
+
+    const data = await res.json();
+    
+    if (data.choices && data.choices.length > 0) {
+        return [data.choices[0].message.content, false];
+    } else {
+        console.error("Неожиданный ответ от API:", data);
+        return ["Извини, не смог сгенерировать ответ.", false];
+    }
+>>>>>>> 6982197 (update canteen)
   } catch (error) {
     console.error("Ошибка при запросе:", error);
     return ["Ошибка при генерации ответа", false];

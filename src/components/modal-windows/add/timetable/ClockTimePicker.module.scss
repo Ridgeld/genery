@@ -1,0 +1,172 @@
+.timePickerContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 12px;
+    margin: 5px 0;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+/* Tabs: Start Time vs End Time */
+.targetTabs {
+    display: flex;
+    width: 100%;
+    border-radius: 12px;
+    padding: 3px;
+    gap: 6px;
+    box-sizing: border-box;
+}
+
+.targetTab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 6px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.targetLabel {
+    font-size: 11px;
+    opacity: 0.75;
+    margin-bottom: 2px;
+}
+
+.targetTimeValue {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* Digital readout with Hours and Minutes toggles */
+.digitalDisplayRow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.digitalSegment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 54px;
+    height: 44px;
+    border-radius: 10px;
+    border: none;
+    font-size: 24px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.digitalColon {
+    font-size: 24px;
+    font-weight: 700;
+    opacity: 0.8;
+}
+
+/* Clock Dial Face */
+.clockDialWrapper {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 4px 0;
+    touch-action: none;
+    cursor: pointer;
+}
+
+.clockCenterPivot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.clockHandLine {
+    position: absolute;
+    transform-origin: bottom center;
+    bottom: 50%;
+    left: calc(50% - 1px);
+    width: 2px;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.clockHandEndCircle {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    pointer-events: none;
+}
+
+.clockNumber {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    z-index: 4;
+    pointer-events: none;
+}
+
+.clockNumberInner {
+    font-size: 11px;
+    font-weight: 500;
+    opacity: 0.85;
+}
+
+.clockNumberActive {
+    font-weight: 800;
+}
+
+/* Quick lesson duration presets */
+.quickPresetsRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+}
+
+.presetBtn {
+    border: none;
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+        opacity: 0.85;
+    }
+
+    &:active {
+        transform: scale(0.96);
+    }
+}
+

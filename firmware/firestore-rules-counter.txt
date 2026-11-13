@@ -1,0 +1,70 @@
+// Полные правила Firestore проекта Genery со счётчиками людей и ролью администратора.
+// Вставить целиком в Firebase Console -> Firestore Database -> Rules -> Publish.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Обычный пользователь Genery: любой вход, кроме анонимного.
+    // Анонимно входят только платы-счётчики — им доступ ко всей базе давать нельзя.
+    function isUser() {
+      return request.auth != null
+        && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    // Администратор: есть документ admins/{uid}.
+    function isAdmin() {
+      return isUser()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // Чтение — всё приложение, как раньше (включая поиск по collectionGroup)
+    match /{document=**} {
+      allow read: if isUser();
+    }
+
+    // Запись — всё приложение, как раньше, КРОМЕ служебных коллекций счётчиков
+    match /{collection}/{rest=**} {
+      allow write: if isUser()
+        && !(collection in ['admins', 'devices', 'canteens', 'firmware']);
+    }
+
+    // Последняя версия прошивки { version, url, enabled }: читают платы, выпускает администратор
+    match /firmware/{doc} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+
+    // Список администраторов: меняют только администраторы (страница «Управление» на сайте).
+    // Первого администратора создают один раз в консоли.
+    match /admins/{uid} {
+      allow write: if isAdmin();
+    }
+
+    // Карточка столовой { name, capacity }: меняет администратор
+    match /canteens/{canteenId} {
+      allow write: if isAdmin();
+    }
+
+    // Счётчик людей (одна дверь)
+    match /devices/{deviceId} {
+      // Администратор: подключает/отключает плату, задаёт название двери, удаляет
+      allow update, delete: if isAdmin();
+
+      // Сама плата (анонимный вход): только свой документ и без поля approved
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && !('approved' in request.resource.data);
+      allow update: if request.auth != null
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.uid == request.auth.uid
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['approved']);
+
+      // Почасовая статистика за день
+      match /days/{day} {
+        allow write: if request.auth != null
+          && getAfter(/databases/$(database)/documents/devices/$(deviceId)).data.uid == request.auth.uid;
+        allow delete: if isAdmin();
+      }
+    }
+  }
+}

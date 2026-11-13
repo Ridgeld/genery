@@ -92,9 +92,6 @@ function About(){
             backgroundColor = {theme.block_first_color}
             isBorder={true}
             borderColor={theme.block_border_color} 
-            textColor = {theme.text_first_color}
-            arrowColor = {theme.text_third_color}
-            arrowBackgroundColor = {theme.block_arrow_first_color}
             linkTo = "/updates"/>
         <Block 
             name = "Меню игр" 
@@ -102,9 +99,6 @@ function About(){
             backgroundColor = {theme.block_second_color} 
             isBorder={false}
             borderColor={theme.block_border_color} 
-            textColor = {theme.text_second_color} 
-            arrowColor = {theme.text_third_color}  
-            arrowBackgroundColor = {theme.block_arrow_second_color} 
             linkTo = "/game-menu"/>
         <Block 
             name = "Расписание" 
@@ -112,20 +106,13 @@ function About(){
             backgroundColor = {theme.block_third_color} 
             isBorder={false}
             borderColor={theme.block_border_color} 
-            textColor = {theme.text_first_color} 
-            arrowColor = {theme.text_third_color} 
-            arrowBackgroundColor = {theme.block_arrow_third_color} 
-            linkTo = {`/timetable/${authUser.mainGroup}`}/>
+            linkTo = {`/timetable/${authUser?.mainGroup || ''}`}/>
         <Block 
             name = "Магазин" 
             description = "Прояви себя" 
             backgroundColor = {theme.block_first_color} 
             isBorder={true}
             borderColor={theme.block_border_color} 
-            textColor = {theme.text_first_color}
-            isCircleArrow = {false}
-            arrowColor = {theme.text_third_color}
-            arrowBackgroundColor = {theme.block_arrow_first_color}
             linkTo = "/shop"/>
         <Block 
             name = "Калькулятор заказа" 
@@ -133,10 +120,21 @@ function About(){
             backgroundColor = {theme.block_second_color} 
             isBorder={false}
             borderColor={theme.block_border_color} 
+<<<<<<< HEAD
             textColor = {theme.text_second_color} 
             arrowColor = {theme.text_third_color}  
             arrowBackgroundColor = {theme.block_arrow_second_color} 
             linkTo = "/order-calculator"/>
+=======
+            linkTo = "/order-calculator"/>
+        <Block 
+            name = "Заполненность столовой" 
+            description = "Свободные места и часы пик" 
+            backgroundColor = {theme.block_third_color} 
+            isBorder={false}
+            borderColor={theme.block_border_color} 
+            linkTo = "/canteen-occupancy"/>
+>>>>>>> 6982197 (update canteen)
       </div>
     </div>
   )

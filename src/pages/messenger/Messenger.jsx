@@ -5,7 +5,7 @@ import MessageContainer from "./MessageContainer.jsx";
 import LoadingMessage from './LoadingMessage.jsx'
 import { ElementContext } from '../../providers/ElementProvider.jsx';
 import { useAuth } from "../../providers/Authprovired.jsx";
-import { addDoc, collection, onSnapshot, deleteDoc, getDocs, orderBy, query  } from "firebase/firestore"; 
+import { addDoc, collection, onSnapshot, deleteDoc, getDocs, orderBy, query, limit } from "firebase/firestore"; 
 import { db, storage } from '../../../firebase.js';
 import { run } from "./AI.jsx";
 import EmojiPanel from "./EmojiPanel.jsx";
@@ -49,13 +49,32 @@ function Messenger(){
             }
         }
     };
+    const messagesEndRef = useRef(null);
+    const [showScrollButton, setShowScrollButton] = useState(false);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    };
+
     useEffect(() => {
-        // Прокрутка вниз при добавлении нового сообщения
-        if (messageContainerRef.current) {
-            // messageContainerRef.current.scrollTop = messageContainerRef.current.height;
-            window.scrollTo(0, 1000000);
-        }
+        // Прокрутка вниз при изменении сообщений с небольшой задержкой для рендера
+        setTimeout(() => {
+            if (messagesEndRef.current) {
+                messagesEndRef.current.scrollIntoView({ behavior: "auto", block: "end" });
+            }
+        }, 100);
     }, [messageData]);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const bottom = Math.ceil(window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 300;
+            setShowScrollButton(!bottom);
+        };
+        window.addEventListener('scroll', handleScroll);
+        // Вызываем сразу при монтировании
+        handleScroll();
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const handleEmojiSelect = (emoji) => {
         setMessage(message + emoji); // Добавляем выбранный эмодзи к текущему значению input
@@ -87,12 +106,15 @@ function Messenger(){
     // ОТОБРАЖЕНИЕ СООБЩЕНИЙ
     useEffect(() => {
         const unlisten = onSnapshot(
-            query(collection(db, 'users', authUser._id, 'messages'), orderBy('timestamp', 'asc')),
+            query(collection(db, 'users', authUser._id, 'messages'), orderBy('timestamp', 'desc'), limit(100)),
             snapshot => {
                 // Создание объекта для хранения сообщений, сгруппированных по дате
                 const messagesByDate = {};
+                
+                // Переворачиваем массив, чтобы отображать в правильном порядке (сверху вниз)
+                const docs = [...snapshot.docs].reverse();
     
-                snapshot.forEach((doc) => {
+                docs.forEach((doc) => {
                     const messageData = doc.data();
                     const messageDate = new Date(messageData.timestamp);
                     const isUser = messageData.isUser;
@@ -396,7 +418,23 @@ function Messenger(){
                                 key={'loading'}
                                 textColor={theme.text_first_color}/>
                         }
+                        {/* Невидимый элемент в самом конце списка */}
+                        <div ref={messagesEndRef} style={{ height: '1px', width: '100%' }} />
                 </div>
+                {showScrollButton && (
+                    <button 
+                        onClick={scrollToBottom}
+                        className={styles['scroll-bottom-btn']}
+                        style={{ 
+                            background: theme.element_first_color, 
+                            color: theme.text_first_color 
+                        }}
+                    >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 5V19M12 19L19 12M12 19L5 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    </button>
+                )}
             </div>
         </>
 

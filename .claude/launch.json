@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "esp-ui",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["firmware/people_counter/ui/dev-server.mjs"],
+      "port": 5180
+    },
+    {
+      "name": "genery-web",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["vite", "--port", "5173", "--strictPort"],
+      "port": 5173
+    }
+  ]
+}

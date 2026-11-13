@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>capture</title>
+<!--
+  Съёмка экранов панели для инструкции мастера (только для разработки, в прошивку не попадает).
+  Открывается с тестового сервера: http://localhost:5181/capture.html?s=portal-list
+  Приводит панель в нужное состояние и обводит элементы номерными метками.
+-->
+<style>
+  html, body { margin: 0; background: #0A0B10; overflow: hidden; }
+  iframe { position: absolute; left: 0; top: 0; width: 390px; height: 844px; border: 0; }
+  #ov { position: absolute; left: 0; top: 0; width: 390px; height: 844px; pointer-events: none; }
+  .box { position: absolute; border: 3px solid #FFC24B; border-radius: 18px; box-shadow: 0 0 0 5px rgba(255, 194, 75, .22); }
+  .num { position: absolute; width: 30px; height: 30px; border-radius: 50%; background: #FFC24B; color: #0A0B10;
+         font: 800 17px 'Noto Sans', system-ui, sans-serif; display: grid; place-items: center;
+         box-shadow: 0 3px 10px rgba(0, 0, 0, .55); }
+</style>
+</head>
+<body>
+<iframe id="f" src="/"></iframe>
+<div id="ov"></div>
+<script>
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const q = (d, sel) => (typeof sel === 'function' ? sel(d) : d.querySelector(sel));
+
+// Сценарии: run — что сделать на странице, marks — что обвести (n — номер метки)
+const S = {
+  'portal-list': {
+    wait0: 4500,
+    marks: [
+      { sel: '[data-n="1"]', n: 1 },
+      { sel: '[data-n="3"]', n: 2 },
+      { sel: '[data-n="manual"]', n: 3 },
+    ],
+  },
+  'portal-form': {
+    wait0: 4500,
+    run: async (w, d) => {
+      d.querySelector('[data-n="1"]').click();
+      await sleep(300);
+      d.getElementById('wPw').value = 'canteen2026';
+    },
+    marks: [
+      { sel: '#wPw', n: 1, corner: 'tl' },
+      { sel: '[data-w="eye"]', n: 2, pad: 2 },
+      { sel: '[data-w="connect"]', n: 3 },
+    ],
+  },
+  'portal-busy': {
+    wait0: 2500,
+    run: async (w) => w.eval("W.ssid='Canteen_Staff';W.view='busy';wifiRender()"),
+  },
+  'portal-ok': {
+    wait0: 2500,
+    run: async (w) => w.eval("W.ssid='Canteen_Staff';W.ip='192.168.1.57';W.view='ok';wifiRender()"),
+    marks: [{ sel: '[data-w="done"]', n: 1 }],
+  },
+  'portal-fail': {
+    wait0: 2500,
+    run: async (w) => w.eval("W.ssid='Canteen_Staff';W.msg='Неверный пароль';W.view='fail';wifiRender()"),
+    marks: [
+      { sel: '.state p', n: 1, pad: 8 },
+      { sel: '[data-w="retry"]', n: 2 },
+    ],
+  },
+  'dash': {
+    wait0: 2500,
+    marks: [
+      { sel: '#conn', n: 1 },
+      { sel: '.ov', n: 2 },
+      { sel: '#bSet', n: 3, pad: 3 },
+    ],
+  },
+  'settings': {
+    wait0: 2500,
+    run: async (w) => { w.eval("show('shSet')"); },
+    marks: [
+      { sel: '#rId', n: 1, pad: 0 },
+      { sel: (d) => d.getElementById('sCloud').closest('.row'), n: 2, pad: 0 },
+      { sel: '#sCan', n: 3 },
+      { sel: '#sSrvB', n: 4 },
+    ],
+  },
+};
+
+function mark(d, { sel, n, pad = 5, corner = 'tr' }) {
+  const el = q(d, sel);
+  if (!el) { console.log('not found', sel); return; }
+  const r = el.getBoundingClientRect();
+  const ov = document.getElementById('ov');
+  const box = document.createElement('div');
+  box.className = 'box';
+  Object.assign(box.style, {
+    left: `${r.left - pad}px`, top: `${r.top - pad}px`, width: `${r.width + pad * 2 - 6}px`, height: `${r.height + pad * 2 - 6}px`,
+  });
+  ov.appendChild(box);
+  const num = document.createElement('div');
+  num.className = 'num';
+  num.textContent = n;
+  const x = corner === 'tl' ? r.left - pad - 12 : r.right + pad - 18;
+  Object.assign(num.style, { left: `${Math.min(Math.max(x, 2), 358)}px`, top: `${Math.max(r.top - pad - 12, 2)}px` });
+  ov.appendChild(num);
+}
+
+const f = document.getElementById('f');
+// ?src=<адрес> — просто показать другую страницу (например, сайт) в рамке шириной 390 px
+const src = new URLSearchParams(location.search).get('src');
+if (src) f.src = src;
+f.onload = async () => {
+  if (src) { document.title = 'ready'; return; }
+  const w = f.contentWindow;
+  const d = f.contentDocument;
+  // Без плавных переходов: иначе метки ставятся, пока окно ещё выезжает
+  const st = d.createElement('style');
+  st.textContent = '*{transition:none!important}';
+  d.head.appendChild(st);
+  const sc = S[new URLSearchParams(location.search).get('s')] || {};
+  await sleep(sc.wait0 ?? 1500);
+  if (sc.run) await sc.run(w, d);
+  await sleep(sc.wait1 ?? 900);
+  (sc.marks || []).forEach((m) => mark(d, m));
+  document.title = 'ready';
+};
+</script>
+</body>
+</html>

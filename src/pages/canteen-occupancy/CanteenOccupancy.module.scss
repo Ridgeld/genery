@@ -1,0 +1,607 @@
+// Страница заполненности столовой и страница «Счётчики».
+// Модульная сетка: крупный акцентный модуль + квадратные плитки 2×N.
+
+.container {
+    margin-top: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 90%;
+    max-width: 520px;
+    gap: 12px;
+    padding-bottom: 100px;
+    letter-spacing: -0.02em;
+}
+
+.topRow {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
+.headerTitle {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.15;
+}
+
+.liveStatus {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 6px;
+    opacity: 0.75;
+}
+
+.liveDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex: none;
+}
+
+.devicesLink {
+    flex: none;
+    height: 40px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+// ---------- Главный модуль ----------
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 22px 20px 22px 22px;
+    border: none;
+    border-radius: 28px;
+    color: #fff;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+}
+
+.heroText {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.heroLabel {
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.heroValue {
+    font-size: 52px;
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+
+    small {
+        font-size: 20px;
+        font-weight: 500;
+        opacity: 0.7;
+    }
+}
+
+.heroPill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    align-self: flex-start;
+    margin-top: 4px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.16);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+}
+
+.heroRing {
+    width: 92px;
+    height: 92px;
+    flex: none;
+}
+
+// ---------- Плитки ----------
+.grid2 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 12px;
+}
+
+.tile {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    aspect-ratio: 1 / 1;
+    padding: 14px 14px 16px 16px;
+    border: none;
+    border-radius: 28px;
+    text-align: left;
+    font: inherit;
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+button.tile {
+    cursor: pointer;
+}
+
+.tileHead {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: auto;
+}
+
+.tileIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.06);
+    display: grid;
+    place-items: center;
+}
+
+.tileGo {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+}
+
+.tileLabel {
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0.7;
+    margin-top: 10px;
+}
+
+.tileValue {
+    font-size: clamp(24px, 7.5vw, 32px);
+    font-weight: 700;
+    line-height: 1.1;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+
+    small {
+        font-size: 14px;
+        font-weight: 500;
+        opacity: 0.6;
+    }
+}
+
+.tileSub {
+    font-size: 12.5px;
+    line-height: 1.3;
+    opacity: 0.6;
+    margin-top: 4px;
+}
+
+// ---------- График ----------
+.sectionTitle {
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 16px;
+    scroll-margin-top: 80px;
+}
+
+.week {
+    display: flex;
+    gap: 6px;
+}
+
+.day {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    height: 42px;
+    border: none;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.todayDot {
+    position: absolute;
+    left: 50%;
+    bottom: 5px;
+    width: 4px;
+    height: 4px;
+    margin-left: -2px;
+    border-radius: 50%;
+}
+
+.chartCard {
+    padding: 14px 12px 12px;
+    border-radius: 24px;
+}
+
+.chartSvg {
+    display: block;
+    width: 100%;
+    height: auto;
+    touch-action: pan-y;
+    cursor: crosshair;
+}
+
+.chartInfo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 14px;
+    min-height: 22px;
+    padding: 8px 6px 0;
+    font-size: 12.5px;
+
+    span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+}
+
+.chartHint {
+    margin-left: auto;
+    opacity: 0.5;
+}
+
+.swatch,
+.swatchDash,
+.swatchDots {
+    display: inline-block;
+    width: 16px;
+    height: 3px;
+    border-radius: 2px;
+}
+
+.swatchDash {
+    border-top: 2px dashed currentColor;
+    height: 0;
+}
+
+.swatchDots {
+    border-top: 3px dotted currentColor;
+    height: 0;
+}
+
+.empty {
+    padding: 36px 12px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.4;
+    opacity: 0.7;
+}
+
+.source {
+    font-size: 12.5px;
+    text-align: center;
+    opacity: 0.55;
+    margin-top: 4px;
+}
+
+// ---------- Страница «Счётчики» ----------
+.tileShort {
+    aspect-ratio: auto;
+    min-height: 150px;
+}
+
+.devCard {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 28px;
+}
+
+.devHead {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.devIcon {
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    flex: none;
+}
+
+.devTitle {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+
+    b {
+        font-size: 16px;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    span {
+        font-size: 12.5px;
+        opacity: 0.6;
+    }
+}
+
+.devPill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    i {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+    }
+}
+
+.devStats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+
+    div {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0;
+        padding: 10px 12px;
+        border-radius: 16px;
+    }
+
+    small {
+        font-size: 12px;
+        opacity: 0.6;
+    }
+
+    b {
+        font-size: 15px;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+.devMeta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    font-size: 12.5px;
+
+    span {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        opacity: 0.75;
+    }
+}
+
+.devInput {
+    width: 100%;
+    box-sizing: border-box;
+    height: 48px;
+    padding: 0 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    font-size: 15px;
+    outline: none;
+}
+
+.devButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 50px;
+    border: none;
+    border-radius: 16px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:disabled {
+        opacity: 0.6;
+    }
+}
+
+// ---------- Страница «Управление» ----------
+.segments {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+    padding: 4px;
+    border-radius: 18px;
+}
+
+.segment {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    height: 42px;
+    border: none;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.segmentBadge {
+    display: inline-grid;
+    place-items: center;
+    min-width: 18px;
+    height: 18px;
+    margin-left: 6px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: #FFC24B;
+    color: #0A0B10;
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 700;
+    box-sizing: border-box;
+}
+
+.roundBtn {
+    width: 42px;
+    height: 42px;
+    flex: none;
+    border: none;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+
+    &:disabled {
+        opacity: 0.5;
+    }
+}
+
+.smallBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 38px;
+    padding: 0 14px;
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    flex: none;
+
+    &:disabled {
+        opacity: 0.5;
+    }
+}
+
+.devCard label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+
+    small {
+        font-size: 12px;
+        opacity: 0.7;
+    }
+}
+
+.formRow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 96px;
+    gap: 8px;
+}
+
+.formError {
+    color: #FF4365;
+    font-size: 13px;
+}
+
+.formHint {
+    font-size: 13px;
+    opacity: 0.6;
+    padding: 2px 4px;
+}
+
+.personRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 0;
+}
+
+.avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    flex: none;
+    object-fit: cover;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+}
+
+.searchField {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 48px;
+    padding: 0 14px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+
+    input {
+        flex: 1;
+        min-width: 0;
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 15px;
+    }
+}
+
+.linkLine {
+    font-size: 12px;
+    word-break: break-all;
+    opacity: 0.7;
+    text-decoration: none;
+}
+
+.steps {
+    padding-left: 18px;
+    display: grid;
+    gap: 6px;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+@media (max-width: 380px) {
+    .heroValue {
+        font-size: 44px;
+    }
+
+    .heroRing {
+        width: 76px;
+        height: 76px;
+    }
+}

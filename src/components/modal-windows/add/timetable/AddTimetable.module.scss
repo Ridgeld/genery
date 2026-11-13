@@ -1,222 +1,218 @@
-.area{
+.area {
     position: fixed;
     display: flex;
     align-items: center;
     justify-content: center;
-    top:0;
+    top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 10;
-    background: rgba($color: #000000, $alpha: 0.5);
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
 }
-.body{
+
+.body {
     display: flex;
     flex-direction: column;
-    width: 80%;
-    border-radius: 10px;
+    width: 92%;
+    max-width: 440px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 20px;
+    box-sizing: border-box;
+    padding-bottom: 10px;
+
+    /* Скрытие стандартного скроллбара */
+    scrollbar-width: thin;
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
+    }
 }
-.header{
+
+.header {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: 10px;
-    width: calc(100% - 20px);
-
+    padding: 16px 20px;
+    width: calc(100% - 40px);
 }
-.line{
+
+.line {
     width: 100%;
     height: 1px;
+    display: block;
 }
-.title{
-    font-size: 15px;
-    font-weight: 500;
+
+.title {
+    font-size: 16px;
+    font-weight: 600;
 }
-.close{
+
+.close {
     border: none;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 30px;
     height: 30px;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
-}
-.add-area{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    width: calc(100% - 20px);
-}
-.border{
-    width: 100%;
-    height: 150px;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 20px;
-    cursor: pointer;
-}
-.circle{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-}
-.text{
-    font-size: 15px;
-    font-weight: 500;
-}
-.file-body{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    width: calc(100% - 10px);
-    padding: 5px;
-    // height: 25px;
-    border-radius: 5px;
-    gap: 5px;
-}
-.file-wrapper{
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    justify-content: space-between;
-    align-items: center;
-}
-.remove-button{
-    width: 22px;
-    height: 22px;
-}
-.file-info{
-    width: 60%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-direction: row;
-    font-size: 15px;
-    font-weight: 500;
-}
-.progress-bar{
-    width: 100%;
-    height: 5px;
+    transition: opacity 0.2s ease;
 
+    &:hover {
+        opacity: 0.8;
+    }
 }
-.progress{
-    height: 5px;
-}
-.input-container{
+
+.input-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px;
-    width: calc(100% - 20px);
+    padding: 8px 16px;
+    width: calc(100% - 32px);
+    box-sizing: border-box;
 }
-.input-body{
+
+.input-body {
     border: none;
     width: 100%;
-    height: 35px;
-    padding-left: 10px;
-    border-radius: 5px;
+    height: 42px;
+    padding: 0 14px;
+    border-radius: 12px;
     font-size: 15px;
     font-weight: 500;
-    &::placeholder{
+    box-sizing: border-box;
+
+    &::placeholder {
         color: var(--placeholder-color, #888);
         font-size: 15px;
         font-weight: 500;
     }
-    &:focus{
+
+    &:focus {
         outline: none;
     }
 }
-.time-container{
+
+.time-container {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
-    padding: 10px;
-    width: calc(100% - 20px);
-    gap: 10px;
+    align-items: stretch;
+    padding: 8px 16px;
+    width: calc(100% - 32px);
+    gap: 8px;
+    box-sizing: border-box;
 }
-.input-wrapper{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
+
+.section-label {
+    font-size: 14px;
+    font-weight: 600;
+    margin-left: 2px;
 }
-.error-container{
+
+.error-container {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    padding: 10px;
-    width: calc(100% - 20px);
-    font-size: 15px;
+    padding: 4px 20px;
+    font-size: 13px;
     font-weight: 500;
+    color: #ef4444;
 }
-.color-container{
+
+.color-container {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
-    padding: 10px;
-    width: calc(100% - 20px);
+    padding: 8px 16px;
+    width: calc(100% - 32px);
     gap: 10px;
+    box-sizing: border-box;
 }
-.circles-container{
+
+.circles-container {
     display: flex;
     align-items: center;
     justify-content: flex-start;
     flex-direction: row;
     gap: 10px;
     width: 100%;
-    overflow-x: scroll;
-    // overflow: hidden;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    box-sizing: border-box;
 
+    &::-webkit-scrollbar {
+        height: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
+    }
 }
-.color-circle{
+
+.color-circle {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 40px;
-    min-height: 40px;
+    min-width: 36px;
+    min-height: 36px;
     border-radius: 50%;
     cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+
+    &:hover {
+        transform: scale(1.08);
+    }
 }
-.active-circle{
-    width: 26px;
-    height: 26px;
+
+.active-circle {
+    width: 24px;
+    height: 24px;
     border: 2px solid;
     border-radius: 50%;
 }
-.button-container{
+
+.button-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px;
-    width: calc(100% - 20px);
+    padding: 12px 16px 8px;
+    width: calc(100% - 32px);
+    box-sizing: border-box;
 }
-.main-button{
+
+.main-button {
     border: none;
     display: flex;
     width: 100%;
-    height: 35px;
+    height: 44px;
     align-items: center;
     justify-content: center;
     font-size: 15px;
-    font-weight: 500;
-    border-radius: 5px;
+    font-weight: 600;
+    border-radius: 12px;
     cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.1s ease;
+
+    &:hover {
+        opacity: 0.9;
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
 }
-@media(min-width: 700px){
-    .body{
-        width: 40%;
+
+@media (min-width: 700px) {
+    .body {
+        width: 440px;
     }
 }

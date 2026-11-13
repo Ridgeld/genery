@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Счётчик людей — инструкция по установке</title>
+<style>
+@page { size: A4; margin: 0; }
+:root {
+  --ink: #0A0B10; --ink2: #3A3A47; --muted: #6B6B78; --line: #E6E6EC; --soft: #F3F4F7;
+  --accent: #0040F9; --accent-soft: #E8EEFF; --lime: #C3F82B; --red: #FF4365; --amber: #FFC24B;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #fff; color: var(--ink); font-family: 'Noto Sans', system-ui, sans-serif; letter-spacing: -0.02em;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.page { width: 210mm; height: 297mm; padding: 14mm 14mm 16mm; position: relative; overflow: hidden; page-break-after: always; }
+.page:last-child { page-break-after: auto; }
+.foot { position: absolute; left: 14mm; right: 14mm; bottom: 8mm; display: flex; justify-content: space-between; font-size: 8.5pt; color: var(--muted); }
+
+h1 { font-size: 30pt; line-height: 1.05; font-weight: 800; letter-spacing: -0.04em; }
+h2 { font-size: 19pt; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 4mm; display: flex; align-items: center; gap: 3mm; }
+h3 { font-size: 12.5pt; font-weight: 700; margin: 0 0 2mm; }
+p, li { font-size: 10.5pt; line-height: 1.45; }
+p + p { margin-top: 2mm; }
+.muted { color: var(--muted); }
+b { font-weight: 700; }
+
+.step { display: inline-grid; place-items: center; min-width: 11mm; height: 11mm; padding: 0 3mm; border-radius: 6mm; background: var(--accent); color: #fff; font-size: 12pt; font-weight: 800; }
+.kicker { font-size: 9.5pt; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2mm; }
+
+.row { display: grid; grid-template-columns: 62mm 1fr; gap: 9mm; align-items: start; }
+.row.rev { grid-template-columns: 1fr 62mm; }
+.phone { width: 62mm; border-radius: 9mm; padding: 2.2mm; background: #15151C; box-shadow: 0 3mm 8mm rgba(10, 11, 16, .18); }
+.phone img { display: block; width: 100%; border-radius: 7mm; }
+.phone.sm { width: 46mm; border-radius: 7mm; padding: 1.8mm; }
+.phone.sm img { border-radius: 5.5mm; }
+/* Обрезка снимка: показываем часть экрана. --y — сдвиг (доля высоты снимка), --h — видимая высота */
+.shot { overflow: hidden; border-radius: 7mm; height: var(--h); }
+.phone.sm .shot { border-radius: 5.5mm; }
+.shot img { border-radius: 0; transform: translateY(calc(-1 * var(--y))); }
+.cap { font-size: 8.5pt; color: var(--muted); text-align: center; margin-top: 2mm; }
+
+.legend { list-style: none; display: flex; flex-direction: column; gap: 3mm; margin-top: 3mm; }
+.legend li { display: grid; grid-template-columns: 8mm 1fr; gap: 3mm; align-items: start; }
+.mk { width: 7mm; height: 7mm; border-radius: 50%; background: var(--amber); color: var(--ink); font-weight: 800; font-size: 10pt; display: grid; place-items: center; }
+
+.card { background: var(--soft); border-radius: 5mm; padding: 5mm 6mm; }
+.card + .card { margin-top: 4mm; }
+.note { border-radius: 4mm; padding: 3.5mm 4.5mm; font-size: 10pt; line-height: 1.45; display: grid; grid-template-columns: 6mm 1fr; gap: 3mm; align-items: start; }
+.note svg { width: 6mm; height: 6mm; }
+.note.info { background: var(--accent-soft); color: #0B2A8C; }
+.note.warn { background: #FFF4DC; color: #6B4A00; }
+.note.bad { background: #FFE6EB; color: #8A0F28; }
+.note + .note, .card + .note, .note + .card { margin-top: 3.5mm; }
+
+.grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 5mm; }
+.grid2 > .card + .card { margin-top: 0; }
+.result .phone { width: 100%; }
+.result h3 { margin-top: 5mm; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5mm; }
+
+table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 10pt; }
+th { text-align: left; font-size: 9pt; color: var(--muted); font-weight: 600; padding: 0 3mm 2mm; }
+td { padding: 3mm; border-top: 1px solid var(--line); vertical-align: top; line-height: 1.4; }
+td:first-child { font-weight: 700; width: 46mm; }
+
+.led { display: inline-flex; align-items: center; gap: 2.5mm; font-weight: 700; }
+.led i { width: 4mm; height: 4mm; border-radius: 50%; background: #2F6BFF; box-shadow: 0 0 0 1.2mm rgba(47, 107, 255, .2); }
+.led i.off { background: #C9CBD3; box-shadow: none; }
+.blink { display: inline-flex; gap: 1mm; }
+
+/* Обложка */
+.cover { background: var(--ink); color: #fff; }
+.cover .foot { color: rgba(255, 255, 255, .45); }
+.cover .lead { font-size: 13pt; line-height: 1.45; color: rgba(255, 255, 255, .75); max-width: 105mm; margin-top: 6mm; }
+.cover .hero { position: absolute; right: 14mm; top: 46mm; }
+.cover .phone { width: 70mm; background: #24242D; box-shadow: none; }
+.pills { display: flex; flex-wrap: wrap; gap: 2.5mm; margin-top: 8mm; max-width: 110mm; }
+.pill { border-radius: 5mm; padding: 2mm 4mm; background: rgba(255, 255, 255, .08); font-size: 10pt; }
+.box-list { margin-top: 12mm; max-width: 108mm; display: grid; gap: 3mm; }
+.box-list div { display: grid; grid-template-columns: 9mm 1fr; gap: 3mm; align-items: center; background: rgba(255, 255, 255, .06); border-radius: 4mm; padding: 3mm 4mm; font-size: 10.5pt; }
+.box-list svg { width: 7mm; height: 7mm; color: var(--lime); }
+.logo { display: inline-grid; place-items: center; width: 14mm; height: 14mm; border-radius: 50%; background: var(--accent); margin-bottom: 8mm; }
+
+/* Схема телефона (настройки Wi‑Fi) */
+.mock { width: 62mm; border-radius: 9mm; padding: 2.2mm; background: #15151C; box-shadow: 0 3mm 8mm rgba(10, 11, 16, .18); }
+.mock .scr { background: #F6F6F8; border-radius: 7mm; padding: 6mm 4mm 5mm; height: 98mm; position: relative; }
+.mock .t { font-size: 13pt; font-weight: 800; margin: 2mm 1mm 4mm; }
+.mock .sw { display: flex; justify-content: space-between; align-items: center; background: #fff; border-radius: 3.5mm; padding: 3mm; font-size: 9.5pt; font-weight: 600; }
+.mock .tg { width: 9mm; height: 5mm; border-radius: 3mm; background: var(--accent); position: relative; }
+.mock .tg::after { content: ''; position: absolute; right: .6mm; top: .6mm; width: 3.8mm; height: 3.8mm; border-radius: 50%; background: #fff; }
+.mock .lbl { font-size: 7.5pt; color: var(--muted); margin: 4mm 1mm 1.5mm; text-transform: uppercase; letter-spacing: .03em; }
+.mock .net { display: flex; align-items: center; gap: 2.5mm; background: #fff; padding: 2.6mm 3mm; font-size: 9pt; position: relative; }
+.mock .net:first-of-type { border-radius: 3.5mm 3.5mm 0 0; }
+.mock .net + .net { border-top: 1px solid #ECECF0; }
+.mock .net.last { border-radius: 0 0 3.5mm 3.5mm; }
+.mock .net small { display: block; font-size: 7pt; color: var(--muted); }
+.mock .net svg { width: 4.5mm; height: 4.5mm; flex: none; }
+.mock .hl { outline: 0.8mm solid var(--amber); outline-offset: -0.4mm; border-radius: 3mm; z-index: 1; }
+.mock .mkx { position: absolute; right: -2.5mm; top: -2.5mm; width: 6mm; height: 6mm; font-size: 9pt; }
+.mock .toast { position: absolute; left: 4mm; right: 4mm; bottom: 5mm; background: #2B2B33; color: #fff; border-radius: 3.5mm; padding: 3mm; font-size: 8pt; line-height: 1.35; }
+.mock .toast b { color: #8FB0FF; }
+
+/* Схема платы */
+.board-wrap { display: grid; grid-template-columns: 74mm 1fr; gap: 8mm; align-items: center; }
+.board svg { width: 74mm; height: auto; display: block; }
+</style>
+</head>
+<body>
+
+<!-- ============ 1. Обложка ============ -->
+<section class="page cover">
+  <div class="logo">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4h3a2 2 0 0 1 2 2v14"/><path d="M2 20h3"/><path d="M13 20h9"/><path d="M10 12v.01"/><path d="M13 4.56v16.16a1 1 0 0 1-1.24.97L5 20V5.56a2 2 0 0 1 1.52-1.94l4-1A2 2 0 0 1 13 4.56z"/></svg>
+  </div>
+  <div class="kicker" style="color: var(--lime)">Инструкция для мастера</div>
+  <h1>Счётчик людей<br>для столовой</h1>
+  <p class="lead">Как подключить плату счётчика к Wi‑Fi столовой и проверить, что данные уходят на сайт Genery. Займёт около 10 минут, ноутбук не нужен — только телефон.</p>
+  <div class="pills">
+    <span class="pill">ESP32 + датчик TOF400C</span>
+    <span class="pill">Настройка с телефона</span>
+    <span class="pill">Прошивка 0.4</span>
+  </div>
+
+  <div class="box-list">
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Плата счётчика и USB‑кабель</div>
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>USB‑зарядка 5 В, от 1 А (подойдёт зарядка от телефона)</div>
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Телефон с Wi‑Fi</div>
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Название и пароль Wi‑Fi столовой</div>
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>ID столовой — его даёт администратор (например, <b>main</b>)</span></div>
+  </div>
+
+  <div class="hero">
+    <div class="phone"><img src="img/dash.png" alt=""></div>
+    <div class="cap" style="color: rgba(255,255,255,.5)">Панель платы после настройки</div>
+  </div>
+  <div class="foot"><span>Genery · Счётчик людей</span><span>1</span></div>
+</section>
+
+<!-- ============ 2. Плата и питание ============ -->
+<section class="page">
+  <div class="kicker">Знакомство с платой</div>
+  <h2>Что где на плате</h2>
+
+  <div class="board-wrap">
+    <div class="board">
+      <svg viewBox="0 0 280 420" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans, sans-serif">
+        <!-- плата -->
+        <rect x="40" y="20" width="200" height="380" rx="14" fill="#1B2433"/>
+        <!-- пины по краям -->
+        <g fill="#C9A84A">
+          <circle cx="56" cy="60" r="4"/><circle cx="56" cy="82" r="4"/><circle cx="56" cy="104" r="4"/><circle cx="56" cy="126" r="4"/><circle cx="56" cy="148" r="4"/><circle cx="56" cy="170" r="4"/><circle cx="56" cy="192" r="4"/><circle cx="56" cy="214" r="4"/><circle cx="56" cy="236" r="4"/><circle cx="56" cy="258" r="4"/><circle cx="56" cy="280" r="4"/><circle cx="56" cy="302" r="4"/><circle cx="56" cy="324" r="4"/>
+          <circle cx="224" cy="60" r="4"/><circle cx="224" cy="82" r="4"/><circle cx="224" cy="104" r="4"/><circle cx="224" cy="126" r="4"/><circle cx="224" cy="148" r="4"/><circle cx="224" cy="170" r="4"/><circle cx="224" cy="192" r="4"/><circle cx="224" cy="214" r="4"/><circle cx="224" cy="236" r="4"/><circle cx="224" cy="258" r="4"/><circle cx="224" cy="280" r="4"/><circle cx="224" cy="302" r="4"/><circle cx="224" cy="324" r="4"/>
+        </g>
+        <!-- модуль ESP32 -->
+        <rect x="80" y="40" width="120" height="150" rx="6" fill="#B8BCC6"/>
+        <rect x="88" y="78" width="104" height="104" rx="4" fill="#D7DAE1"/>
+        <text x="140" y="136" text-anchor="middle" font-size="15" font-weight="800" fill="#5A5F6B">ESP32</text>
+        <path d="M92 50h12v14h12V50h12v14h12V50h12v14h12V50h12" fill="none" stroke="#7D828E" stroke-width="3"/>
+        <!-- кнопки -->
+        <rect x="70" y="330" width="34" height="26" rx="4" fill="#E9EAEE"/><circle cx="87" cy="343" r="8" fill="#2A2F3A"/>
+        <rect x="176" y="330" width="34" height="26" rx="4" fill="#E9EAEE"/><circle cx="193" cy="343" r="8" fill="#2A2F3A"/>
+        <text x="87" y="372" text-anchor="middle" font-size="11" font-weight="700" fill="#E9EAEE">EN</text>
+        <text x="193" y="372" text-anchor="middle" font-size="11" font-weight="700" fill="#E9EAEE">BOOT</text>
+        <!-- светодиоды -->
+        <rect x="150" y="300" width="10" height="7" rx="2" fill="#FF4365"/>
+        <rect x="168" y="300" width="10" height="7" rx="2" fill="#2F6BFF"/>
+        <circle cx="173" cy="303.5" r="10" fill="#2F6BFF" opacity=".25"/>
+        <!-- USB -->
+        <rect x="118" y="376" width="44" height="30" rx="5" fill="#A7ABB5"/>
+        <rect x="126" y="384" width="28" height="12" rx="3" fill="#5A5F6B"/>
+        <!-- подписи пинов датчика -->
+        <g font-size="10" font-weight="700" fill="#FFC24B">
+          <text x="238" y="64">3V3</text>
+          <text x="238" y="86">GND</text>
+          <text x="238" y="152">D21</text>
+          <text x="238" y="218">D22</text>
+        </g>
+        <!-- метки -->
+        <g font-size="14" font-weight="800">
+          <circle cx="140" cy="413" r="12" fill="#FFC24B"/><text x="140" y="418" text-anchor="middle" fill="#0A0B10">1</text>
+          <circle cx="198" cy="292" r="12" fill="#FFC24B"/><text x="198" y="297" text-anchor="middle" fill="#0A0B10">2</text>
+          <circle cx="226" cy="343" r="12" fill="#FFC24B"/><text x="226" y="348" text-anchor="middle" fill="#0A0B10">3</text>
+          <circle cx="54" cy="343" r="12" fill="#FFC24B"/><text x="54" y="348" text-anchor="middle" fill="#0A0B10">4</text>
+          <circle cx="262" cy="30" r="12" fill="#FFC24B"/><text x="262" y="35" text-anchor="middle" fill="#0A0B10">5</text>
+        </g>
+      </svg>
+      <div class="cap">Схема платы ESP32 DevKit. У вашей платы детали могут стоять чуть иначе.</div>
+    </div>
+
+    <div>
+      <ul class="legend">
+        <li><span class="mk">1</span><div><b>USB‑разъём</b> — сюда подключается питание от зарядки.</div></li>
+        <li><span class="mk">2</span><div><b>Синий светодиод</b> — показывает состояние (таблица ниже). Красный рядом просто означает, что есть питание.</div></li>
+        <li><span class="mk">3</span><div><b>Кнопка BOOT</b> — удерживать <b>5 секунд</b>, чтобы стереть настройки Wi‑Fi и настроить заново.</div></li>
+        <li><span class="mk">4</span><div><b>Кнопка EN</b> — перезагрузка платы. Настройки при этом не стираются.</div></li>
+        <li><span class="mk">5</span><div><b>Контакты датчика</b>: 3V3, GND, D21 (SDA), D22 (SCL). Подключает тот, кто собирал плату.</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin-top: 8mm">Что показывает синий светодиод</h3>
+  <table>
+    <tr><th>Светодиод</th><th>Что это значит</th><th>Что делать</th></tr>
+    <tr><td><span class="led"><span class="blink"><i></i><i class="off"></i></span>Медленно мигает</span></td><td>Плата ждёт настройки Wi‑Fi</td><td>Пройдите шаги 2–5</td></tr>
+    <tr><td><span class="led"><span class="blink"><i></i><i></i><i class="off"></i><i></i></span>Часто мигает</span></td><td>Подключается к сети</td><td>Подождите до минуты</td></tr>
+    <tr><td><span class="led"><i></i>Горит постоянно</span></td><td>Всё работает</td><td>Ничего, можно уходить</td></tr>
+  </table>
+
+  <div class="card" style="margin-top: 7mm">
+    <h3><span class="step" style="margin-right: 3mm">1</span>Подайте питание</h3>
+    <p>Подключите плату USB‑кабелем к зарядке и вставьте зарядку в розетку. Через несколько секунд синий светодиод начнёт <b>медленно мигать</b> — плата ждёт настройки.</p>
+  </div>
+  <div class="note warn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+    <div>Если плату уже настраивали в другом месте, она сначала около минуты ищет старую сеть (светодиод мигает часто), а потом сама переходит в режим настройки.</div>
+  </div>
+  <div class="foot"><span>Genery · Счётчик людей</span><span>2</span></div>
+</section>
+
+<!-- ============ 3. Подключение с телефона + выбор сети ============ -->
+<section class="page">
+  <div class="kicker">Настройка Wi‑Fi</div>
+  <h2><span class="step">2</span>Подключитесь к плате с телефона</h2>
+
+  <div class="row">
+    <div>
+      <div class="mock"><div class="scr">
+        <div class="t">Wi‑Fi</div>
+        <div class="sw">Wi‑Fi <span class="tg"></span></div>
+        <div class="lbl">Доступные сети</div>
+        <div class="net"><svg viewBox="0 0 24 24" fill="none" stroke="#0A0B10" stroke-width="2.2" stroke-linecap="round"><path d="M12 20h.01"/><path d="M2 8.82a15 15 0 0 1 20 0"/><path d="M5 12.86a10 10 0 0 1 14 0"/><path d="M8.5 16.43a5 5 0 0 1 7 0"/></svg><span style="flex:1">Canteen_Staff</span><svg viewBox="0 0 24 24" fill="none" stroke="#8A8A96" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+        <div class="net hl"><svg viewBox="0 0 24 24" fill="none" stroke="#0040F9" stroke-width="2.2" stroke-linecap="round"><path d="M12 20h.01"/><path d="M2 8.82a15 15 0 0 1 20 0"/><path d="M5 12.86a10 10 0 0 1 14 0"/><path d="M8.5 16.43a5 5 0 0 1 7 0"/></svg><span style="flex:1"><b>Counter-9134F0</b><small>открытая сеть</small></span><span class="mk mkx">1</span></div>
+        <div class="net"><svg viewBox="0 0 24 24" fill="none" stroke="#0A0B10" stroke-width="2.2" stroke-linecap="round"><path d="M12 20h.01"/><path d="M5 12.86a10 10 0 0 1 14 0"/><path d="M8.5 16.43a5 5 0 0 1 7 0"/></svg><span style="flex:1">TP-Link_5A21</span><svg viewBox="0 0 24 24" fill="none" stroke="#8A8A96" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+        <div class="net last"><svg viewBox="0 0 24 24" fill="none" stroke="#0A0B10" stroke-width="2.2" stroke-linecap="round"><path d="M12 20h.01"/><path d="M8.5 16.43a5 5 0 0 1 7 0"/></svg><span style="flex:1">Guest</span></div>
+        <div class="toast" style="outline: .8mm solid var(--amber)">
+          <span class="mk" style="position:absolute; right:-2.5mm; top:-2.5mm; width:6mm; height:6mm; font-size:9pt">2</span>
+          В сети нет доступа к интернету. <b>Оставаться на связи?</b>
+        </div>
+      </div></div>
+      <div class="cap">Схема: настройки Wi‑Fi телефона. У разных телефонов экран выглядит по-разному.</div>
+    </div>
+
+    <div>
+      <p>Откройте на телефоне <b>Настройки → Wi‑Fi</b>.</p>
+      <ul class="legend">
+        <li><span class="mk">1</span><div>Найдите сеть <b>Counter-XXXXXX</b> (буквы и цифры у каждой платы свои) и подключитесь. <b>Пароля нет.</b></div></li>
+        <li><span class="mk">2</span><div>Телефон может предупредить, что в сети нет интернета. Выберите <b>«Оставаться на связи»</b> / «Использовать эту сеть» — интернет здесь и не нужен.</div></li>
+      </ul>
+      <div class="card" style="margin-top: 6mm">
+        <h3>Страница настройки откроется сама</h3>
+        <p>Через несколько секунд телефон покажет окно входа в сеть — это и есть страница платы.</p>
+        <p class="muted">Если не открылась: откройте браузер и наберите адрес <b style="color: var(--ink)">192.168.4.1</b></p>
+      </div>
+      <div class="note info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <div>Сеть Counter-XXXXXX видна, только пока плата ждёт настройки (светодиод мигает медленно). После успешного подключения она исчезает.</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 style="margin-top: 9mm"><span class="step">3</span>Выберите сеть столовой</h2>
+  <div class="row rev">
+    <div>
+      <p>Окно <b>Wi‑Fi</b> со списком сетей откроется автоматически.</p>
+      <ul class="legend">
+        <li><span class="mk">1</span><div>Нажмите на <b>сеть столовой</b>. Значок слева показывает силу сигнала — чем больше дуг, тем лучше.</div></li>
+        <li><span class="mk">2</span><div>Сети с пометкой <b>«корпоративная, не поддерживается»</b> (вход по логину и паролю) не подойдут. Попросите отдельную сеть с обычным паролем.</div></li>
+        <li><span class="mk">3</span><div>Сети нет в списке (скрытая)? Нажмите <b>«Другая сеть»</b> и введите название вручную.</div></li>
+      </ul>
+      <p class="muted" style="margin-top: 4mm">Кнопка со стрелкой по кругу вверху списка — обновить список сетей.</p>
+    </div>
+    <div class="phone"><div class="shot" style="--y: 41%; --h: 73mm"><img src="img/portal-list.png" alt=""></div></div>
+  </div>
+  <div class="foot"><span>Genery · Счётчик людей</span><span>3</span></div>
+</section>
+
+<!-- ============ 4. Пароль и результат ============ -->
+<section class="page">
+  <div class="kicker">Настройка Wi‑Fi</div>
+  <h2><span class="step">4</span>Введите пароль и подключите</h2>
+  <div class="row">
+    <div class="phone"><div class="shot" style="--y: 24%; --h: 95mm"><img src="img/portal-form.png" alt=""></div></div>
+    <div>
+      <p>Под выбранной сетью появится поле для пароля.</p>
+      <ul class="legend">
+        <li><span class="mk">1</span><div>Введите <b>пароль Wi‑Fi столовой</b>. Пароль не короче 8 символов, большие и маленькие буквы различаются.</div></li>
+        <li><span class="mk">2</span><div>Значок глаза <b>показывает пароль</b> — удобно проверить, нет ли опечатки.</div></li>
+        <li><span class="mk">3</span><div>Нажмите <b>«Подключить»</b>. Проверка занимает до 20 секунд.</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 9mm; display:grid; grid-template-columns: 46mm 1fr; gap: 7mm; align-items:center">
+    <div>
+      <div class="phone sm"><div class="shot" style="--y: 56%; --h: 40mm"><img src="img/portal-busy.png" alt=""></div></div>
+    </div>
+    <div>
+      <h3>Идёт подключение</h3>
+      <p>Просто подождите — до 20 секунд.</p>
+      <div class="note warn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+        <div>Иногда в этот момент телефон <b>сам отключается</b> от сети платы — это нормально. Посмотрите на светодиод: горит постоянно — всё получилось.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>Genery · Счётчик людей</span><span>4</span></div>
+</section>
+
+<!-- ============ 5. Результат ============ -->
+<section class="page">
+  <div class="kicker">Настройка Wi‑Fi</div>
+  <h2><span class="step">5</span>Результат</h2>
+  <div class="grid2">
+    <div class="card result">
+      <div class="phone"><div class="shot" style="--y: 56%; --h: 66mm"><img src="img/portal-ok.png" alt=""></div></div>
+      <h3 style="color:#3C6E00">Подключено</h3>
+      <ul class="legend"><li><span class="mk">1</span><div>Нажмите <b>«Готово»</b>.</div></li></ul>
+      <p style="margin-top: 3mm">Через минуту сеть Counter-XXXXXX исчезнет, а светодиод будет <b>гореть постоянно</b>.</p>
+    </div>
+    <div class="card result">
+      <div class="phone"><div class="shot" style="--y: 56%; --h: 66mm"><img src="img/portal-fail.png" alt=""></div></div>
+      <h3 style="color:#B0122F">Не удалось</h3>
+      <ul class="legend">
+        <li><span class="mk">1</span><div>Здесь написана <b>причина</b> (частые — в таблице ниже).</div></li>
+        <li><span class="mk">2</span><div><b>«Попробовать снова»</b> вернёт к списку сетей.</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin-top: 6mm">Частые причины</h3>
+  <table>
+    <tr><td>Неверный пароль</td><td>Проверьте пароль значком глаза: регистр букв, похожие символы (0 и O, l и I).</td></tr>
+    <tr><td>Сеть не найдена</td><td>Плата слишком далеко от роутера или роутер работает только на 5 ГГц. Плате нужна сеть <b>2,4 ГГц</b>.</td></tr>
+    <tr><td>Роутер не отвечает</td><td>Перезагрузите роутер или попробуйте ещё раз ближе к нему.</td></tr>
+    <tr><td>Сеть столовой с логином</td><td>Корпоративные сети (вход по логину и паролю) не поддерживаются. Нужна отдельная сеть с обычным паролем.</td></tr>
+  </table>
+  <div class="note info">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+    <div>Если сеть или пароль ошибочны, плата ничего не сохраняет и остаётся в режиме настройки — можно спокойно пробовать ещё раз.</div>
+  </div>
+  <div class="foot"><span>Genery · Счётчик людей</span><span>5</span></div>
+</section>
+
+<!-- ============ 6. Проверка ============ -->
+<section class="page">
+  <div class="kicker">Проверка</div>
+  <h2><span class="step">6</span>Проверьте, что данные уходят</h2>
+  <div class="row">
+    <div class="phone"><img src="img/dash.png" alt=""></div>
+    <div>
+      <p>Подключите телефон обратно к <b>Wi‑Fi столовой</b> и откройте в браузере панель платы:</p>
+      <div class="card" style="margin: 3mm 0 4mm">
+        <p><b style="font-size: 12pt">counter-xxxxxx.local</b></p>
+        <p class="muted">вместо xxxxxx — буквы и цифры из названия сети платы, маленькими буквами. Если адрес не открывается (бывает на Android) — используйте IP‑адрес платы из списка устройств роутера.</p>
+      </div>
+      <ul class="legend">
+        <li><span class="mk">1</span><div><b>Сеть и IP‑адрес</b> платы. Нажмите, чтобы сменить сеть.</div></li>
+        <li><span class="mk">2</span><div><b>Состояние</b>: у Wi‑Fi и Сервера должны стоять <b>зелёные галочки</b>. Красный крестик у Сервера — откройте настройки (3) и посмотрите причину.</div></li>
+        <li><span class="mk">3</span><div><b>Настройки</b> платы.</div></li>
+      </ul>
+      <div class="note info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <div>Пока датчик не подключён, у «Датчика» написано <b>«Имитация»</b>, а внизу есть кнопки «Вход» и «Выход» для проверки связи с сайтом.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot"><span>Genery · Счётчик людей</span><span>6</span></div>
+</section>
+
+<!-- ============ 7. Настройки ============ -->
+<section class="page">
+  <div class="kicker">Настройки платы</div>
+  <h2><span class="step">7</span>Укажите столовую</h2>
+  <div class="row rev">
+    <div>
+      <p>Нажмите шестерёнку вверху справа — откроются <b>Настройки</b>.</p>
+      <ul class="legend">
+        <li><span class="mk">1</span><div><b>ID устройства</b>. Нажмите — он скопируется. Он понадобится на шаге 8.</div></li>
+        <li><span class="mk">2</span><div><b>Связь с сервером</b>: должно быть «Данные приняты сервером». Если здесь ошибка — сфотографируйте экран и отправьте администратору.</div></li>
+        <li><span class="mk">3</span><div><b>ID столовой</b> — введите ID, который дал администратор (латиницей, например <b>main</b>).</div></li>
+        <li><span class="mk">4</span><div>Нажмите <b>«Сохранить»</b>.</div></li>
+      </ul>
+      <p class="muted" style="margin-top: 4mm">Поле «Проект Firebase» не меняйте.</p>
+    </div>
+    <div class="phone"><div class="shot" style="--y: 10%; --h: 106mm"><img src="img/settings.png" alt=""></div></div>
+  </div>
+
+  <h3 style="margin-top: 8mm">Остальные кнопки в настройках (ниже на экране)</h3>
+  <table>
+    <tr><td>Сменить сеть Wi‑Fi</td><td>Открывает список сетей, как на шаге 3.</td></tr>
+    <tr><td>Отправить данные сейчас</td><td>Отправляет данные на сайт сразу, не дожидаясь очереди. Удобно для проверки.</td></tr>
+    <tr><td>Обнулить счётчик</td><td>Ставит «внутри» в 0 на плате и на сайте. Обычно не нужно — счёт и так начинается заново каждую ночь.</td></tr>
+    <tr><td>Перезагрузить</td><td>Перезапускает плату. Настройки сохраняются.</td></tr>
+    <tr><td>Забыть Wi‑Fi</td><td>Стирает сеть и открывает режим настройки (то же, что BOOT 5 секунд).</td></tr>
+  </table>
+  <div class="foot"><span>Genery · Счётчик людей</span><span>7</span></div>
+</section>
+
+<!-- ============ 6. Администратор ============ -->
+<section class="page">
+  <div class="kicker">Завершение</div>
+  <h2><span class="step">8</span>Сообщите администратору</h2>
+  <div class="row">
+    <div>
+      <div class="phone"><img src="img/admin-devices.png" alt=""></div>
+      <div class="cap">Так плату видит администратор на сайте</div>
+    </div>
+    <div>
+      <p>Отправьте администратору <b>ID устройства</b> (например, <b>counter-9134f0</b>) и где стоит плата — например, «главный вход».</p>
+      <div class="card" style="margin-top: 5mm">
+        <h3>Что делает администратор</h3>
+        <ol style="padding-left: 5mm; display: grid; gap: 2mm">
+          <li>Открывает на сайте Genery страницу столовой → <b>«Управление»</b>.</li>
+          <li>В разделе <b>«Счётчики»</b> находит новую плату в блоке «Ждут подключения».</li>
+          <li>Пишет название двери и нажимает <b>«Подключить к столовой»</b>.</li>
+        </ol>
+      </div>
+      <div class="note info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <div>Пока администратор не подключил плату, её данные на сайте не учитываются. Это защита от посторонних устройств.</div>
+      </div>
+      <div class="grid2" style="margin-top: 6mm; align-items: start">
+        <div>
+          <div class="phone sm"><img src="img/canteen-page.png" alt=""></div>
+        </div>
+        <div>
+          <h3>Готово</h3>
+          <p>После подключения посетители видят на сайте, сколько людей в столовой, когда станет свободнее и график загрузки.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>Genery · Счётчик людей</span><span>8</span></div>
+</section>
+
+<!-- ============ 9. Неполадки ============ -->
+<section class="page">
+  <div class="kicker">Справка</div>
+  <h2>Если что-то пошло не так</h2>
+  <table>
+    <tr><th>Ситуация</th><th>Что делать</th></tr>
+    <tr><td>Нет сети Counter-XXXXXX</td><td>Посмотрите на светодиод. Мигает часто — плата ещё ищет старую сеть, подождите минуту. Горит постоянно — плата уже подключена; чтобы настроить заново, удерживайте <b>BOOT 5 секунд</b>. Не горит — проверьте зарядку и кабель.</td></tr>
+    <tr><td>Страница настройки не открылась</td><td>Откройте браузер и наберите <b>192.168.4.1</b>. Отключите на время мобильный интернет, если телефон упорно переключается на него.</td></tr>
+    <tr><td>Сменили пароль Wi‑Fi или роутер</td><td>Ничего нажимать не нужно: через минуту после включения плата сама откроет сеть Counter-XXXXXX. Пройдите шаги 2–5.</td></tr>
+    <tr><td>Плату перенесли в другую столовую</td><td>Настройте Wi‑Fi нового места (шаги 2–5), затем в настройках смените <b>ID столовой</b> (шаг 7) и сообщите администратору.</td></tr>
+    <tr><td>«Сервер: ошибка»</td><td>Откройте настройки → «Связь с сервером». «Нет Wi‑Fi» — проблема с сетью. Другая ошибка — отправьте снимок экрана администратору.</td></tr>
+    <tr><td>На сайте не те цифры</td><td>Счёт за день начинается заново каждую ночь. Если нужно сбросить сейчас: Настройки → <b>«Обнулить счётчик»</b> (обнулится и на сайте).</td></tr>
+    <tr><td>Плата «зависла»</td><td>Нажмите кнопку <b>EN</b> или отключите и снова включите питание. Настройки и данные сохранятся.</td></tr>
+  </table>
+
+  <h3 style="margin-top: 8mm">Полезно знать</h3>
+  <div class="grid2">
+    <div class="card">
+      <h3>Без интернета данные не теряются</h3>
+      <p>Если Wi‑Fi пропал, плата копит проходы в памяти (даже при отключении питания) и отправит их, когда связь вернётся.</p>
+    </div>
+    <div class="card">
+      <h3>Сброс настроек Wi‑Fi</h3>
+      <p>Удерживайте <b>BOOT 5 секунд</b> или в настройках платы нажмите <b>«Забыть Wi‑Fi»</b>. Счётчик и ID столовой при этом сохраняются.</p>
+    </div>
+    <div class="card">
+      <h3>Место для платы</h3>
+      <p>Wi‑Fi должен ловить уверенно: в панели «Сигнал Wi‑Fi» лучше всего значения от <b>−40 до −70 дБм</b>. Хуже −80 — переставьте плату или роутер.</p>
+    </div>
+    <div class="card">
+      <h3>Установка датчика над дверью</h3>
+      <p class="muted">Раздел появится вместе с прошивкой для датчика: высота, направление и калибровка.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Genery · Счётчик людей</span><span>9</span></div>
+</section>
+
+</body>
+</html>

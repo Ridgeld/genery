@@ -182,9 +182,6 @@ function GameMenu(){
             backgroundColor = {theme.element_first_color}
             isBorder={true}
             borderColor={theme.block_border_color} 
-            textColor = {theme.text_first_color}
-            arrowColor = {theme.text_first_color}
-            arrowBackgroundColor = {theme.block_arrow_first_color}
             linkTo = "/casino"/>
         <Block 
             name = "Построение механизма" 
@@ -192,9 +189,6 @@ function GameMenu(){
             backgroundColor = {theme.first_color}
             isBorder={true}
             borderColor={theme.block_border_color} 
-            textColor = {theme.text_first_color}
-            arrowColor = {theme.text_first_color}
-            arrowBackgroundColor = {theme.block_arrow_third_color}
             linkTo = "/analysis"/>
         <Block 
             name = "Эльдан wiki" 
@@ -202,9 +196,12 @@ function GameMenu(){
             backgroundColor = {theme.second_color}
             isBorder={true}
             borderColor={theme.block_border_color} 
+<<<<<<< HEAD
             textColor = {theme.text_first_color}
             arrowColor = {theme.text_first_color}
             arrowBackgroundColor = {theme.block_arrow_third_color}
+=======
+>>>>>>> 6982197 (update canteen)
             linkTo = "/eldan-about"/>
         <Block 
             name = "Genery AI" 
@@ -212,9 +209,6 @@ function GameMenu(){
             backgroundColor = {theme.second_color}
             isBorder={true}
             borderColor={theme.block_border_color} 
-            textColor = {theme.text_first_color}
-            arrowColor = {theme.text_first_color}
-            arrowBackgroundColor = {theme.block_arrow_third_color}
             linkTo = "/messenger"/>
         <Block 
             name = "Генератор цитат" 
@@ -222,9 +216,6 @@ function GameMenu(){
             backgroundColor = {theme.first_color}
             isBorder={true}
             borderColor={theme.block_border_color} 
-            textColor = {theme.text_third_color}
-            arrowColor = {theme.text_third_color}
-            arrowBackgroundColor = {''}
             linkTo = "/generate-quote"/>
         <Block 
             name = "GCOIN" 
@@ -232,9 +223,6 @@ function GameMenu(){
             backgroundColor = {theme.element_first_color}
             isBorder={true}
             borderColor={theme.block_border_color} 
-            textColor = {theme.text_first_color}
-            arrowColor = {theme.text_first_color}
-            arrowBackgroundColor = {theme.block_arrow_second_color}
             linkTo = "/tapcoin"/>
         <Block 
             name = "Ракетка" 
@@ -242,9 +230,6 @@ function GameMenu(){
             backgroundColor = {theme.element_first_color}
             isBorder={true}
             borderColor={theme.block_border_color} 
-            textColor = {theme.text_first_color}
-            arrowColor = {theme.text_first_color}
-            arrowBackgroundColor = {theme.block_arrow_first_color}
             linkTo = "/rocket"/>
         <Block 
             name = "Тест" 
@@ -252,9 +237,6 @@ function GameMenu(){
             backgroundColor = {theme.element_first_color}
             isBorder={true}
             borderColor={theme.block_border_color} 
-            textColor = {theme.text_first_color}
-            arrowColor = {theme.text_first_color}
-            arrowBackgroundColor = {theme.block_arrow_third_color}
             linkTo = "/quiz"/>
         <Block 
             name = "Flyppi bird" 
@@ -262,9 +244,6 @@ function GameMenu(){
             backgroundColor = {theme.element_first_color}
             isBorder={true}
             borderColor={theme.block_border_color} 
-            textColor = {theme.text_first_color}
-            arrowColor = {theme.text_first_color}
-            arrowBackgroundColor = {theme.block_arrow_second_color}
             linkTo = "/flippybird"/>
         <Block 
             name = "Рейтинг студентов" 
@@ -272,9 +251,6 @@ function GameMenu(){
             backgroundColor = {theme.element_first_color}
             isBorder={true}
             borderColor={theme.block_border_color} 
-            textColor = {theme.text_first_color}
-            arrowColor = {theme.text_first_color}
-            arrowBackgroundColor = {theme.block_arrow_first_color}
             linkTo = "/rating"/>
         <Block 
             name = "Угадай линию" 
@@ -282,10 +258,7 @@ function GameMenu(){
             backgroundColor = {theme.element_first_color}
             isBorder={true}
             borderColor={theme.block_border_color} 
-            textColor = {theme.text_first_color}
-            arrowColor = {theme.text_first_color}
-            arrowBackgroundColor = {theme.block_arrow_third_color}
-            linkTo = "/guessline"/>
+            linkTo = "/guess-line"/>
     </div>
   )
 }
