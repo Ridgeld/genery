@@ -50,14 +50,15 @@ service cloud.firestore {
       // Администратор: подключает/отключает плату, задаёт название двери, удаляет
       allow update, delete: if isAdmin();
 
-      // Сама плата (анонимный вход): только свой документ и без поля approved
+      // Сама плата (анонимный вход): только свой документ. Подключение (approved),
+      // столовую (canteenId) и название двери (door) задаёт только администратор.
       allow create: if request.auth != null
         && request.resource.data.uid == request.auth.uid
-        && !('approved' in request.resource.data);
+        && !request.resource.data.keys().hasAny(['approved', 'canteenId', 'door']);
       allow update: if request.auth != null
         && resource.data.uid == request.auth.uid
         && request.resource.data.uid == request.auth.uid
-        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['approved']);
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['approved', 'canteenId', 'door']);
 
       // Почасовая статистика за день
       match /days/{day} {

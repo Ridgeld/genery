@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   collection, collectionGroup, deleteDoc, doc, getDocs, onSnapshot, serverTimestamp, setDoc, updateDoc
@@ -8,50 +8,48 @@ import { ElementContext } from '../../providers/ElementProvider.jsx';
 import { useAuth } from '../../providers/Authprovired.jsx';
 import styles from './CanteenOccupancy.module.scss';
 import '../../themes/default.scss';
-import AdminView from './AdminView.jsx';
+import AdminApp from './AdminApp.jsx';
 import useIsAdmin from './useIsAdmin.js';
+import useDayDocs from './useDayDocs.js';
+import { buildDayCurves } from './canteenStats.js';
 
 const byName = (a, b) => String(a.name || a.id).localeCompare(String(b.name || b.id), 'ru');
 
-// Страница «Управление» (/canteen-devices): счётчики, столовые и администраторы. Только для админов.
+// Панель «Управление» (/canteen-devices?v=canteen&id=main): столовые, новые платы, прошивка, администраторы.
 export default function CanteenDevices() {
   const { theme, setElementColors } = useContext(ElementContext);
   const { authUser } = useAuth();
   const navigateTo = useNavigate();
   const [params, setParams] = useSearchParams();
-  const tab = params.get('tab') || 'devices';
   const isAdmin = useIsAdmin();
 
   const [devices, setDevices] = useState([]);
-  const [devicesLoaded, setDevicesLoaded] = useState(false);
   const [canteens, setCanteens] = useState([]);
+  const [canteensLoaded, setCanteensLoaded] = useState(false);
   const [admins, setAdmins] = useState([]);
   const [firmware, setFirmware] = useState(null);
   const [users, setUsers] = useState(null);
   const [usersLoading, setUsersLoading] = useState(false);
   const [, setClock] = useState(0);
 
-  // Живые списки — только для админа (остальным правила всё равно не дадут менять)
   useEffect(() => {
     if (!isAdmin) return undefined;
     const fail = (what) => (e) => console.error(`Ошибка чтения (${what}):`, e);
-    const offDevices = onSnapshot(collection(db, 'devices'), (snap) => {
-      const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-      list.sort((a, b) => String(a.canteenId).localeCompare(String(b.canteenId))
-        || String(a.door || a.id).localeCompare(String(b.door || b.id)));
-      setDevices(list);
-      setDevicesLoaded(true);
-    }, fail('счётчики'));
-    const offCanteens = onSnapshot(collection(db, 'canteens'), (snap) => {
-      setCanteens(snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort(byName));
-    }, fail('столовые'));
-    const offAdmins = onSnapshot(collection(db, 'admins'), (snap) => {
-      setAdmins(snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort(byName));
-    }, fail('администраторы'));
-    const offFirmware = onSnapshot(doc(db, 'firmware', 'latest'), (snap) => {
-      setFirmware(snap.exists() ? snap.data() : null);
-    }, fail('прошивка'));
-    return () => { offDevices(); offCanteens(); offAdmins(); offFirmware(); };
+    const offs = [
+      onSnapshot(collection(db, 'devices'), (snap) => {
+        setDevices(snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+          .sort((a, b) => String(a.door || a.id).localeCompare(String(b.door || b.id), 'ru')));
+      }, fail('счётчики')),
+      onSnapshot(collection(db, 'canteens'), (snap) => {
+        setCanteens(snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort(byName));
+        setCanteensLoaded(true);
+      }, fail('столовые')),
+      onSnapshot(collection(db, 'admins'), (snap) => {
+        setAdmins(snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort(byName));
+      }, fail('администраторы')),
+      onSnapshot(doc(db, 'firmware', 'latest'), (snap) => setFirmware(snap.exists() ? snap.data() : null), fail('прошивка')),
+    ];
+    return () => offs.forEach((off) => off());
   }, [isAdmin]);
 
   useEffect(() => {
@@ -59,23 +57,39 @@ export default function CanteenDevices() {
     return () => clearInterval(t);
   }, []);
 
+  // Полноэкранная панель: без шапки и нижнего меню сайта
   useEffect(() => {
     setElementColors({
       iconColor: theme.icon_color,
       titleColor: theme.text_first_color,
-      showArrow: true,
-      arrowColor: theme.text_first_color,
-      arrowLink: () => navigateTo('/canteen'),
-      isHeaderBackground: true,
-      headerBackground: theme.background_color,
-      isHeader: true,
-      isFooter: true,
-      footerBackground: theme.background_color,
-      activeElementIndex: 0,
+      showArrow: false,
+      isHeader: false,
+      isFooter: false,
       background: theme.background_color
     });
     document.body.style.background = theme.background_color;
-  }, [theme, setElementColors, navigateTo]);
+  }, [theme, setElementColors]);
+
+  // Раздел и выбранная столовая — в адресе страницы
+  let view = params.get('v');
+  let selectedId = params.get('id');
+  if (!view) {
+    view = canteens.length ? 'canteen' : 'new-canteen';
+    selectedId = canteens[0]?.id;
+  }
+  if (view === 'canteen' && canteensLoaded && !canteens.some((c) => c.id === selectedId)) {
+    selectedId = canteens[0]?.id;
+    if (!selectedId) view = 'new-canteen';
+  }
+  const navigate = (v, id) => setParams(id ? { v, id } : { v });
+
+  // История выбранной столовой — для графика
+  const historyIds = useMemo(
+    () => (view === 'canteen' ? devices.filter((d) => d.approved === true && d.canteenId === selectedId).map((d) => d.id) : []),
+    [view, selectedId, devices]
+  );
+  const dayDocs = useDayDocs(historyIds);
+  const curves = useMemo(() => buildDayCurves(dayDocs), [dayDocs]);
 
   const guard = async (what, fn) => {
     try {
@@ -83,20 +97,19 @@ export default function CanteenDevices() {
     } catch (e) {
       console.error(`Не удалось: ${what}`, e);
       alert(`Не удалось ${what}: ${e.message}`);
+      throw e;
     }
   };
 
-  // Пользователи для поиска администраторов — загружаются один раз, при первом фокусе в поиске
   const loadUsers = async () => {
     if (users || usersLoading) return;
     setUsersLoading(true);
     try {
       const snap = await getDocs(collectionGroup(db, 'info'));
-      const list = snap.docs
+      setUsers(snap.docs
         .filter((d) => d.id === 'preferences' && d.ref.path.startsWith('users/'))
         .map((d) => ({ uid: d.data().uid || d.ref.parent.parent.id, name: d.data().name || '', photo: d.data().photo || '' }))
-        .filter((u) => u.uid && u.name);
-      setUsers(list);
+        .filter((u) => u.uid && u.name));
     } catch (e) {
       console.error('Не удалось загрузить пользователей:', e);
       setUsers([]);
@@ -112,33 +125,39 @@ export default function CanteenDevices() {
           <div className={styles.empty} style={{ color: theme.text_second_color }}>
             {isAdmin === null ? 'Проверяю доступ…' : 'Эта страница доступна только администратору.'}
           </div>
+          <button type="button" className={styles.devicesLink} style={{ margin: '0 auto 20px', display: 'block', background: theme.element_second_color, color: theme.text_first_color }} onClick={() => navigateTo('/canteen')}>
+            На страницу столовой
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <AdminView
+    <AdminApp
       theme={theme}
-      tab={tab}
-      onTab={(t) => setParams({ tab: t }, { replace: true })}
+      user={authUser}
+      view={view}
+      selectedId={selectedId}
+      onNavigate={navigate}
+      onBack={() => navigateTo(selectedId ? `/canteen?id=${encodeURIComponent(selectedId)}` : '/canteen')}
       devices={devices}
-      devicesLoaded={devicesLoaded}
-      onSaveDevice={(id, data) => guard('сохранить счётчик', () => updateDoc(doc(db, 'devices', id), data))}
       canteens={canteens}
-      onSaveCanteen={(id, data) => guard('сохранить столовую', () => updateDoc(doc(db, 'canteens', id), data))}
-      onCreateCanteen={(id, data) => guard('создать столовую', () => setDoc(doc(db, 'canteens', id), data))}
-      onOpenCanteen={(id) => navigateTo(`/canteen?id=${encodeURIComponent(id)}`)}
       admins={admins}
-      myUid={authUser?._id}
+      firmware={firmware}
+      curves={curves}
       users={users}
       usersLoading={usersLoading}
       onLoadUsers={loadUsers}
+      onSaveDevice={(id, data) => guard('сохранить счётчик', () => updateDoc(doc(db, 'devices', id), data))}
+      onSaveCanteen={(id, data) => guard('сохранить столовую', () => updateDoc(doc(db, 'canteens', id), data))}
+      onCreateCanteen={(id, data) => guard('создать столовую', () => setDoc(doc(db, 'canteens', id), data))}
+      onDeleteCanteen={(id) => guard('удалить столовую', async () => { await deleteDoc(doc(db, 'canteens', id)); navigate('canteen'); })}
+      onOpenCanteenPage={(id) => navigateTo(`/canteen?id=${encodeURIComponent(id)}`)}
       onAddAdmin={(u) => guard('добавить администратора', () => setDoc(doc(db, 'admins', u.uid), {
         name: u.name, photo: u.photo, addedBy: authUser?._id || '', addedAt: serverTimestamp()
       }))}
       onRemoveAdmin={(uid) => guard('убрать администратора', () => deleteDoc(doc(db, 'admins', uid)))}
-      firmware={firmware}
       onPublishFirmware={({ version, url }) => guard('выпустить прошивку', () => setDoc(doc(db, 'firmware', 'latest'), {
         version, url, enabled: true, publishedAt: serverTimestamp(), publishedBy: authUser?._id || ''
       }))}

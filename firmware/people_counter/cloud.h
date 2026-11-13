@@ -149,11 +149,13 @@ bool cloudSend(uint32_t inN, uint32_t outN) {
   String devPath = base + "/devices/" + deviceId;
 
   // --- devices/{id}: живое состояние ---
-  String fields = "\"uid\":" + fsStr(fbUid) + ",\"canteenId\":" + fsStr(cfgCanteen) +
+  // Столовую (canteenId) назначает администратор на сайте. Плата лишь подсказывает,
+  // какую столовую ввёл мастер при установке (canteenRequested).
+  String fields = "\"uid\":" + fsStr(fbUid) + ",\"canteenRequested\":" + fsStr(cfgCanteen) +
                   ",\"fw\":" + fsStr(FW_VERSION) + ",\"ip\":" + fsStr(WiFi.localIP().toString()) +
                   ",\"rssi\":" + fsInt(WiFi.RSSI()) + ",\"sim\":" + fsBool(SIMULATE_SENSOR) +
                   ",\"day\":" + fsStr(day) + ",\"ota\":" + fsStr(otaMsg);
-  String mask = "\"uid\",\"canteenId\",\"fw\",\"ip\",\"rssi\",\"sim\",\"day\",\"ota\"";
+  String mask = "\"uid\",\"canteenRequested\",\"fw\",\"ip\",\"rssi\",\"sim\",\"day\",\"ota\"";
   String tr = "{\"fieldPath\":\"lastSeen\",\"setToServerValue\":\"REQUEST_TIME\"}";
   if (newDay) {
     // Первая отправка за день: счётчики дня начинаются заново
@@ -175,7 +177,7 @@ bool cloudSend(uint32_t inN, uint32_t outN) {
     if (inN)  dtr += fsInc(String("in.") + hourKey, inN);
     if (outN) dtr += (dtr.length() ? "," : "") + fsInc(String("out.") + hourKey, outN);
     writes += ",{\"update\":{\"name\":\"" + devPath + "/days/" + day + "\",\"fields\":{\"uid\":" + fsStr(fbUid) +
-              ",\"canteenId\":" + fsStr(cfgCanteen) + "}},\"updateMask\":{\"fieldPaths\":[\"uid\",\"canteenId\"]}," +
+              "}},\"updateMask\":{\"fieldPaths\":[\"uid\"]}," +
               "\"updateTransforms\":[" + dtr + "]}";
   }
 

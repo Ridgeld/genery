@@ -13,7 +13,7 @@ export const slugify = (s) => s.toLowerCase().split('').map((c) => TR[c] ?? c).j
 
 // Раздел «Столовые»: список, редактирование названия и вместимости, создание новой.
 // canteens: [{ id, name, capacity }], devices — для подсчёта дверей
-export default function CanteensSection({ theme, canteens, devices, onSave, onCreate, onOpen }) {
+export default function CanteensSection({ theme, canteens, devices, onSave, onCreate, onOpen, onlyForm = false }) {
   const [name, setName] = useState('');
   const [capacity, setCapacity] = useState('');
   const [id, setId] = useState('');
@@ -46,7 +46,7 @@ export default function CanteensSection({ theme, canteens, devices, onSave, onCr
 
   return (
     <>
-      {canteens.map((c) => {
+      {!onlyForm && canteens.map((c) => {
         const doors = devices.filter((d) => d.canteenId === c.id);
         const active = doors.filter((d) => d.approved === true).length;
         return (
@@ -108,7 +108,7 @@ export default function CanteensSection({ theme, canteens, devices, onSave, onCr
         );
       })}
 
-      <div className={styles.sectionTitle} style={{ color: text }}>Новая столовая</div>
+      {!onlyForm && <div className={styles.sectionTitle} style={{ color: text }}>Новая столовая</div>}
       <div className={styles.devCard} style={{ background: tile }}>
         <div className={styles.formRow}>
           <label>

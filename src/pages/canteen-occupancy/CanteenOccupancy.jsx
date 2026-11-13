@@ -1,14 +1,13 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { collection, doc, documentId, getDocs, onSnapshot, query, where } from 'firebase/firestore';
+import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../../../firebase.js';
 import { ElementContext } from '../../providers/ElementProvider.jsx';
 import '../../themes/default.scss';
 import CanteenView from './CanteenView.jsx';
 import useIsAdmin from './useIsAdmin.js';
-import {
-  HISTORY_DAYS, buildDayCurves, dayKey, daysAgoKey, liveOccupancy, nowMinutes
-} from './canteenStats.js';
+import useDayDocs from './useDayDocs.js';
+import { buildDayCurves, dayKey, liveOccupancy, nowMinutes } from './canteenStats.js';
 
 const DEFAULT_CAPACITY = 120;
 const STATUS_COLORS = { ok: '#C3F82B', bad: '#FF4365', none: '#7D7D8C' };
@@ -25,7 +24,6 @@ export default function CanteenOccupancy() {
   const [info, setInfo] = useState({ capacity: DEFAULT_CAPACITY, name: '' });
   const [devices, setDevices] = useState([]);       // одобренные счётчики этой столовой
   const [devicesLoaded, setDevicesLoaded] = useState(false);
-  const [dayDocs, setDayDocs] = useState([]);       // почасовая история всех дверей
   const [clock, setClock] = useState(Date.now());   // «сейчас», обновляется раз в 30 с
 
   // Карточка столовой: canteens/{id} { name, capacity }
@@ -52,26 +50,7 @@ export default function CanteenOccupancy() {
   ), [canteenId]);
 
   // История за 5 недель (включая сегодня). Обновляется каждые 5 минут
-  const deviceIds = devices.map((d) => d.id).sort().join(',');
-  useEffect(() => {
-    if (!deviceIds) { setDayDocs([]); return undefined; }
-    let cancelled = false;
-    const load = async () => {
-      try {
-        const from = daysAgoKey(HISTORY_DAYS);
-        const parts = await Promise.all(deviceIds.split(',').map(async (id) => {
-          const snap = await getDocs(query(collection(db, 'devices', id, 'days'), where(documentId(), '>=', from)));
-          return snap.docs.map((d) => ({ date: d.id, ...d.data() }));
-        }));
-        if (!cancelled) setDayDocs(parts.flat());
-      } catch (error) {
-        console.error('Ошибка чтения истории:', error);
-      }
-    };
-    load();
-    const timer = setInterval(load, 5 * 60 * 1000);
-    return () => { cancelled = true; clearInterval(timer); };
-  }, [deviceIds]);
+  const dayDocs = useDayDocs(devices.map((d) => d.id));
 
   useEffect(() => {
     const timer = setInterval(() => setClock(Date.now()), 30 * 1000);

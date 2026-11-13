@@ -29,7 +29,7 @@
 #include "esp_mac.h"
 #include "ui_bundle.h"   // интерфейс: ui/index.html, собирается командой node ui/build.mjs
 
-#define FW_VERSION      "0.5.0"
+#define FW_VERSION      "0.5.1"
 #define PIN_LED         2      // встроенный светодиод ESP32 DevKit
 #define PIN_BUTTON      0      // кнопка BOOT
 #define DEFAULT_SERVER  "genery-c83e3"
