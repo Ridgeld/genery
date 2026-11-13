@@ -196,12 +196,9 @@ function GameMenu(){
             backgroundColor = {theme.second_color}
             isBorder={true}
             borderColor={theme.block_border_color} 
-<<<<<<< HEAD
             textColor = {theme.text_first_color}
             arrowColor = {theme.text_first_color}
             arrowBackgroundColor = {theme.block_arrow_third_color}
-=======
->>>>>>> 6982197 (update canteen)
             linkTo = "/eldan-about"/>
         <Block 
             name = "Genery AI" 

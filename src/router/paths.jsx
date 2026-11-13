@@ -44,12 +44,10 @@ import QuoteGenerate from '../pages/quotegenerate/QuoteGenerate.jsx';
 import Analysis from '../pages/engineering analysis/Analysis.jsx';
 import AboutEldan from './../pages/eldan-about/AboutEldan';
 import OrderCalculator from '../pages/order-calculator/OrderCalculator.jsx';
-<<<<<<< HEAD
-=======
+
 import CanteenOccupancy from '../pages/canteen-occupancy/CanteenOccupancy.jsx';
 import CanteenDevices from '../pages/canteen-occupancy/CanteenDevices.jsx';
 import CanteenPreview from '../pages/canteen-occupancy/CanteenPreview.jsx';
->>>>>>> 6982197 (update canteen)
 
 export const routes = [
     // Предпросмотр страницы столовой на тестовых данных — только при разработке (vite dev)

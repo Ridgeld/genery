@@ -351,7 +351,6 @@
 // Мамытов - легенда, странный препод, на парах которого мы делаем "что по кайфу", в общем ничего. Но иногда когда начинает учить. Предлагал нам пойти на Нобелевскую премию за проект выполненный через нейросеть.
 // Джалбиев - преподаватель легенда, преподавал программирование на листке бумаги, рассказывал алгоритмизацию на примере youtube shorts.
 // Жолдошов - легенда черчения, ставит на всех чертежах точки и все. Не знает как должен выглядеть чертеж. Кожомбердиев Эльдан - легенда, умеет менять выбор даже там где его изменить нельзя. Ты большой любитель Чон-Арыкской шавы (шаурмечная "Перчик"), и против мяса ишака - Эльдан его обожает.`
-<<<<<<< HEAD
 
 
 //     const parts = storedCensor ? [
@@ -404,8 +403,6 @@ async function fileToGenerativePart(file) {
           mimeType: file.type,
         },
       });
-=======
-
 
 //     const parts = storedCensor ? [
 //         { role: "user", parts: [{ text: 'input: Привет, кто ты?' }] },
@@ -458,7 +455,6 @@ async function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onloadend = () => resolve(reader.result);
->>>>>>> 6982197 (update canteen)
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
@@ -466,7 +462,6 @@ async function fileToBase64(file) {
 
 export async function run(userInput, images) {
   try {
-<<<<<<< HEAD
     const imageParts = await Promise.all(images.map(fileToGenerativePart));
 
     const res = await fetch("https://genery-proxy-vercel.vercel.app/api/generate", {
@@ -477,7 +472,6 @@ export async function run(userInput, images) {
 
     const data = await res.json();
     return [data.text, false];
-=======
     let currentSystemPrompt = SYSTEM_PROMPT;
     let textToSend = userInput;
 
@@ -534,7 +528,6 @@ export async function run(userInput, images) {
         console.error("Неожиданный ответ от API:", data);
         return ["Извини, не смог сгенерировать ответ.", false];
     }
->>>>>>> 6982197 (update canteen)
   } catch (error) {
     console.error("Ошибка при запросе:", error);
     return ["Ошибка при генерации ответа", false];

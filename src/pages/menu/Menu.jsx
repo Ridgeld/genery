@@ -120,12 +120,9 @@ function About(){
             backgroundColor = {theme.block_second_color} 
             isBorder={false}
             borderColor={theme.block_border_color} 
-<<<<<<< HEAD
             textColor = {theme.text_second_color} 
             arrowColor = {theme.text_third_color}  
             arrowBackgroundColor = {theme.block_arrow_second_color} 
-            linkTo = "/order-calculator"/>
-=======
             linkTo = "/order-calculator"/>
         <Block 
             name = "Заполненность столовой" 
@@ -134,7 +131,6 @@ function About(){
             isBorder={false}
             borderColor={theme.block_border_color} 
             linkTo = "/canteen-occupancy"/>
->>>>>>> 6982197 (update canteen)
       </div>
     </div>
   )
