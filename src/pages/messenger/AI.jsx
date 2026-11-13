@@ -403,46 +403,10 @@ async function fileToGenerativePart(file) {
           mimeType: file.type,
         },
       });
-
-//     const parts = storedCensor ? [
-//         { role: "user", parts: [{ text: 'input: Привет, кто ты?' }] },
-//         { role: "model", parts: [{ text: 'input: Привет! Я нейросеть Genery' }] },
-//         { role: "user", parts: [{ text: `input: ${userInput}` }] },
-//     ] : [
-//         { role: "user", parts: [{ text: "Заебал" }] },
-//         { role: "model", parts: [{ text: "Эу, братишка, проще общайся" }] },
-//         { role: "user", parts: [{ text: `input: ${userInput}` }] },
-//     ];
-
-
-//     try {
-//         const imageParts = await Promise.all(images.map(fileToGenerativePart));
-//         let result;
-
-//         if (images.length > 0) {
-//             const textPart = { role: "user", parts: [{ text: userInput }] };
-//             result = await model.generateContent([textPart, ...imageParts]);
-//         } else {
-//             result = await model.generateContent({
-//                 contents: parts,
-//                 generationConfig,
-//                 systemInstruction: systemInstruction,
-//                 safetySettings,
-//             });
-//         }
-
-//         const responseText = result.response.text();
-//         console.log(responseText);
-//         return [responseText, false];
-
-//     } catch (error) {
-//         console.error("Ошибка при запросе к Google Generative AI:", error);
-//         return [`Ошибка при генерации ответа`, false];
-//     }
-// }
-
-
-
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 
 const SYSTEM_PROMPT = `Ты — полезный и умный ИИ-ассистент. 
 Твоя задача — отвечать на вопросы пользователя, помогать с учебой и поддерживать беседу.
@@ -462,16 +426,6 @@ async function fileToBase64(file) {
 
 export async function run(userInput, images) {
   try {
-    const imageParts = await Promise.all(images.map(fileToGenerativePart));
-
-    const res = await fetch("https://genery-proxy-vercel.vercel.app/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userInput, images: imageParts }),
-    });
-
-    const data = await res.json();
-    return [data.text, false];
     let currentSystemPrompt = SYSTEM_PROMPT;
     let textToSend = userInput;
 
@@ -512,7 +466,7 @@ export async function run(userInput, images) {
       method: "POST",
       headers: { 
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY || ''}` // Добавьте ваш ключ в .env
+        "Authorization": `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY || ''}`
       },
       body: JSON.stringify({ 
         model: "apodex/apodex-1.1-mini:free",
