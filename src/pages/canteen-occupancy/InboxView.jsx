@@ -3,8 +3,10 @@ import s from './AdminDashboard.module.scss';
 import Icon from './AdminIcons.jsx';
 import { SignalBars, ago, isOnline } from './CanteenDashboard.jsx';
 
-const GREEN = '#C3F82B';
-const RED = '#FF4365';
+import { C } from './themeColors.js';
+
+const GREEN = C.ok;
+const RED = C.bad;
 
 function PendingCard({ theme, d, canteens, onConnect }) {
   const known = canteens.some((c) => c.id === d.canteenRequested);
@@ -32,7 +34,7 @@ function PendingCard({ theme, d, canteens, onConnect }) {
         <span><SignalBars rssi={d.rssi} /><b>{d.rssi ? `${d.rssi} дБм` : '—'}</b></span>
         <span>Прошивка <b>v{d.fw || '?'}</b></span>
         <span>{ago(seen)}</span>
-        {d.sim && <span style={{ color: '#FFC24B' }}>режим имитации</span>}
+        {d.sim && <span style={{ color: C.warn }}>режим имитации</span>}
       </div>
       <div className={s.fields2} style={{ gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)' }}>
         <label className={s.field}>

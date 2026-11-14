@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import s from './AdminDashboard.module.scss';
 import Icon from './AdminIcons.jsx';
 
-const GREEN = '#C3F82B';
-const RED = '#FF4365';
-const GRAY = '#7D7D8C';
+import { C, themePalette, themeVars } from './themeColors.js';
+
+const GREEN = C.ok;
+const RED = C.bad;
+const GRAY = C.muted;
 
 // Каркас панели управления: боковое меню слева, содержимое по центру.
 // На телефоне меню прячется и открывается кнопкой в верхней строке.
@@ -13,14 +15,18 @@ export default function AdminShell({ theme, user, isSuper = true, canteens, pend
   const [open, setOpen] = useState(false);
   useEffect(() => { setOpen(false); }, [view, selectedId]);
 
+  const pal = themePalette(theme);
   const vars = {
+    ...themeVars(theme),
     '--bg': theme.background_color,
     '--panel': theme.element_first_color,
     '--panel2': theme.element_second_color,
     '--text': theme.text_first_color,
-    '--muted': theme.text_second_color === '#E1E1E1' ? '#8A8A99' : theme.text_second_color,
-    '--accent': theme.gradient_first_color || '#0040F9',
+    '--muted': pal.muted,
+    '--accent': pal.accent,
     '--accent-bg': theme.first_color,
+    '--on-accent': pal.onAccent,
+    '--on-hero': pal.onHero,
     '--line': 'rgba(127,127,140,.16)',
     '--hover': 'rgba(127,127,140,.10)',
   };
@@ -55,7 +61,7 @@ export default function AdminShell({ theme, user, isSuper = true, canteens, pend
 
         <div className={s.navLabel}>Столовые</div>
         {canteens.map((c) => {
-          const color = !c.total ? GRAY : c.online === c.total ? GREEN : c.online ? '#FFC24B' : RED;
+          const color = !c.total ? GRAY : c.online === c.total ? GREEN : c.online ? C.warn : RED;
           return item('canteen', c.id, <span className={s.dot} style={{ background: color }} />,
             <span className={s.navText}>
               <span>{c.name || c.id}</span>

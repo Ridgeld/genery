@@ -1,7 +1,6 @@
 import styles from './CanteenOccupancy.module.scss';
 import { CANTEEN_STATUSES, loadLevel } from './canteenStats.js';
-
-const LEVEL_COLORS = { free: '#C3F82B', mid: '#FFFFFF', busy: '#FFC24B', full: '#FF4365' };
+import { levelColor, statusHex, themePalette, themeVars } from './themeColors.js';
 
 // Несколько столовых: список, отсортированный по загруженности — сразу видно, где свободнее.
 // items: [{ id, name, occupied, capacity, status, hasDevices }]
@@ -12,9 +11,10 @@ export default function CanteenList({ theme, items, onOpen, onDevices }) {
     return (a.capacity ? a.occupied / a.capacity : 1) - (b.capacity ? b.occupied / b.capacity : 1);
   });
   const C = 2 * Math.PI * 22;
+  const pal = themePalette(theme);
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} style={themeVars(theme)}>
       <div className={styles.topRow}>
         <div>
           <div className={styles.headerTitle} style={{ color: theme.text_first_color }}>Столовые</div>
@@ -30,7 +30,7 @@ export default function CanteenList({ theme, items, onOpen, onDevices }) {
       {sorted.map((c) => {
         const open = !c.status || c.status === 'open';
         const level = loadLevel(c.occupied, c.capacity);
-        const color = !open ? (CANTEEN_STATUSES[c.status]?.color || '#FF4365') : c.hasDevices ? LEVEL_COLORS[level.key] : '#7D7D8C';
+        const color = !open ? statusHex(c.status, pal) : c.hasDevices ? levelColor(level.key, pal) : pal.muted;
         const pct = c.capacity ? Math.min(1, c.occupied / c.capacity) : 0;
         return (
           <button key={c.id} type="button" className={styles.listCard} style={{ background: theme.element_first_color, color: theme.text_first_color }} onClick={() => onOpen(c.id)}>

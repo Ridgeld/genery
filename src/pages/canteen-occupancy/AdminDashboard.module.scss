@@ -41,7 +41,7 @@
     height: 38px;
     border-radius: 12px;
     background: var(--accent-bg);
-    color: #fff;
+    color: var(--on-hero, #fff);
     display: grid;
     place-items: center;
     flex: none;
@@ -117,8 +117,8 @@
     height: 22px;
     padding: 0 7px;
     border-radius: 11px;
-    background: #FFC24B;
-    color: #0A0B10;
+    background: var(--c-warn, #FFC24B);
+    color: var(--c-glyph, #0A0B10);
     font-size: 12px;
     font-weight: 700;
     display: grid;
@@ -198,7 +198,7 @@
     gap: 16px;
     flex-wrap: wrap;
 
-    h1 { font-size: 30px; font-weight: 700; line-height: 1.1; margin: 0; }
+    h1 { font-size: 30px; font-weight: 700; line-height: 1.1; margin: 0; color: var(--text); }
     p { font-size: 14px; color: var(--muted); margin: 6px 0 0; }
 }
 
@@ -239,13 +239,13 @@
 .btnPrimary {
     background: var(--accent-bg);
     border-color: transparent;
-    color: #fff;
+    color: var(--on-hero, #fff);
 }
 
 .btnDanger {
-    background: rgba(255, 67, 101, 0.12);
+    background: color-mix(in srgb, var(--c-bad, #FF4365) 12%, transparent);
     border-color: transparent;
-    color: #FF4365;
+    color: var(--c-bad, #FF4365);
 }
 
 // Показатели
@@ -274,9 +274,9 @@
 .statAccent {
     background: var(--accent-bg);
     border-color: transparent;
-    color: #fff;
+    color: var(--on-hero, #fff);
 
-    small, span, b em { color: rgba(255, 255, 255, 0.75); }
+    small, span, b em { color: var(--on-hero, #fff); opacity: 0.75; }
 }
 
 .statIcon {
@@ -420,7 +420,7 @@
         border-bottom: 1px dashed var(--muted) !important;
         border-radius: 6px 6px 0 0 !important;
 
-        &::placeholder { color: #FFC24B; font-weight: 600; }
+        &::placeholder { color: var(--c-warn, #FFC24B); font-weight: 600; }
     }
 }
 
@@ -623,7 +623,7 @@
     height: 20px;
     padding: 0 6px;
     border-radius: 10px;
-    color: #0A0B10;
+    color: var(--c-glyph, #0A0B10);
     font-size: 11.5px;
     font-weight: 700;
     display: grid;
@@ -662,8 +662,8 @@
     gap: 12px;
     padding: 12px 14px;
     border-radius: 16px;
-    background: rgba(255, 67, 101, 0.1);
-    border: 1px solid rgba(255, 67, 101, 0.3);
+    background: color-mix(in srgb, var(--c-bad, #FF4365) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--c-bad, #FF4365) 30%, transparent);
     font-size: 13.5px;
 
     b { display: block; }
@@ -756,7 +756,7 @@
     height: 26px;
     border-radius: 8px;
     background: var(--accent-bg);
-    color: #fff;
+    color: var(--on-hero, #fff);
     font-size: 13px;
     font-weight: 700;
     display: grid;
@@ -969,7 +969,7 @@
 
 .iconBtnOn {
     background: var(--accent-bg);
-    color: #fff;
+    color: var(--on-hero, #fff);
     border-color: transparent;
 }
 

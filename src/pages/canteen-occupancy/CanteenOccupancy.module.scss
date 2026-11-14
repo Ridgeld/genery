@@ -339,6 +339,91 @@ button.tile {
     opacity: 0.18;
 }
 
+// ---------- Столбцы по часам (страница студента) ----------
+.bars { position: relative; }
+
+.tipRow {
+    position: relative;
+    height: 80px;
+}
+
+.tip {
+    position: absolute;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    box-sizing: border-box;
+    padding: 8px 12px 9px;
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    white-space: nowrap;
+    z-index: 1;
+    transition: left 0.18s ease;
+    pointer-events: none;
+}
+
+.tipHead { font-size: 11.5px; font-weight: 600; }
+
+.tipMain {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    font-size: 13px;
+
+    b { font-size: 22px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
+
+    em {
+        margin-left: 6px;
+        padding: 2px 7px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 700;
+        align-self: center;
+    }
+}
+
+.tipSub { font-size: 11.5px; }
+
+.barGroup {
+    cursor: pointer;
+    rect, circle { transition: fill-opacity 0.15s; }
+}
+
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    padding: 6px 4px 0;
+    font-size: 12px;
+
+    span { display: inline-flex; align-items: center; gap: 6px; }
+}
+
+.swatchSq {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+}
+
+.swatchHatch {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    border: 1px solid currentColor;
+    background: repeating-linear-gradient(45deg, currentColor 0 1.6px, transparent 1.6px 4px);
+}
+
+.swatchLine {
+    display: inline-block;
+    width: 14px;
+    height: 3px;
+    border-radius: 2px;
+}
+
 // Статус работы столовой (санитарный час и т.п.)
 .statusBanner {
     display: flex;

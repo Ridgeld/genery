@@ -37,7 +37,7 @@ export default function AdminsSection({ theme, admins, myUid, canteens = [], use
     <>
       <div className={styles.devCard} style={{ background: tile }}>
         {admins.map((a, i) => (
-          <div key={a.id} style={i ? { borderTop: '1px solid rgba(255,255,255,.06)' } : undefined}>
+          <div key={a.id} style={i ? { borderTop: '1px solid rgba(127,127,140,.16)' } : undefined}>
           <div className={styles.personRow}>
             <Avatar photo={a.photo} name={a.name} theme={theme} />
             <div className={styles.devTitle}>
@@ -65,7 +65,7 @@ export default function AdminsSection({ theme, admins, myUid, canteens = [], use
                 className={styles.roundBtn}
                 disabled={busy === a.id}
                 onClick={() => { if (window.confirm(`Убрать «${a.name || a.id}» из администраторов?`)) run(a.id, () => onRemove(a.id)); }}
-                style={{ background: 'rgba(255,67,101,.14)', color: '#FF4365' }}
+                style={{ background: 'color-mix(in srgb, var(--c-bad, #FF4365) 14%, transparent)', color: 'var(--c-bad, #FF4365)' }}
                 aria-label="Убрать из администраторов"
               >
                 <AdminIcon name="trash" size={18} />

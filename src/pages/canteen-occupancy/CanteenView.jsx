@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from 'react';
 import styles from './CanteenOccupancy.module.scss';
 import BarsChart from './BarsChart.jsx';
 import { STATUS, StatusIcon } from './StatusBadge.jsx';
+import { levelColor, themePalette, themeVars, tint } from './themeColors.js';
 
 const CLOSED_HINTS = {
   sanitary: 'Зал закрыт на уборку. Скоро откроемся',
@@ -38,7 +39,6 @@ const Icon = ({ name, size = 20 }) => (
   />
 );
 
-const LEVEL_COLORS = { free: '#C3F82B', mid: '#FFFFFF', busy: '#FFC24B', full: '#FF4365' };
 
 // Отображение страницы. Все данные приходят готовыми — компонент ничего не загружает.
 // canteen: { name, capacity, effectiveCapacity, status, statusNote, schedule }
@@ -51,9 +51,11 @@ export default function CanteenView({
   const todayWd = weekdayIndex(today);
   const [selectedWd, setSelectedWd] = useState(todayWd);
   const chartRef = useRef(null);
-  const accent = theme.gradient_first_color || '#0040F9';
+  const pal = useMemo(() => themePalette(theme), [theme]);
+  const vars = useMemo(() => themeVars(theme), [theme]);
+  const accent = pal.accent;
   const tile = theme.element_first_color;
-  const muted = theme.text_second_color;
+  const muted = pal.light ? pal.muted : theme.text_second_color;
 
   const typicalToday = useMemo(() => typicalDay(curves, todayWd, today), [curves, todayWd, today]);
   const typicalSel = useMemo(() => typicalDay(curves, selectedWd, today), [curves, selectedWd, today]);
@@ -113,7 +115,7 @@ export default function CanteenView({
   const pctText = Math.round(pct * 100);
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} style={vars}>
       <div className={styles.topRow}>
         <div className={styles.headerTitle} style={{ color: theme.text_first_color }}>
           {name || 'Столовая'}
@@ -127,14 +129,14 @@ export default function CanteenView({
 
       {!isOpen ? (
         /* Столовая не работает — это главное, что нужно увидеть */
-        <div className={styles.closedHero} style={{ background: `${statusInfo.color}1a`, borderColor: `${statusInfo.color}55`, color: theme.text_first_color }}>
+        <div className={styles.closedHero} style={{ background: tint(statusInfo.color, 10), borderColor: tint(statusInfo.color, 35), color: theme.text_first_color }}>
           <StatusIcon kind={canteen.status} size={56} />
           <b style={{ color: statusInfo.color }}>{STATUS[canteen.status]?.text || statusInfo.text}</b>
           <span>{canteen?.statusNote || CLOSED_HINTS[canteen.status] || 'Информация от столовой'}</span>
         </div>
       ) : (
         /* Главное: сколько свободно */
-        <button type="button" className={styles.hero} style={{ background: theme.first_color }} onClick={scrollToChart}>
+        <button type="button" className={styles.hero} style={{ background: theme.first_color, color: pal.onHero }} onClick={scrollToChart}>
           <div className={styles.heroText}>
             <span className={styles.heroLabel}>Свободно</span>
             <span className={styles.heroValue}>{hasDevices ? free : '—'}</span>
@@ -146,19 +148,19 @@ export default function CanteenView({
             {status.stale && <span className={styles.heroNote}>{status.text}</span>}
           </div>
           <svg className={styles.heroRing} viewBox="0 0 84 84">
-            <circle cx="42" cy="42" r={R} fill="none" stroke="rgba(255,255,255,.2)" strokeWidth="8" />
+            <circle cx="42" cy="42" r={R} fill="none" stroke={pal.onHero} strokeOpacity="0.2" strokeWidth="8" />
             <circle
               cx="42"
               cy="42"
               r={R}
               fill="none"
-              stroke={hasDevices ? LEVEL_COLORS[level.key] : '#fff'}
+              stroke={hasDevices ? levelColor(level.key, pal.onHeroSet) : pal.onHero}
               strokeWidth="8"
               strokeLinecap="round"
               strokeDasharray={`${(C * (hasDevices ? pct : 0)).toFixed(1)} ${C.toFixed(1)}`}
               transform="rotate(-90 42 42)"
             />
-            <text x="42" y="47" textAnchor="middle" fill="#fff" fontSize="17" fontWeight="700">
+            <text x="42" y="47" textAnchor="middle" fill={pal.onHero} fontSize="17" fontWeight="700">
               {hasDevices ? `${pctText}%` : '—'}
             </text>
           </svg>
@@ -167,7 +169,7 @@ export default function CanteenView({
 
       {waveText && hasDevices && (
         <div className={styles.wave} style={{ background: tile, color: theme.text_first_color }}>
-          <span style={{ color: '#FFC24B' }}><Icon name="bell" size={18} /></span>
+          <span style={{ color: pal.warn }}><Icon name="bell" size={18} /></span>
           {waveText}
         </div>
       )}
@@ -210,9 +212,9 @@ export default function CanteenView({
             <>
               <b>Ты сейчас в столовой? Данные точные?</b>
               <div className={styles.feedbackBtns}>
-                <button type="button" style={{ background: theme.background_color, color: theme.text_first_color }} onClick={() => onVote('ok')}>Да, верно</button>
-                <button type="button" style={{ background: 'rgba(255,67,101,.16)', color: '#FF4365' }} onClick={() => onVote('full')}>Мест нет</button>
-                <button type="button" style={{ background: 'rgba(195,248,43,.14)', color: '#C3F82B' }} onClick={() => onVote('free')}>Свободнее</button>
+                <button type="button" style={{ background: tint(pal.accent, 16), color: pal.light ? pal.accent : pal.text, boxShadow: `inset 0 0 0 1.5px ${tint(pal.accent, 45)}` }} onClick={() => onVote('ok')}>Да, верно</button>
+                <button type="button" style={{ background: tint(pal.bad, 14), color: pal.bad, boxShadow: `inset 0 0 0 1.5px ${tint(pal.bad, 35)}` }} onClick={() => onVote('full')}>Мест нет</button>
+                <button type="button" style={{ background: tint(pal.ok, pal.light ? 14 : 12), color: pal.ok, boxShadow: `inset 0 0 0 1.5px ${tint(pal.ok, 35)}` }} onClick={() => onVote('free')}>Свободнее</button>
               </div>
             </>
           )}
@@ -232,11 +234,11 @@ export default function CanteenView({
             className={styles.day}
             style={{
               background: selectedWd === i ? theme.first_color : tile,
-              color: selectedWd === i ? '#FFFFFF' : theme.text_first_color
+              color: selectedWd === i ? pal.onHero : theme.text_first_color
             }}
           >
             {d.short}
-            {i === todayWd && <i className={styles.todayDot} style={{ background: selectedWd === i ? '#fff' : accent }} />}
+            {i === todayWd && <i className={styles.todayDot} style={{ background: selectedWd === i ? pal.onHero : accent }} />}
           </button>
         ))}
       </div>
@@ -244,8 +246,7 @@ export default function CanteenView({
       <div className={styles.chartCard} style={{ background: tile }}>
         {typicalSel || (isToday && todayOcc) ? (
           <BarsChart
-            theme={theme}
-            accent={accent}
+            pal={pal}
             capacity={capacity}
             typical={typicalSel}
             todayOcc={todayOcc}

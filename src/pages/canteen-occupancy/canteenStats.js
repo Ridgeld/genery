@@ -5,6 +5,8 @@
 //   devices/{deviceId}/days/{дата} { in: { h08: 3, ... }, out: { h08: 1, ... } }
 // Здесь данные всех дверей складываются, строится «обычный» день и прогноз.
 
+import { C } from './themeColors.js';
+
 export const CANTEEN_TZ = 'Asia/Bishkek';
 export const OPEN_HOUR = 8;     // начало графика
 export const CLOSE_HOUR = 19;   // конец графика
@@ -34,11 +36,11 @@ export function dayKey(date = new Date(), resetHour = 0) {
 
 // Статусы работы столовой, которые меняет менеджер
 export const CANTEEN_STATUSES = {
-  open: { text: 'Открыто', color: '#C3F82B' },
-  sanitary: { text: 'Санитарный час', color: '#FFC24B' },
-  break: { text: 'Технический перерыв', color: '#FFC24B' },
-  takeaway: { text: 'Только на вынос — мест нет', color: '#FF4365' },
-  closed: { text: 'Закрыто', color: '#FF4365' },
+  open: { text: 'Открыто', color: C.ok },
+  sanitary: { text: 'Санитарный час', color: C.warn },
+  break: { text: 'Технический перерыв', color: C.orange },
+  takeaway: { text: 'Только на вынос — мест нет', color: C.info },
+  closed: { text: 'Закрыто', color: C.bad },
 };
 
 // Эффективная вместимость: порог, при котором визуально сесть уже негде

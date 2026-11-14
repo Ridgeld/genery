@@ -9,9 +9,12 @@ import {
   fmtTime, liveOccupancy, toMin, typicalDay, weekdayIndex
 } from './canteenStats.js';
 
-const GREEN = '#C3F82B';
-const AMBER = '#FFC24B';
-const RED = '#FF4365';
+import { C, tint } from './themeColors.js';
+
+// Цвета берутся из темы через CSS-переменные (их задаёт AdminShell)
+const GREEN = C.ok;
+const AMBER = C.warn;
+const RED = C.bad;
 
 const seenOf = (d) => (d.lastSeen?.toMillis ? d.lastSeen.toMillis() : 0);
 export const isOnline = (d) => Date.now() - seenOf(d) < ONLINE_TIMEOUT_MS;
@@ -79,7 +82,7 @@ function HallControl({ canteen, live, today, onSave }) {
               key={key}
               type="button"
               className={`${s.statusTile} ${on ? s.statusTileOn : ''}`}
-              style={on ? { borderColor: st.color, background: `${st.color}14` } : undefined}
+              style={on ? { borderColor: st.color, background: tint(st.color, 10) } : undefined}
               onClick={() => !on && onSave({ status: key })}
             >
               <StatusIcon kind={key} size={26} />
@@ -93,8 +96,8 @@ function HallControl({ canteen, live, today, onSave }) {
       <div className={s.hallGrid}>
         <div className={s.hallBox}>
           <small>Сообщение для студентов</small>
-          <div className={s.inline} style={{ width: '100%' }}>
-            <input style={{ flex: 1, width: 'auto' }} value={note} placeholder={status === 'open' ? 'Например: «Сегодня плов»' : 'Например: «Откроемся в 13:30»'} onChange={(e) => setNote(e.target.value)} />
+          <div className={s.inline} style={{ width: '100%', flexWrap: 'wrap' }}>
+            <input style={{ flex: '1 1 180px', width: 'auto', minWidth: 0 }} value={note} placeholder={status === 'open' ? 'Например: «Сегодня плов»' : 'Например: «Откроемся в 13:30»'} onChange={(e) => setNote(e.target.value)} />
             <button type="button" className={s.btn} disabled={note === (canteen.statusNote || '')} onClick={() => onSave({ statusNote: note.trim() })}>Сохранить</button>
           </div>
         </div>
@@ -233,7 +236,7 @@ function AlertList({ alerts }) {
   if (!alerts.length) {
     return (
       <div className={s.alert}>
-        <span className={s.alertIcon} style={{ background: 'rgba(195,248,43,.14)', color: GREEN }}><Icon name="check" size={16} /></span>
+        <span className={s.alertIcon} style={{ background: tint(GREEN, 14), color: GREEN }}><Icon name="check" size={16} /></span>
         <div><b>Всё в порядке</b><small>проблем не найдено</small></div>
       </div>
     );
@@ -242,7 +245,7 @@ function AlertList({ alerts }) {
     <div className={s.alerts}>
       {alerts.map((a) => (
         <div key={a.t} className={s.alert}>
-          <span className={s.alertIcon} style={{ background: `${a.c}22`, color: a.c }}><Icon name={a.icon} size={16} /></span>
+          <span className={s.alertIcon} style={{ background: tint(a.c, 14), color: a.c }}><Icon name={a.icon} size={16} /></span>
           <div><b>{a.t}</b><small>{a.s}</small></div>
         </div>
       ))}
@@ -319,7 +322,7 @@ export default function CanteenDashboard({
 
       {critical.length > 0 && (
         <div className={s.criticalBar}>
-          <span className={s.alertIcon} style={{ background: `${RED}26`, color: RED }}><Icon name={critical[0].icon} size={16} /></span>
+          <span className={s.alertIcon} style={{ background: tint(RED, 15), color: RED }}><Icon name={critical[0].icon} size={16} /></span>
           <div><b>{critical[0].t}</b><small>{critical[0].s}{critical.length > 1 ? ` · и ещё ${critical.length - 1}` : ''}</small></div>
         </div>
       )}

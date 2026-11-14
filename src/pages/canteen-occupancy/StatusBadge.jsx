@@ -1,9 +1,11 @@
+import { C, tint } from './themeColors.js';
+
 // Единые статусы с SVG-иконками: плашка «иконка + подпись» или только иконка.
 // Используются и на странице студентов, и в панели управления.
 
 const ICONS = {
   // Заполненный круг с галочкой
-  ok: (c) => <><circle cx="12" cy="12" r="10" fill={c} /><path d="m7.5 12.2 3 3 6-6.2" fill="none" stroke="#0A0B10" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></>,
+  ok: (c) => <><circle cx="12" cy="12" r="10" fill={c} /><path d="m7.5 12.2 3 3 6-6.2" fill="none" stroke="var(--c-glyph, #0A0B10)" style={{ stroke: 'var(--c-glyph, #0A0B10)' }} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></>,
   // Пунктирный круг — «черновик» / нет данных
   dashed: (c) => <circle cx="12" cy="12" r="9" fill="none" stroke={c} strokeWidth="2" strokeDasharray="3.2 3.2" strokeLinecap="round" />,
   // Наполовину закрашенный круг — «в процессе»
@@ -11,7 +13,7 @@ const ICONS = {
   // На три четверти — «почти»
   quarter: (c) => <><circle cx="12" cy="12" r="9" fill="none" stroke={c} strokeWidth="2" /><path d="M12 12V6a6 6 0 1 1-6 6z" fill={c} /></>,
   // Заполненный круг с крестиком
-  stop: (c) => <><circle cx="12" cy="12" r="10" fill={c} /><path d="m8.5 8.5 7 7m0-7-7 7" stroke="#0A0B10" strokeWidth="2.2" strokeLinecap="round" /></>,
+  stop: (c) => <><circle cx="12" cy="12" r="10" fill={c} /><path d="m8.5 8.5 7 7m0-7-7 7" stroke="var(--c-glyph, #0A0B10)" style={{ stroke: 'var(--c-glyph, #0A0B10)' }} strokeWidth="2.2" strokeLinecap="round" /></>,
   // Ключ — технический перерыв
   wrench: (c) => <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />,
   // Пакет — только на вынос
@@ -29,32 +31,32 @@ const ICONS = {
 // Статусы: цвет текста/иконки и иконка
 export const STATUS = {
   // Работа столовой
-  open:      { icon: 'ok', color: '#C3F82B', text: 'Открыто' },
-  sanitary:  { icon: 'drop', color: '#FFC24B', text: 'Санитарный час' },
-  break:     { icon: 'wrench', color: '#FF9F43', text: 'Технический перерыв' },
-  takeaway:  { icon: 'bag', color: '#6E9BFF', text: 'Только на вынос' },
-  closed:    { icon: 'stop', color: '#FF4365', text: 'Закрыто' },
+  open:      { icon: 'ok', color: C.ok, text: 'Открыто' },
+  sanitary:  { icon: 'drop', color: C.warn, text: 'Санитарный час' },
+  break:     { icon: 'wrench', color: C.orange, text: 'Технический перерыв' },
+  takeaway:  { icon: 'bag', color: C.info, text: 'Только на вынос' },
+  closed:    { icon: 'stop', color: C.bad, text: 'Закрыто' },
   // Загрузка зала
-  free:      { icon: 'ok', color: '#C3F82B', text: 'Свободно' },
-  mid:       { icon: 'half', color: '#FFFFFF', text: 'Умеренно' },
-  busy:      { icon: 'quarter', color: '#FFC24B', text: 'Много людей' },
-  full:      { icon: 'stop', color: '#FF4365', text: 'Мест нет' },
+  free:      { icon: 'ok', color: C.ok, text: 'Свободно' },
+  mid:       { icon: 'half', color: C.neutral, text: 'Умеренно' },
+  busy:      { icon: 'quarter', color: C.warn, text: 'Много людей' },
+  full:      { icon: 'stop', color: C.bad, text: 'Мест нет' },
   // Счётчики
-  online:    { icon: 'ok', color: '#C3F82B', text: 'На связи' },
-  offline:   { icon: 'wifiOff', color: '#FF4365', text: 'Нет связи' },
-  sim:       { icon: 'dashed', color: '#9A9AA8', text: 'Имитация' },
-  updating:  { icon: 'half', color: '#6E9BFF', text: 'Обновляется' },
-  outdated:  { icon: 'up', color: '#FFC24B', text: 'Старая прошивка' },
-  pending:   { icon: 'dashed', color: '#FFC24B', text: 'Ждёт подключения' },
-  feedback:  { icon: 'users', color: '#FF4365', text: 'По отзывам' },
+  online:    { icon: 'ok', color: C.ok, text: 'На связи' },
+  offline:   { icon: 'wifiOff', color: C.bad, text: 'Нет связи' },
+  sim:       { icon: 'dashed', color: C.muted, text: 'Имитация' },
+  updating:  { icon: 'half', color: C.info, text: 'Обновляется' },
+  outdated:  { icon: 'up', color: C.warn, text: 'Старая прошивка' },
+  pending:   { icon: 'dashed', color: C.warn, text: 'Ждёт подключения' },
+  feedback:  { icon: 'users', color: C.bad, text: 'По отзывам' },
 };
 
 export function StatusIcon({ kind, size = 18, color }) {
   const st = STATUS[kind] || STATUS.sim;
   const c = color || st.color;
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" style={{ flex: 'none', display: 'block' }}>
-      {ICONS[st.icon](c)}
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" style={{ flex: 'none', display: 'block', color: c }}>
+      {ICONS[st.icon]('currentColor')}
     </svg>
   );
 }
@@ -73,7 +75,7 @@ export default function StatusBadge({ kind, text, size = 'md', iconOnly = false,
         gap: big ? 8 : 6,
         padding: pad,
         borderRadius: big ? 14 : 10,
-        background: `${st.color}1f`,
+        background: tint(st.color, 12),
         color: st.color,
         fontSize: big ? 15 : 12.5,
         fontWeight: 600,

@@ -2,9 +2,11 @@ import { useState } from 'react';
 import styles from './CanteenOccupancy.module.scss';
 import AdminIcon from './AdminIcons.jsx';
 
-const GREEN = '#C3F82B';
-const AMBER = '#FFC24B';
-const RED = '#FF4365';
+import { C } from './themeColors.js';
+
+const GREEN = C.ok;
+const AMBER = C.warn;
+const RED = C.bad;
 
 const VERSION_RE = /^\d+\.\d+\.\d+$/;
 export const cmpVersion = (a = '0.0.0', b = '0.0.0') => {
@@ -59,7 +61,7 @@ export default function FirmwareSection({ theme, latest, devices, onPublish, onT
         <b style={{ color: text }}>{d.door || d.id}</b>
         <span style={{ color: muted }}>{d.ota || d.id}</span>
       </div>
-      <span className={styles.devPill} style={{ color, background: 'rgba(255,255,255,.06)' }}>{label}</span>
+      <span className={styles.devPill} style={{ color, background: 'rgba(127,127,140,.12)' }}>{label}</span>
     </div>
   );
 
@@ -75,7 +77,7 @@ export default function FirmwareSection({ theme, latest, devices, onPublish, onT
                 {latest.publishedAt?.toDate ? `выпущена ${latest.publishedAt.toDate().toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}` : 'текущая'}
               </span>
             </div>
-            <span className={styles.devPill} style={{ color: latest.enabled === false ? AMBER : GREEN, background: 'rgba(255,255,255,.06)' }}>
+            <span className={styles.devPill} style={{ color: latest.enabled === false ? AMBER : GREEN, background: 'rgba(127,127,140,.12)' }}>
               <i style={{ background: latest.enabled === false ? AMBER : GREEN }} />
               {latest.enabled === false ? 'пауза' : 'раздаётся'}
             </span>
