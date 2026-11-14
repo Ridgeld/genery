@@ -1,8 +1,9 @@
 /*
  * Счётчик людей — ESP32 + TOF400C (VL53L1X)
  *
- * Этап 2: настройка Wi‑Fi с телефона, имитация датчика, очередь отправки,
- *         веб-панель устройства (ui/index.html -> ui_bundle.h).
+ * Настройка Wi‑Fi с телефона, подсчёт по двум зонам датчика (sensor.h), почасовая очередь отправки
+ * в Firestore (cloud.h), обновление через интернет (ota.h), настройки с сервера (remote.h),
+ * веб-панель устройства (ui/index.html -> ui_bundle.h), сторожевой таймер.
  *
  * Как настроить (для мастера):
  *   1. Подать питание. Светодиод медленно мигает — устройство ждёт настройки.
@@ -27,17 +28,17 @@
 #include <vector>
 #include <algorithm>
 #include "esp_mac.h"
+#include "esp_task_wdt.h"
 #include "ui_bundle.h"   // интерфейс: ui/index.html, собирается командой node ui/build.mjs
 
-#define FW_VERSION      "0.5.1"
+#define FW_VERSION      "0.6.1"
 #define PIN_LED         2      // встроенный светодиод ESP32 DevKit
 #define PIN_BUTTON      0      // кнопка BOOT
 #define DEFAULT_SERVER  "genery-c83e3"
 #define DEFAULT_CANTEEN "main"
 #define TZ_INFO         "<+06>-6"   // UTC+6 (Бишкек)
 
-// Пока датчик не припаян — события задаются вручную
-#define SIMULATE_SENSOR true
+#define WDT_TIMEOUT_MS  60000       // зависла программа дольше минуты — перезагрузка
 
 const uint32_t FIRST_CONNECT_TIMEOUT = 60UL * 1000;      // после включения: нет сети 60 с → портал
 const uint32_t LOST_CONNECT_TIMEOUT  = 5UL * 60 * 1000;  // во время работы: нет сети 5 мин → портал
@@ -76,14 +77,33 @@ volatile uint32_t lastDisconnectAt = 0;
 
 String scanCache = "[]";
 
+// --- Настройки, которые администратор меняет на сайте (читаются с сервера) ---
+bool     cfgInvert = false;      // поменять вход и выход местами
+uint16_t cfgThreshold = 0;       // порог срабатывания датчика, мм (0 — по калибровке пола)
+uint16_t cfgDebounce = 300;      // минимальный интервал между двумя людьми, мс
+uint8_t  cfgResetHour = 0;       // час ночного обнуления (рабочий день начинается в это время)
+uint32_t otaRequestSeen = 0;     // последняя обработанная команда «обновить сейчас»
+bool     simMode = true;         // датчика нет — проходы задаются вручную
+uint32_t rawA = 0, rawB = 0;     // «сырые» срабатывания зон A и B за рабочий день (диагностика датчика)
+uint16_t sensorFloorMm = 0;      // расстояние до пола по калибровке
+uint16_t sensorThresholdMm = 0;  // действующий порог: ближе — в зоне кто-то есть
+uint16_t sensorDistA = 0, sensorDistB = 0;   // последние измерения зон (для панели)
+
 // --- Счётчик и очередь отправки ---
-// «Внутри» считается так же, как на сайте: входы минус выходы за сегодня (не меньше 0).
-// В полночь (UTC+6) счёт дня начинается заново.
+// «Внутри» считается так же, как на сайте: входы минус выходы за рабочий день (не меньше 0).
+// В час ночного обнуления (cfgResetHour, UTC+6) счёт дня начинается заново.
 int32_t  occupancy = 0;
 uint32_t dayIn = 0, dayOut = 0;
-String   curDay;                 // дата, к которой относятся dayIn/dayOut
+String   curDay;                 // рабочий день, к которому относятся dayIn/dayOut
 uint32_t totalIn = 0, totalOut = 0;
-uint32_t pendingIn = 0, pendingOut = 0;
+uint32_t pendingIn = 0, pendingOut = 0;   // сумма по корзинам (для экрана)
+
+// Неотправленные проходы по часам: без связи они копятся с меткой часа
+// и потом попадают в свои часы на графике, а не в час отправки.
+struct Bucket { uint32_t hourEpoch; uint16_t in, out; };   // hourEpoch = unix-время / 3600, 0 — время неизвестно
+const uint8_t MAX_BUCKETS = 72;                            // трое суток без связи
+Bucket   buckets[MAX_BUCKETS];
+uint8_t  bucketCount = 0;
 bool     stateDirty = false;
 uint32_t lastStateSave = 0;
 uint32_t lastSendAt = 0, sendCount = 0;
@@ -116,6 +136,45 @@ String jsonEscape(const String &s) {
     else o += c;
   }
   return o;
+}
+
+bool timeValid() { return time(nullptr) > 1700000000; }
+
+// Рабочий день: дата с учётом часа ночного обнуления (при resetHour=2 время 01:30 ещё «вчера»)
+String businessDay(time_t t) {
+  t -= (time_t)cfgResetHour * 3600;
+  struct tm tm;
+  localtime_r(&t, &tm);
+  char d[11];
+  strftime(d, sizeof d, "%Y-%m-%d", &tm);
+  return d;
+}
+
+int localHour(time_t t) {
+  struct tm tm;
+  localtime_r(&t, &tm);
+  return tm.tm_hour;
+}
+
+void recountPending() {
+  pendingIn = pendingOut = 0;
+  for (uint8_t i = 0; i < bucketCount; i++) { pendingIn += buckets[i].in; pendingOut += buckets[i].out; }
+}
+
+void addToBucket(int dir) {
+  uint32_t h = timeValid() ? (uint32_t)(time(nullptr) / 3600) : 0;
+  Bucket *b = nullptr;
+  for (int i = bucketCount - 1; i >= 0; i--) if (buckets[i].hourEpoch == h) { b = &buckets[i]; break; }
+  if (!b) {
+    if (bucketCount < MAX_BUCKETS) {
+      b = &buckets[bucketCount++];
+      *b = {h, 0, 0};
+    } else {
+      b = &buckets[MAX_BUCKETS - 1];   // буфер полон — добавляем в последнюю корзину
+    }
+  }
+  if (dir > 0) b->in++; else b->out++;
+  recountPending();
 }
 
 String timeString() {
@@ -174,8 +233,35 @@ void loadState() {
   occupancy  = dayIn > dayOut ? (int32_t)(dayIn - dayOut) : 0;
   totalIn    = prefs.getUInt("tin", 0);
   totalOut   = prefs.getUInt("tout", 0);
-  pendingIn  = prefs.getUInt("pin", 0);
-  pendingOut = prefs.getUInt("pout", 0);
+  bucketCount = 0;
+  size_t len = prefs.getBytesLength("bk");
+  if (len && len % sizeof(Bucket) == 0 && len <= sizeof(buckets)) {
+    prefs.getBytes("bk", buckets, len);
+    bucketCount = len / sizeof(Bucket);
+  } else {
+    // Переход с 0.5.x: старая очередь была без часов
+    uint32_t pin = prefs.getUInt("pin", 0), pout = prefs.getUInt("pout", 0);
+    if (pin || pout) { buckets[0] = {0, (uint16_t)pin, (uint16_t)pout}; bucketCount = 1; }
+  }
+  prefs.end();
+  recountPending();
+
+  prefs.begin("rcfg", true);
+  cfgInvert      = prefs.getBool("inv", false);
+  cfgThreshold   = prefs.getUShort("thr", 0);
+  cfgDebounce    = prefs.getUShort("deb", 300);
+  cfgResetHour   = prefs.getUChar("rst", 0);
+  otaRequestSeen = prefs.getUInt("otaReq", 0);
+  prefs.end();
+}
+
+void saveRemoteConfig() {
+  prefs.begin("rcfg", false);
+  prefs.putBool("inv", cfgInvert);
+  prefs.putUShort("thr", cfgThreshold);
+  prefs.putUShort("deb", cfgDebounce);
+  prefs.putUChar("rst", cfgResetHour);
+  prefs.putUInt("otaReq", otaRequestSeen);
   prefs.end();
 }
 
@@ -186,8 +272,9 @@ void saveState() {
   prefs.putString("cday", curDay);
   prefs.putUInt("tin", totalIn);
   prefs.putUInt("tout", totalOut);
-  prefs.putUInt("pin", pendingIn);
-  prefs.putUInt("pout", pendingOut);
+  prefs.putBytes("bk", buckets, bucketCount * sizeof(Bucket));
+  prefs.remove("pin");
+  prefs.remove("pout");
   prefs.end();
   stateDirty = false;
   lastStateSave = millis();
@@ -197,6 +284,7 @@ String otaMsg = "";  // состояние обновления прошивки
 
 #include "cloud.h"   // отправка в Firestore (использует настройки и утилиты выше)
 #include "ota.h"     // обновление прошивки через интернет
+#include "remote.h"  // настройки платы с сервера
 
 // ======================================================================
 // Счётчик
@@ -206,25 +294,26 @@ void recalcOccupancy() {
   occupancy = dayIn > dayOut ? (int32_t)(dayIn - dayOut) : 0;
 }
 
-// Новый день — счёт «внутри» начинается с нуля (как на сайте)
+// Новый рабочий день — счёт «внутри» начинается с нуля (как на сайте)
 void rollDay() {
-  struct tm t;
-  if (!getLocalTime(&t, 0)) return;   // время ещё не синхронизировано
-  char d[11];
-  strftime(d, sizeof d, "%Y-%m-%d", &t);
+  if (!timeValid()) return;   // время ещё не синхронизировано
+  String d = businessDay(time(nullptr));
   if (curDay == d) return;
-  if (curDay.length()) Serial.printf("[СЧЁТ] Новый день %s — счёт за день начат заново\n", d);
+  if (curDay.length()) Serial.printf("[СЧЁТ] Новый день %s — счёт за день начат заново\n", d.c_str());
   curDay = d;
   dayIn = dayOut = 0;
+  rawA = rawB = 0;
   recalcOccupancy();
   stateDirty = true;
 }
 
-// Сюда будет вызывать алгоритм датчика: +1 вход, -1 выход
+// Проход: +1 вход, -1 выход (вызывает алгоритм датчика или имитация)
 void countEvent(int dir) {
   rollDay();
-  if (dir > 0) { dayIn++; totalIn++; pendingIn++; }
-  else         { dayOut++; totalOut++; pendingOut++; }
+  if (cfgInvert) dir = -dir;          // датчик повешен «задом наперёд»
+  if (dir > 0) { dayIn++; totalIn++; }
+  else         { dayOut++; totalOut++; }
+  addToBucket(dir);
   recalcOccupancy();
   stateDirty = true;
   Serial.printf("[СЧЁТ] %s внутри: %ld   (ждут отправки: +%lu / -%lu)\n",
@@ -235,7 +324,8 @@ void countEvent(int dir) {
 // Обнуляет счёт за сегодня и на плате, и на сервере
 void resetCounter() {
   dayIn = dayOut = 0;
-  pendingIn = pendingOut = 0;
+  bucketCount = 0;
+  recountPending();
   recalcOccupancy();
   sentDay = "";        // следующая отправка запишет на сервер dayIn = dayOut = 0
   fbSave();
@@ -244,6 +334,8 @@ void resetCounter() {
   stateDirty = true;
   Serial.println("[СЧЁТ] Счётчик обнулён (на плате и на сервере)");
 }
+
+#include "sensor.h"  // подсчёт по двум зонам датчика VL53L1X
 
 void historyLoop() {
   if (millis() - lastHistAt < HIST_STEP) return;
@@ -276,12 +368,13 @@ void appendHist(String &j, const char *key, const uint16_t *u16, const int8_t *i
 bool sendBatch(bool heartbeat) {
   if (WiFi.status() != WL_CONNECTED) { setCloud("error", "Нет Wi‑Fi"); return false; }
 
-  // Фиксируем, что отправляем: новые события во время запроса останутся в очереди
+  // Фиксируем, что отправляем: корзины, появившиеся во время запроса, останутся в очереди
+  uint8_t n = bucketCount;
   uint32_t inN = pendingIn, outN = pendingOut;
   uint32_t t0 = millis();
-  bool ok = cloudSend(inN, outN);
-  Serial.printf("[ОТПРАВКА%s] in=+%lu out=-%lu -> %s (%lu мс)\n", heartbeat ? " / пульс" : "",
-                (unsigned long)inN, (unsigned long)outN, ok ? "OK" : cloudMsg.c_str(),
+  bool ok = cloudSend(buckets, n);
+  Serial.printf("[ОТПРАВКА%s] in=+%lu out=-%lu (%u ч) -> %s (%lu мс)\n", heartbeat ? " / пульс" : "",
+                (unsigned long)inN, (unsigned long)outN, n, ok ? "OK" : cloudMsg.c_str(),
                 (unsigned long)(millis() - t0));
   if (!ok && cloudState == "wait") {
     // Время ещё не синхронизировано — это не ошибка, пробуем снова через пару секунд
@@ -296,11 +389,14 @@ bool sendBatch(bool heartbeat) {
     cloudRetryAt = millis() + cloudBackoff;
     return false;
   }
-  pendingIn -= inN;
-  pendingOut -= outN;
+  // Убираем отправленные корзины
+  for (uint8_t i = n; i < bucketCount; i++) buckets[i - n] = buckets[i];
+  bucketCount -= n;
+  recountPending();
   stateDirty = true;
   cloudBackoff = 0;
   otaConfirm();   // после обновления: связь есть — новая прошивка рабочая
+  remoteConfigLoop(false);   // заодно забрать настройки с сервера (раз в 5 минут)
   sendCount++;
   everSent = true;
   lastSendAt = millis();
@@ -527,7 +623,12 @@ void handleStatus() {
   j += "\"cloud\":{\"state\":\"" + cloudState + "\",\"msg\":\"" + jsonEscape(cloudMsg) + "\",\"uid\":\"" + fbUid + "\"},";
   j += "\"ota\":{\"state\":\"" + otaState + "\",\"msg\":\"" + jsonEscape(otaMsg) + "\",\"progress\":" + String(otaProgress) + "},";
   j += String("\"portal\":") + (portalActive ? "true" : "false") + ",";
-  j += String("\"sim\":") + (SIMULATE_SENSOR ? "true" : "false") + ",";
+  j += String("\"sim\":") + (simMode ? "true" : "false") + ",";
+  j += "\"sensor\":{\"present\":" + String(simMode ? "false" : "true") + ",\"a\":" + String(sensorDistA) +
+       ",\"b\":" + String(sensorDistB) + ",\"floor\":" + String(sensorFloorMm) + ",\"threshold\":" + String(sensorThresholdMm) +
+       ",\"rawA\":" + String(rawA) + ",\"rawB\":" + String(rawB) + ",\"invert\":" + (cfgInvert ? "true" : "false") +
+       ",\"debounce\":" + String(cfgDebounce) + ",\"resetHour\":" + String(cfgResetHour) +
+       ",\"cfgThreshold\":" + String(cfgThreshold) + "},";
   j += String("\"wifi\":{\"connected\":") + (c ? "true" : "false") +
        ",\"ssid\":\"" + jsonEscape(c ? WiFi.SSID() : cfgSsid) + "\"" +
        ",\"ip\":\"" + (c ? WiFi.localIP().toString() : String("")) + "\"" +
@@ -584,7 +685,7 @@ void setupWeb() {
   server.on("/status", HTTP_GET, handleStatus);
   server.on("/font.woff2", HTTP_GET, handleFont);
   server.on("/sim", HTTP_POST, []() {
-    if (SIMULATE_SENSOR) countEvent(server.arg("d").toInt() >= 0 ? 1 : -1);
+    if (simMode) countEvent(server.arg("d").toInt() >= 0 ? 1 : -1);
     sendOk();
   });
   server.on("/reset", HTTP_POST, []() { resetCounter(); sendOk(); });
@@ -610,6 +711,23 @@ void setupWeb() {
   });
   server.on("/api/forget", HTTP_POST, []() { sendOk(); pendingForget = true; });
   server.on("/api/ota-check", HTTP_POST, []() { otaForceCheck = true; sendOk(); });
+  // Настройка датчика на месте установки (действует, пока администратор не поменяет её на сайте)
+  server.on("/api/sensor", HTTP_POST, []() {
+    if (server.hasArg("invert"))    cfgInvert = server.arg("invert") == "1";
+    if (server.hasArg("threshold")) cfgThreshold = constrain(server.arg("threshold").toInt(), 0, 4000);
+    if (server.hasArg("debounce"))  cfgDebounce = constrain(server.arg("debounce").toInt(), 0, 5000);
+    saveRemoteConfig();
+    everSent = false;   // сразу сообщить серверу действующие настройки
+    Serial.printf("[НАСТРОЙКИ] С панели платы: инверсия %s, порог %u мм, антидребезг %u мс\n",
+                  cfgInvert ? "да" : "нет", cfgThreshold, cfgDebounce);
+    sendOk();
+  });
+  server.on("/api/calibrate", HTTP_POST, []() {
+    if (simMode) { sendOk(false); return; }
+    bool ok = sensorCalibrate();
+    everSent = false;
+    sendOk(ok);
+  });
   server.on("/api/reboot", HTTP_POST, []() {
     sendOk();
     Serial.println("[НАСТРОЙКИ] Перезагрузка по команде со страницы");
@@ -693,12 +811,20 @@ void setup() {
   deviceId.toLowerCase();
 
   Serial.printf("\n=== Счётчик людей %s, прошивка %s ===\n", deviceId.c_str(), FW_VERSION);
-  if (SIMULATE_SENSOR) Serial.println("Датчик: режим ИМИТАЦИИ (события вводятся вручную)");
+
+  // Сторожевой таймер: если программа зависнет больше чем на минуту — перезагрузка
+  esp_task_wdt_config_t wdtCfg = { .timeout_ms = WDT_TIMEOUT_MS, .idle_core_mask = 0, .trigger_panic = true };
+  if (esp_task_wdt_reconfigure(&wdtCfg) != ESP_OK) esp_task_wdt_init(&wdtCfg);
+  esp_task_wdt_add(NULL);
 
   loadConfig();
   loadState();
+  loadSeenRemote();
   fbLoad();
   otaBootCheck();
+
+  simMode = !sensorBegin();
+  if (simMode) Serial.println("[ДАТЧИК] Не найден — режим ИМИТАЦИИ (проходы вводятся вручную)");
   Serial.printf("Восстановлено: внутри %ld, ждут отправки +%lu / -%lu\n",
                 (long)occupancy, (unsigned long)pendingIn, (unsigned long)pendingOut);
 
@@ -722,6 +848,8 @@ void setup() {
 }
 
 void loop() {
+  esp_task_wdt_reset();
+  sensorLoop();
   if (portalActive) dns.processNextRequest();
   server.handleClient();
   serialLoop();

@@ -15,6 +15,7 @@
  */
 #include <Update.h>
 #include "esp_ota_ops.h"
+#include "mbedtls/sha256.h"
 
 const uint32_t OTA_CHECK_PERIOD    = 60UL * 60 * 1000;   // проверка раз в час
 const uint32_t OTA_CONFIRM_TIMEOUT = 15UL * 60 * 1000;   // новая прошивка должна выйти на связь за 15 мин
@@ -107,7 +108,9 @@ bool otaFail(const String &msg) {
   return false;
 }
 
-bool otaInstall(const String &ver, const String &url) {
+// Скачивает и ставит прошивку. sha256 (hex) — если задан, файл сверяется до перезагрузки.
+bool otaInstall(const String &ver, const String &url, String sha256) {
+  sha256.toLowerCase();
   Serial.printf("[ОБНОВЛЕНИЕ] Скачиваю %s: %s\n", ver.c_str(), url.c_str());
   otaState = "downloading";
   otaProgress = 0;
@@ -126,18 +129,43 @@ bool otaInstall(const String &ver, const String &url) {
   if (len <= 0) { http.end(); return otaFail("Неизвестный размер файла"); }
   if (!Update.begin(len)) { http.end(); return otaFail(String("Не хватает места: ") + Update.errorString()); }
 
-  static int lastPrinted;
-  lastPrinted = -10;
-  Update.onProgress([](size_t done, size_t total) {
-    otaProgress = total ? (int)(done * 100 / total) : 0;
-    if (otaProgress - lastPrinted >= 10) {
-      lastPrinted = otaProgress;
-      Serial.printf("[ОБНОВЛЕНИЕ] %d%%\n", otaProgress);
+  // Читаем по кусочкам: пишем в память, считаем SHA-256 и не даём сработать сторожевому таймеру
+  mbedtls_sha256_context sha;
+  mbedtls_sha256_init(&sha);
+  mbedtls_sha256_starts(&sha, 0);
+  WiFiClient *stream = http.getStreamPtr();
+  static uint8_t buf[2048];
+  size_t done = 0;
+  int lastPrinted = -10;
+  uint32_t lastData = millis();
+  while (done < (size_t)len) {
+    esp_task_wdt_reset();
+    size_t avail = stream->available();
+    if (!avail) {
+      if (!stream->connected() || millis() - lastData > 20000) break;
+      delay(2);
+      continue;
     }
-  });
-  size_t written = Update.writeStream(*http.getStreamPtr());
+    int r = stream->readBytes(buf, avail > sizeof buf ? sizeof buf : avail);
+    if (r <= 0) continue;
+    if (Update.write(buf, r) != (size_t)r) break;
+    mbedtls_sha256_update(&sha, buf, r);
+    done += r;
+    lastData = millis();
+    otaProgress = (int)(done * 100 / len);
+    if (otaProgress - lastPrinted >= 10) { lastPrinted = otaProgress; Serial.printf("[ОБНОВЛЕНИЕ] %d%%\n", otaProgress); }
+  }
   http.end();
-  if (written != (size_t)len) { Update.abort(); return otaFail("Загрузка прервалась"); }
+  uint8_t digest[32];
+  mbedtls_sha256_finish(&sha, digest);
+  mbedtls_sha256_free(&sha);
+  if (done != (size_t)len) { Update.abort(); return otaFail("Загрузка прервалась"); }
+  if (sha256.length()) {
+    char hex[65];
+    for (int i = 0; i < 32; i++) snprintf(hex + i * 2, 3, "%02x", digest[i]);
+    if (sha256 != hex) { Update.abort(); return otaFail("Контрольная сумма SHA-256 не совпала — файл повреждён"); }
+    Serial.println("[ОБНОВЛЕНИЕ] SHA-256 совпала");
+  }
   if (!Update.end(true)) return otaFail(String("Файл повреждён: ") + Update.errorString());
 
   prefs.begin("ota", false);
@@ -169,6 +197,7 @@ void otaCheck() {
   String ver = fsField(resp, "version", "stringValue");
   String url = fsField(resp, "url", "stringValue");
   String enabled = fsField(resp, "enabled", "booleanValue");
+  String sha = fsField(resp, "sha256", "stringValue");
   if (enabled == "false") { otaMsg = "Обновления приостановлены"; return; }
   if (!ver.length() || !url.startsWith("https://")) { otaMsg = "Установлена последняя версия"; return; }
   if (cmpVersion(ver, FW_VERSION) <= 0) { otaMsg = "Установлена последняя версия"; return; }
@@ -178,7 +207,7 @@ void otaCheck() {
   prefs.end();
   if (bad == ver) { otaMsg = "Версия " + ver + " не прошла проверку, пропущена"; return; }
 
-  otaInstall(ver, url);
+  otaInstall(ver, url, sha);
 }
 
 void otaLoop() {

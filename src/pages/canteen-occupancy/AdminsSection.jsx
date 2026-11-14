@@ -14,7 +14,7 @@ const Avatar = ({ photo, name, theme }) => (
 
 // Раздел «Администраторы»: список, удаление и добавление по поиску имени.
 // admins: [{ id(uid), name, photo }], users: [{ uid, name, photo }] — загружаются по запросу
-export default function AdminsSection({ theme, admins, myUid, users, usersLoading, onLoadUsers, onAdd, onRemove }) {
+export default function AdminsSection({ theme, admins, myUid, canteens = [], users, usersLoading, onLoadUsers, onAdd, onRemove, onSave }) {
   const [q, setQ] = useState('');
   const [busy, setBusy] = useState('');
   const tile = theme.element_first_color;
@@ -37,12 +37,28 @@ export default function AdminsSection({ theme, admins, myUid, users, usersLoadin
     <>
       <div className={styles.devCard} style={{ background: tile }}>
         {admins.map((a, i) => (
-          <div key={a.id} className={styles.personRow} style={i ? { borderTop: '1px solid rgba(255,255,255,.06)' } : undefined}>
+          <div key={a.id} style={i ? { borderTop: '1px solid rgba(255,255,255,.06)' } : undefined}>
+          <div className={styles.personRow}>
             <Avatar photo={a.photo} name={a.name} theme={theme} />
             <div className={styles.devTitle}>
               <b style={{ color: text }}>{a.name || 'Без имени'}</b>
-              <span style={{ color: muted }}>{a.id === myUid ? 'это вы' : 'администратор'}</span>
+              <span style={{ color: muted }}>
+                {a.id === myUid ? 'это вы · ' : ''}
+                {a.role === 'manager' ? `менеджер: ${(a.canteens || []).map((id) => canteens.find((c) => c.id === id)?.name || id).join(', ') || 'столовые не выбраны'}` : 'суперадминистратор'}
+              </span>
             </div>
+            {a.id !== myUid && onSave && (
+              <select
+                className={styles.roleSelect}
+                style={{ background: theme.background_color, color: text }}
+                value={a.role === 'manager' ? 'manager' : 'super'}
+                onChange={(e) => run(a.id, () => onSave(a.id, { role: e.target.value }))}
+                aria-label="Роль"
+              >
+                <option value="super">Суперадмин</option>
+                <option value="manager">Менеджер</option>
+              </select>
+            )}
             {a.id !== myUid && (
               <button
                 type="button"
@@ -55,6 +71,27 @@ export default function AdminsSection({ theme, admins, myUid, users, usersLoadin
                 <AdminIcon name="trash" size={18} />
               </button>
             )}
+          </div>
+          {a.role === 'manager' && onSave && (
+            <div className={styles.chips}>
+              {canteens.map((c) => {
+                const on = (a.canteens || []).includes(c.id);
+                return (
+                  <button
+                    key={c.id}
+                    type="button"
+                    className={styles.chip}
+                    style={{ background: on ? theme.first_color : theme.background_color, color: on ? '#fff' : text }}
+                    onClick={() => run(a.id, () => onSave(a.id, {
+                      canteens: on ? (a.canteens || []).filter((x) => x !== c.id) : [...(a.canteens || []), c.id],
+                    }))}
+                  >
+                    {c.name || c.id}
+                  </button>
+                );
+              })}
+            </div>
+          )}
           </div>
         ))}
       </div>

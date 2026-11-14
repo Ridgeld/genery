@@ -25,9 +25,79 @@ const pad = (n) => String(n).padStart(2, '0');
 export const fmtTime = (min) => `${pad(Math.floor(min / 60) % 24)}:${pad(Math.round(min % 60))}`;
 const millis = (ts) => (ts && typeof ts.toMillis === 'function' ? ts.toMillis() : 0);
 
-// Дата в часовом поясе столовой в формате YYYY-MM-DD (так же её считает ESP)
-export function dayKey(date = new Date()) {
-  return new Intl.DateTimeFormat('sv-SE', { timeZone: CANTEEN_TZ }).format(date);
+// Рабочий день в часовом поясе столовой (YYYY-MM-DD), так же его считает плата.
+// resetHour — час ночного обнуления: при resetHour = 2 время 01:30 ещё относится к «вчера».
+export function dayKey(date = new Date(), resetHour = 0) {
+  const shifted = new Date(date.getTime() - (Number(resetHour) || 0) * 3600 * 1000);
+  return new Intl.DateTimeFormat('sv-SE', { timeZone: CANTEEN_TZ }).format(shifted);
+}
+
+// Статусы работы столовой, которые меняет менеджер
+export const CANTEEN_STATUSES = {
+  open: { text: 'Открыто', color: '#C3F82B' },
+  sanitary: { text: 'Санитарный час', color: '#FFC24B' },
+  break: { text: 'Технический перерыв', color: '#FFC24B' },
+  takeaway: { text: 'Только на вынос — мест нет', color: '#FF4365' },
+  closed: { text: 'Закрыто', color: '#FF4365' },
+};
+
+// Эффективная вместимость: порог, при котором визуально сесть уже негде
+export const effectiveCap = (canteen) => Number(canteen?.effectiveCapacity) || Number(canteen?.capacity) || 0;
+
+// Ручная коррекция «Зал пуст» / «Сейчас N человек»: { day, value } добавляется к сумме дверей
+export const correctionFor = (canteen, today) => (canteen?.correction?.day === today ? Number(canteen.correction.value) || 0 : 0);
+
+// ---------- Расписание звонков ----------
+// schedule: [{ from: '08:00', to: '09:20' }, ...] — пары по порядку
+export const toMin = (hhmm) => {
+  const [h, m] = String(hhmm || '').split(':').map(Number);
+  return Number.isFinite(h) ? h * 60 + (m || 0) : NaN;
+};
+export const DEFAULT_SCHEDULE = [
+  { from: '08:00', to: '09:20' }, { from: '09:30', to: '10:50' }, { from: '11:00', to: '12:10' },
+  { from: '12:50', to: '14:10' }, { from: '14:20', to: '15:40' }, { from: '15:50', to: '17:10' },
+];
+export function lessons(schedule) {
+  return (schedule || []).map((l, i) => ({ n: i + 1, from: toMin(l.from), to: toMin(l.to) }))
+    .filter((l) => Number.isFinite(l.from) && Number.isFinite(l.to) && l.to > l.from)
+    .sort((a, b) => a.from - b.from);
+}
+// Перемены между парами (для отметок на графике)
+export function breaks(schedule) {
+  const ls = lessons(schedule);
+  const out = [];
+  for (let i = 0; i < ls.length - 1; i += 1) if (ls[i + 1].from > ls[i].to) out.push({ from: ls[i].to, to: ls[i + 1].from, after: ls[i].n });
+  return out;
+}
+// Ближайшая «волна»: перемена сейчас или скоро
+export function waveInfo(schedule, now) {
+  const ls = lessons(schedule);
+  if (!ls.length) return null;
+  const current = ls.find((l) => now >= l.from && now < l.to);
+  if (current) {
+    const left = current.to - now;
+    if (left <= 20) return { kind: 'soon', minutes: left, lesson: current.n, at: fmtTime(current.to) };
+    return { kind: 'lesson', minutes: left, lesson: current.n, at: fmtTime(current.to) };
+  }
+  const next = ls.find((l) => l.from > now);
+  const prev = [...ls].reverse().find((l) => l.to <= now);
+  if (prev && next) return { kind: 'break', minutes: next.from - now, at: fmtTime(next.from), lesson: prev.n };
+  return null;
+}
+
+// ---------- Отзывы студентов ----------
+// votes: [{ vote: 'ok'|'full'|'free', at: Timestamp }] — за последние 15 минут
+export function feedbackSummary(votes, windowMin = 15) {
+  const since = Date.now() - windowMin * 60000;
+  const recent = (votes || []).filter((v) => (v.at?.toMillis ? v.at.toMillis() : 0) >= since);
+  const count = (k) => recent.filter((v) => v.vote === k).length;
+  const full = count('full');
+  const free = count('free');
+  const ok = count('ok');
+  let override = null;
+  if (full >= 3 && full > free + ok) override = 'full';
+  else if (free >= 3 && free > full + ok) override = 'free';
+  return { full, free, ok, total: recent.length, override };
 }
 export function daysAgoKey(n) {
   return dayKey(new Date(Date.now() - n * 24 * 3600 * 1000));
@@ -46,8 +116,9 @@ export function weekdayIndex(key) {
 }
 
 // ---------- Живое состояние ----------
-export function liveOccupancy(devices, today = dayKey()) {
-  let occupied = 0;
+// correction — ручная поправка менеджера на сегодня (см. correctionFor)
+export function liveOccupancy(devices, today = dayKey(), correction = 0) {
+  let occupied = correction;
   let online = 0;
   let lastSeen = 0;
   devices.forEach((d) => {
@@ -56,7 +127,8 @@ export function liveOccupancy(devices, today = dayKey()) {
     if (Date.now() - seen < ONLINE_TIMEOUT_MS) online += 1;
     lastSeen = Math.max(lastSeen, seen);
   });
-  return { occupied: Math.max(0, occupied), online, total: devices.length, lastSeen };
+  const raw = occupied - correction;
+  return { occupied: Math.max(0, occupied), raw, online, total: devices.length, lastSeen };
 }
 
 // ---------- История ----------

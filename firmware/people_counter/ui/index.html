@@ -260,6 +260,7 @@ svg{display:block;flex:none}
       <div class="row"><span class="ri" data-i="globe"></span><span class="rt"><small>IP-адрес</small><b id="sIp">–</b></span></div>
       <div class="row"><span class="ri" data-i="clock"></span><span class="rt"><small>Время работы</small><b id="sUp">–</b></span></div>
       <div class="row"><span class="ri" data-i="info"></span><span class="rt"><small>Прошивка</small><b id="sFw">–</b><small id="sOta"></small></span></div>
+      <div class="row"><span class="ri" data-i="signal"></span><span class="rt"><small>Датчик</small><b id="sSen">–</b><small id="sSen2"></small></span></div>
     </div>
     <div class="glb">Сервер</div>
     <div class="grp">
@@ -270,6 +271,7 @@ svg{display:block;flex:none}
     </div>
     <div class="glb">Действия</div>
     <div class="grp">
+      <button class="row" id="aSensor"><span class="ri" data-i="signal"></span><span class="rt"><b>Настройка датчика</b></span><span data-i="chevron" class="rv"></span></button>
       <button class="row" id="aWifi"><span class="ri" data-i="wifi"></span><span class="rt"><b>Сменить сеть Wi‑Fi</b></span><span data-i="chevron" class="rv"></span></button>
       <button class="row" id="aSend"><span class="ri" data-i="cloud"></span><span class="rt"><b>Отправить данные сейчас</b></span><span data-i="chevron" class="rv"></span></button>
       <button class="row" id="aOta"><span class="ri" data-i="refresh"></span><span class="rt"><b>Проверить обновления</b></span><span data-i="chevron" class="rv"></span></button>
@@ -277,6 +279,29 @@ svg{display:block;flex:none}
       <button class="row" id="aReboot"><span class="ri" data-i="power"></span><span class="rt"><b>Перезагрузить</b></span><span data-i="chevron" class="rv"></span></button>
       <button class="row danger" id="aForget"><span class="ri" data-i="wifiOff"></span><span class="rt"><b>Забыть Wi‑Fi</b></span></button>
     </div>
+  </div>
+</section>
+
+<!-- Окно датчика -->
+<section class="sheet" id="shSensor">
+  <div class="grab"></div>
+  <div class="sh"><h3>Датчик</h3><button class="close" data-close data-i="x"></button></div>
+  <div class="sb">
+    <div class="stats" style="margin-top:0">
+      <div><small>Зона A</small><b class="num" id="snA">–</b></div>
+      <div><small>Зона B</small><b class="num" id="snB">–</b></div>
+      <div><small>Пол</small><b class="num" id="snF">–</b></div>
+    </div>
+    <p class="foot" style="margin:8px 4px 0;text-align:left" id="snInfo"></p>
+    <div class="glb">Настройки</div>
+    <div class="grp">
+      <label class="row" style="cursor:pointer"><span class="ri" data-i="reset"></span><span class="rt"><b>Поменять вход и выход</b><small>если датчик повесили «задом наперёд»</small></span><input type="checkbox" id="snInv" style="width:22px;height:22px;accent-color:#0040F9"></label>
+      <label class="fl"><small>Порог срабатывания, мм (0 — автоматически по полу)</small><input id="snThr" type="number" min="0" max="4000" inputmode="numeric"></label>
+      <label class="fl"><small>Антидребезг, мс — чтобы одного человека не посчитать дважды</small><input id="snDeb" type="number" min="0" max="5000" inputmode="numeric"></label>
+      <div class="inl"><button id="snSave" style="flex:1">Сохранить</button></div>
+    </div>
+    <button class="cta sec2" id="snCal"><span data-i="refresh"></span>Калибровать пол</button>
+    <p class="foot" style="margin:10px 4px 0;text-align:left">Перед калибровкой под датчиком никого не должно быть. Если администратор изменит эти настройки на сайте, плата применит его значения.</p>
   </div>
 </section>
 
@@ -404,7 +429,7 @@ function show(id){
   if(openSheet&&openSheet!==id)$(openSheet).classList.remove('on');
   openSheet=id;$(id).classList.add('on');$('scrim').classList.add('on');
   if(id==='shWifi')wifiOpen();
-  if(id==='shOcc'||id==='shSend'||id==='shSet')render();
+  if(id==='shOcc'||id==='shSend'||id==='shSet'||id==='shSensor')render();
 }
 function hide(){if(!openSheet)return;if(openSheet==='shWifi'&&W.view==='busy')return;$(openSheet).classList.remove('on');$('scrim').classList.remove('on');openSheet=null}
 $('scrim').onclick=hide;
@@ -477,7 +502,9 @@ function render(){
   if(openSheet==='shSet'){
     $('sId').textContent=S.id;$('sIp').textContent=wifi.connected?wifi.ip:'192.168.4.1 (точка доступа)';
     $('sUp').textContent=fmtUpText(S.uptime);$('sFw').textContent=S.fw;
-    const o=S.ota||{};
+    const sn=S.sensor||{};
+    $('sSen').textContent=sn.present?`Зона A ${sn.a} мм · зона B ${sn.b} мм`:'Не подключён — режим имитации';
+    $('sSen2').textContent=sn.present?`Пол ${sn.floor} мм, порог ${sn.threshold} мм · срабатываний A ${sn.rawA}, B ${sn.rawB}${sn.invert?' · вход/выход поменяны':''}`:'Настройки датчика меняются на сайте в «Управлении»';
     $('sOta').textContent=o.state==='downloading'?`Загрузка обновления: ${o.progress}%`:(o.msg||'');
     $('sOta').style.color=o.state==='error'?'var(--red)':'';
     if(document.activeElement!==$('sSrv'))$('sSrv').value=S.server;
@@ -491,6 +518,13 @@ function render(){
     $('stNow').textContent=c.occupancy;$('stMax').textContent=Math.max(...o);
     $('stAvg').textContent=Math.round(o.reduce((a,b)=>a+b,0)/o.length);
     $('stNote').textContent=`Последние ${Math.round(o.length*(h.step||10)/60)} мин, точка каждые ${h.step||10} с`;
+  }
+  if(openSheet==='shSensor'){
+    const sn=S.sensor||{};
+    $('snA').textContent=sn.present?sn.a:'—';$('snB').textContent=sn.present?sn.b:'—';$('snF').textContent=sn.present?sn.floor:'—';
+    $('snInfo').textContent=sn.present?`Действующий порог ${sn.threshold} мм · срабатываний за день: A ${sn.rawA}, B ${sn.rawB}`:'Датчик не подключён — плата в режиме имитации. Настройки сохранятся и начнут работать после подключения.';
+    $('snCal').disabled=!sn.present;
+    if(!sensorFormTouched){$('snInv').checked=!!sn.invert;$('snThr').value=sn.cfgThreshold??0;$('snDeb').value=sn.debounce??300}
   }
   if(openSheet==='shSend'){
     $('qIn').textContent='+'+c.pendingIn;$('qOut').textContent='−'+c.pendingOut;$('qN').textContent=S.sends;
@@ -605,6 +639,16 @@ $('sIn').onclick=async()=>{await postJ('/sim?d=1');poll()};
 $('sOut').onclick=async()=>{await postJ('/sim?d=-1');poll()};
 async function sendNow(){toast('Отправляю…','cloud');const j=await postJ('/api/send');await poll();toast(j.ok?'Данные отправлены':(S&&S.cloud?S.cloud.msg:'Нет связи с сервером'),j.ok?'check':'x')}
 $('aSend').onclick=sendNow;$('qSend').onclick=sendNow;
+let sensorFormTouched=false;
+$('aSensor').onclick=()=>{sensorFormTouched=false;show('shSensor')};
+['snInv','snThr','snDeb'].forEach(id=>$(id).addEventListener('input',()=>sensorFormTouched=true));
+$('snSave').onclick=async()=>{
+  const j=await postJ('/api/sensor',{invert:$('snInv').checked?'1':'0',threshold:$('snThr').value||'0',debounce:$('snDeb').value||'0'});
+  sensorFormTouched=false;toast(j.ok?'Настройки датчика сохранены':'Не удалось сохранить',j.ok?'check':'x');poll();
+};
+$('snCal').onclick=()=>confirmBox({title:'Калибровать пол?',text:'Под датчиком никого не должно быть. Займёт несколько секунд.',icon:'refresh',yes:'Калибровать'},async()=>{
+  toast('Калибрую…','refresh');const j=await postJ('/api/calibrate');toast(j.ok?'Готово':'Не удалось откалибровать',j.ok?'check':'x');poll();
+});
 $('aOta').onclick=async()=>{await postJ('/api/ota-check');toast('Проверяю обновления…','refresh');setTimeout(poll,4000)};
 $('rId').onclick=()=>{const t=S?S.id:'';
   const done=()=>toast('ID скопирован','copy');

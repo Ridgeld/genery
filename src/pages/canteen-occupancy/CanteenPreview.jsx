@@ -4,7 +4,8 @@ import { ElementContext } from '../../providers/ElementProvider.jsx';
 import '../../themes/default.scss';
 import CanteenView from './CanteenView.jsx';
 import AdminApp from './AdminApp.jsx';
-import { buildDayCurves, dayKey, daysAgoKey, nowMinutes } from './canteenStats.js';
+import CanteenList from './CanteenList.jsx';
+import { DEFAULT_SCHEDULE, buildDayCurves, dayKey, daysAgoKey, nowMinutes } from './canteenStats.js';
 
 // Только для разработки (маршрут /canteen-preview есть лишь в режиме vite dev):
 // страницы столовой и «Управления» на сгенерированных данных, без входа и без Firestore.
@@ -36,7 +37,11 @@ const MOCK_DEVICES = [
   { id: 'counter-77e0d1', door: 'Вход со двора', canteenId: 'main', approved: true, day: dayKey(), dayIn: 40, dayOut: 37, lastSeen: ts(45), rssi: -82, fw: '0.5.0', ota: 'Загружаю версию 0.5.1' },
   { id: 'counter-c0ffee', door: 'Вход', canteenId: 'korpus-2', approved: true, day: dayKey(), dayIn: 31, dayOut: 12, lastSeen: ts(2), rssi: -55, fw: '0.5.1' },
 ];
-const MOCK_CANTEENS = [{ id: 'main', name: 'Политех', capacity: 100 }, { id: 'korpus-2', name: 'Корпус 2', capacity: 60 }];
+const MOCK_CANTEENS = [
+  { id: 'main', name: 'Политех', capacity: 120, effectiveCapacity: 95, status: 'open', resetHour: 2, schedule: DEFAULT_SCHEDULE },
+  { id: 'korpus-2', name: 'Корпус 2', capacity: 60, status: 'sanitary', statusNote: 'Откроемся в 13:30' },
+];
+const MOCK_VOTES = [{ vote: 'full', at: ts(2) }, { vote: 'full', at: ts(4) }, { vote: 'full', at: ts(6) }, { vote: 'ok', at: ts(9) }];
 
 export default function CanteenPreview() {
   const { theme, setElementColors } = useContext(ElementContext);
@@ -69,13 +74,16 @@ export default function CanteenPreview() {
       <AdminApp
         theme={theme}
         user={{ _id: 'me', name: 'Даниил' }}
+        staff={params.get('role') === 'manager' ? { role: 'manager', canteens: ['main'] } : { role: 'super', canteens: [] }}
+        votes={MOCK_VOTES}
         view={v}
         selectedId={id}
         onNavigate={(nv, nid) => setParams(nid ? { view: 'admin', v: nv, id: nid } : { view: 'admin', v: nv })}
         onBack={() => {}}
         devices={devices}
         canteens={canteens}
-        admins={[{ id: 'me', name: 'Даниил' }, { id: 'u2', name: 'Айгерим' }]}
+        admins={[{ id: 'me', name: 'Даниил' }, { id: 'u2', name: 'Айгерим', role: 'manager', canteens: ['main'] }]}
+        onSaveAdmin={async () => {}}
         firmware={{ version: '0.5.1', url: 'https://github.com/example/genery-firmware/releases/download/v0.5.1/people_counter-0.5.1.bin', enabled: true }}
         curves={curves}
         users={[{ uid: 'u2', name: 'Айгерим' }, { uid: 'u3', name: 'Азамат' }, { uid: 'u4', name: 'Алина' }]}
@@ -83,6 +91,10 @@ export default function CanteenPreview() {
         onLoadUsers={() => {}}
         onSaveDevice={save}
         onSaveCanteen={async (cid, data) => setCanteens((list) => list.map((c) => (c.id === cid ? { ...c, ...data } : c)))}
+        onRenameCanteen={async (oldId, newId, data) => {
+          setCanteens((list) => list.map((c) => (c.id === oldId ? { ...c, ...data, id: newId } : c)));
+          setDevices((list) => list.map((d) => (d.canteenId === oldId ? { ...d, canteenId: newId } : d)));
+        }}
         onCreateCanteen={async (cid, data) => setCanteens((list) => [...list, { id: cid, ...data }])}
         onDeleteCanteen={async (cid) => setCanteens((list) => list.filter((c) => c.id !== cid))}
         onOpenCanteenPage={() => {}}
@@ -94,17 +106,36 @@ export default function CanteenPreview() {
     );
   }
 
+  if (params.get('view') === 'list') {
+    return (
+      <CanteenList
+        theme={theme}
+        items={[
+          { id: 'main', name: 'Политех', occupied: 72, capacity: 95, hasDevices: true },
+          { id: 'korpus-2', name: 'Корпус 2', occupied: 0, capacity: 60, hasDevices: true, status: 'sanitary' },
+          { id: 'bufet', name: 'Буфет, 3 этаж', occupied: 9, capacity: 30, hasDevices: true },
+        ]}
+        onOpen={() => {}}
+        onDevices={() => {}}
+      />
+    );
+  }
+
+  const canteen = MOCK_CANTEENS.find((c) => c.id === (params.get('id') || 'main'));
   return (
     <CanteenView
       theme={theme}
-      name="Политех"
-      capacity={100}
+      canteen={canteen}
+      capacity={canteen.effectiveCapacity || canteen.capacity}
       occupied={occ}
       hasDevices
       status={{ color: '#C3F82B', text: 'В реальном времени · счётчиков на связи: 1 из 1' }}
       curves={curves}
       today={dayKey(new Date(clock))}
       now={now}
+      votes={params.get('votes') === '1' ? MOCK_VOTES : []}
+      myVote={null}
+      onVote={() => {}}
       onDevices={() => {}}
     />
   );

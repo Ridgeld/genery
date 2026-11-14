@@ -1,5 +1,6 @@
-// Полные правила Firestore проекта Genery со счётчиками людей и ролью администратора.
+// Полные правила Firestore проекта Genery со счётчиками людей.
 // Вставить целиком в Firebase Console -> Firestore Database -> Rules -> Publish.
+// ВАЖНО: публикуйте после того, как все платы обновятся до прошивки 0.6.0.
 
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -11,10 +12,20 @@ service cloud.firestore {
         && request.auth.token.firebase.sign_in_provider != 'anonymous';
     }
 
-    // Администратор: есть документ admins/{uid}.
+    // Сотрудник: есть документ admins/{uid}. role: 'super' (по умолчанию) или 'manager'.
+    function isStaff() {
+      return isUser() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+    function staffDoc() {
+      return get(/databases/$(database)/documents/admins/$(request.auth.uid)).data;
+    }
+    // Суперадмин: платы, прошивка, столовые, администраторы
     function isAdmin() {
-      return isUser()
-        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+      return isStaff() && staffDoc().get('role', 'super') == 'super';
+    }
+    // Менеджер конкретной столовой (или суперадмин)
+    function managesCanteen(canteenId) {
+      return isAdmin() || (isStaff() && canteenId in staffDoc().get('canteens', []));
     }
 
     // Чтение — всё приложение, как раньше (включая поиск по collectionGroup)
@@ -28,37 +39,50 @@ service cloud.firestore {
         && !(collection in ['admins', 'devices', 'canteens', 'firmware']);
     }
 
-    // Последняя версия прошивки { version, url, enabled }: читают платы, выпускает администратор
+    // Сотрудники: меняет только суперадмин (на сайте). Первого суперадмина создают в консоли.
+    match /admins/{uid} {
+      allow write: if isAdmin();
+    }
+
+    // Последняя версия прошивки { version, url, sha256, enabled }: читают платы, выпускает суперадмин
     match /firmware/{doc} {
       allow read: if request.auth != null;
       allow write: if isAdmin();
     }
 
-    // Список администраторов: меняют только администраторы (страница «Управление» на сайте).
-    // Первого администратора создают один раз в консоли.
-    match /admins/{uid} {
-      allow write: if isAdmin();
-    }
-
-    // Карточка столовой { name, capacity }: меняет администратор
+    // Столовая { name, capacity, effectiveCapacity, status, correction, resetHour, schedule, ... }
     match /canteens/{canteenId} {
-      allow write: if isAdmin();
+      allow create, delete: if isAdmin();
+      // Суперадмин меняет всё, менеджер — только статус работы и ручную коррекцию
+      allow update: if isAdmin()
+        || (managesCanteen(canteenId)
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'statusNote', 'correction']));
+
+      // Отзывы студентов «Данные точные?»
+      match /feedback/{id} {
+        allow create: if isUser()
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.keys().hasOnly(['vote', 'uid', 'at', 'day'])
+          && request.resource.data.vote in ['ok', 'full', 'free'];
+        allow delete: if managesCanteen(canteenId);
+      }
     }
 
     // Счётчик людей (одна дверь)
     match /devices/{deviceId} {
-      // Администратор: подключает/отключает плату, задаёт название двери, удаляет
+      // Суперадмин: подключение, столовая, название двери, настройки датчика, «обновить сейчас»
       allow update, delete: if isAdmin();
 
-      // Сама плата (анонимный вход): только свой документ. Подключение (approved),
-      // столовую (canteenId) и название двери (door) задаёт только администратор.
+      // Плата (анонимный вход): читает и пишет только свой документ.
+      // Поля, которые задаёт администратор, плата менять не может.
+      allow get: if request.auth != null && resource.data.uid == request.auth.uid;
       allow create: if request.auth != null
         && request.resource.data.uid == request.auth.uid
-        && !request.resource.data.keys().hasAny(['approved', 'canteenId', 'door']);
+        && !request.resource.data.keys().hasAny(['approved', 'canteenId', 'door', 'invert', 'threshold', 'debounceMs', 'resetHour', 'otaRequest']);
       allow update: if request.auth != null
         && resource.data.uid == request.auth.uid
         && request.resource.data.uid == request.auth.uid
-        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['approved', 'canteenId', 'door']);
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['approved', 'canteenId', 'door', 'invert', 'threshold', 'debounceMs', 'resetHour', 'otaRequest']);
 
       // Почасовая статистика за день
       match /days/{day} {

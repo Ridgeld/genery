@@ -1,8 +1,17 @@
 import { useMemo, useRef, useState } from 'react';
 import styles from './CanteenOccupancy.module.scss';
-import CanteenChart from './CanteenChart.jsx';
+import BarsChart from './BarsChart.jsx';
+import { STATUS, StatusIcon } from './StatusBadge.jsx';
+
+const CLOSED_HINTS = {
+  sanitary: 'Зал закрыт на уборку. Скоро откроемся',
+  break: 'Временно не обслуживаем',
+  takeaway: 'Сесть негде — еду можно взять с собой',
+  closed: 'Сегодня столовая не работает',
+};
 import {
-  WEEKDAYS, dayHighlights, fmtTime, forecastFree, loadLevel, typicalDay, valueAt, weekdayIndex
+  CANTEEN_STATUSES, WEEKDAYS, dayHighlights, feedbackSummary, fmtTime, forecastFree, loadLevel, typicalDay, valueAt,
+  waveInfo, weekdayIndex
 } from './canteenStats.js';
 
 const ICONS = {
@@ -12,6 +21,8 @@ const ICONS = {
   peak: '<path d="m22 7-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/>',
   leaf: '<path d="M20 6 9 17l-5-5"/>',
   arrow: '<path d="M7 17 17 7"/><path d="M8 7h9v9"/>',
+  bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+  alert: '<circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/>',
 };
 const Icon = ({ name, size = 20 }) => (
   <svg
@@ -30,9 +41,13 @@ const Icon = ({ name, size = 20 }) => (
 const LEVEL_COLORS = { free: '#C3F82B', mid: '#FFFFFF', busy: '#FFC24B', full: '#FF4365' };
 
 // Отображение страницы. Все данные приходят готовыми — компонент ничего не загружает.
+// canteen: { name, capacity, effectiveCapacity, status, statusNote, schedule }
 export default function CanteenView({
-  theme, name, capacity, occupied, hasDevices, status, curves, today, now, onDevices,
+  theme, canteen, capacity, occupied, hasDevices, status, curves, today, now, onDevices,
+  votes, myVote, onVote,
 }) {
+  const name = canteen?.name;
+  const schedule = canteen?.schedule;
   const todayWd = weekdayIndex(today);
   const [selectedWd, setSelectedWd] = useState(todayWd);
   const chartRef = useRef(null);
@@ -44,14 +59,22 @@ export default function CanteenView({
   const typicalSel = useMemo(() => typicalDay(curves, selectedWd, today), [curves, selectedWd, today]);
   const highlights = useMemo(() => dayHighlights(typicalSel), [typicalSel]);
   const todayOcc = curves.get(today) || null;
+  const fb = feedbackSummary(votes);
 
   const free = Math.max(0, capacity - occupied);
   const pct = capacity ? Math.min(1, occupied / capacity) : 0;
-  const level = loadLevel(occupied, capacity);
+  let level = loadLevel(occupied, capacity);
+  // Если несколько студентов подряд сообщили «мест нет» — показываем «плотно», даже если датчик считает меньше
+  const byFeedback = fb.override === 'full' && (level.key === 'free' || level.key === 'mid');
+  if (byFeedback) level = { key: 'busy', text: 'Плотно (по отзывам)' };
+  const statusInfo = CANTEEN_STATUSES[canteen?.status || 'open'] || CANTEEN_STATUSES.open;
+  const isOpen = !canteen?.status || canteen.status === 'open';
+
   const forecast = hasDevices ? forecastFree(typicalToday, occupied, capacity, now) : { state: 'nodevices' };
   const usual = typicalToday ? Math.round(valueAt(typicalToday.occ, now)) : null;
   const diff = usual === null ? 0 : occupied - usual;
   const isToday = selectedWd === todayWd;
+  const wave = isOpen ? waveInfo(schedule, now) : null;
   const scrollToChart = () => chartRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   // Плитка «Освободится»
@@ -75,20 +98,25 @@ export default function CanteenView({
     fcSub = 'счётчики не подключены';
   }
 
+  // Подсказка про «волну» после пары
+  let waveText = null;
+  if (wave?.kind === 'soon') {
+    waveText = level.key === 'free' || level.key === 'mid'
+      ? `Сейчас ${level.key === 'free' ? 'свободно' : 'есть места'}, но через ${wave.minutes} мин закончится ${wave.lesson}-я пара — будет наплыв`
+      : `Через ${wave.minutes} мин закончится ${wave.lesson}-я пара — станет ещё плотнее`;
+  } else if (wave?.kind === 'break') {
+    waveText = `Сейчас перемена после ${wave.lesson}-й пары — до ${wave.at}. Обычно в это время людно`;
+  }
+
   const R = 34;
   const C = 2 * Math.PI * R;
+  const pctText = Math.round(pct * 100);
 
   return (
     <div className={styles.container}>
       <div className={styles.topRow}>
-        <div>
-          <div className={styles.headerTitle} style={{ color: theme.text_first_color }}>
-            {name || 'Столовая'}
-          </div>
-          <div className={styles.liveStatus} style={{ color: muted }}>
-            <span className={styles.liveDot} style={{ background: status.color }} />
-            {status.text}
-          </div>
+        <div className={styles.headerTitle} style={{ color: theme.text_first_color }}>
+          {name || 'Столовая'}
         </div>
         {onDevices && (
           <button type="button" className={styles.devicesLink} onClick={onDevices} style={{ background: tile, color: theme.text_first_color }}>
@@ -97,40 +125,55 @@ export default function CanteenView({
         )}
       </div>
 
-      {/* Главное: заполненность */}
-      <button type="button" className={styles.hero} style={{ background: theme.first_color }} onClick={scrollToChart}>
-        <div className={styles.heroText}>
-          <span className={styles.heroLabel}>Сейчас в столовой</span>
-          <span className={styles.heroValue}>
-            {hasDevices ? occupied : '—'}
-            <small> / {capacity}</small>
-          </span>
-          <span className={styles.heroPill}>
-            <i style={{ background: hasDevices ? LEVEL_COLORS[level.key] : 'rgba(255,255,255,.5)' }} />
-            {hasDevices ? `${level.text} · свободно ${free}` : 'нет данных'}
-          </span>
+      {!isOpen ? (
+        /* Столовая не работает — это главное, что нужно увидеть */
+        <div className={styles.closedHero} style={{ background: `${statusInfo.color}1a`, borderColor: `${statusInfo.color}55`, color: theme.text_first_color }}>
+          <StatusIcon kind={canteen.status} size={56} />
+          <b style={{ color: statusInfo.color }}>{STATUS[canteen.status]?.text || statusInfo.text}</b>
+          <span>{canteen?.statusNote || CLOSED_HINTS[canteen.status] || 'Информация от столовой'}</span>
         </div>
-        <svg className={styles.heroRing} viewBox="0 0 84 84">
-          <circle cx="42" cy="42" r={R} fill="none" stroke="rgba(255,255,255,.2)" strokeWidth="8" />
-          <circle
-            cx="42"
-            cy="42"
-            r={R}
-            fill="none"
-            stroke="#fff"
-            strokeWidth="8"
-            strokeLinecap="round"
-            strokeDasharray={`${(C * (hasDevices ? pct : 0)).toFixed(1)} ${C.toFixed(1)}`}
-            transform="rotate(-90 42 42)"
-          />
-          <text x="42" y="47" textAnchor="middle" fill="#fff" fontSize="16" fontWeight="700">
-            {hasDevices ? `${Math.round(pct * 100)}%` : '—'}
-          </text>
-        </svg>
-      </button>
+      ) : (
+        /* Главное: сколько свободно */
+        <button type="button" className={styles.hero} style={{ background: theme.first_color }} onClick={scrollToChart}>
+          <div className={styles.heroText}>
+            <span className={styles.heroLabel}>Свободно</span>
+            <span className={styles.heroValue}>{hasDevices ? free : '—'}</span>
+            <span className={styles.heroLabel}>
+              {hasDevices ? `занято ${occupied} из ${capacity}` : 'нет данных'}
+              {byFeedback && ' · плотно по отзывам'}
+            </span>
+            {canteen?.statusNote && <span className={styles.heroNote}>{canteen.statusNote}</span>}
+            {status.stale && <span className={styles.heroNote}>{status.text}</span>}
+          </div>
+          <svg className={styles.heroRing} viewBox="0 0 84 84">
+            <circle cx="42" cy="42" r={R} fill="none" stroke="rgba(255,255,255,.2)" strokeWidth="8" />
+            <circle
+              cx="42"
+              cy="42"
+              r={R}
+              fill="none"
+              stroke={hasDevices ? LEVEL_COLORS[level.key] : '#fff'}
+              strokeWidth="8"
+              strokeLinecap="round"
+              strokeDasharray={`${(C * (hasDevices ? pct : 0)).toFixed(1)} ${C.toFixed(1)}`}
+              transform="rotate(-90 42 42)"
+            />
+            <text x="42" y="47" textAnchor="middle" fill="#fff" fontSize="17" fontWeight="700">
+              {hasDevices ? `${pctText}%` : '—'}
+            </text>
+          </svg>
+        </button>
+      )}
+
+      {waveText && hasDevices && (
+        <div className={styles.wave} style={{ background: tile, color: theme.text_first_color }}>
+          <span style={{ color: '#FFC24B' }}><Icon name="bell" size={18} /></span>
+          {waveText}
+        </div>
+      )}
 
       {/* Прогноз */}
-      <div className={styles.grid2}>
+      {isOpen && <div className={styles.grid2}>
         <button type="button" className={styles.tile} style={{ background: tile }} onClick={scrollToChart}>
           <div className={styles.tileHead}>
             <span className={styles.tileIcon} style={{ color: theme.text_first_color }}><Icon name="clock" /></span>
@@ -156,7 +199,25 @@ export default function CanteenView({
                 : diff > 0 ? `сегодня на ${diff} больше` : `сегодня на ${-diff} меньше`}
           </span>
         </div>
-      </div>
+      </div>}
+
+      {/* Обратная связь */}
+      {hasDevices && isOpen && onVote && (
+        <div className={styles.feedback} style={{ background: tile, color: theme.text_first_color }}>
+          {myVote ? (
+            <span style={{ color: muted }}>Спасибо! Ответ учтён — он помогает проверять точность датчиков.</span>
+          ) : (
+            <>
+              <b>Ты сейчас в столовой? Данные точные?</b>
+              <div className={styles.feedbackBtns}>
+                <button type="button" style={{ background: theme.background_color, color: theme.text_first_color }} onClick={() => onVote('ok')}>Да, верно</button>
+                <button type="button" style={{ background: 'rgba(255,67,101,.16)', color: '#FF4365' }} onClick={() => onVote('full')}>Мест нет</button>
+                <button type="button" style={{ background: 'rgba(195,248,43,.14)', color: '#C3F82B' }} onClick={() => onVote('free')}>Свободнее</button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
 
       {/* График */}
       <div ref={chartRef} className={styles.sectionTitle} style={{ color: theme.text_first_color }}>
@@ -182,7 +243,7 @@ export default function CanteenView({
 
       <div className={styles.chartCard} style={{ background: tile }}>
         {typicalSel || (isToday && todayOcc) ? (
-          <CanteenChart
+          <BarsChart
             theme={theme}
             accent={accent}
             capacity={capacity}
@@ -191,6 +252,7 @@ export default function CanteenView({
             now={now}
             occupied={occupied}
             isToday={isToday}
+            schedule={schedule}
           />
         ) : (
           <div className={styles.empty} style={{ color: muted }}>

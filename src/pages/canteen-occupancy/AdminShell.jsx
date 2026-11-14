@@ -9,7 +9,7 @@ const GRAY = '#7D7D8C';
 // Каркас панели управления: боковое меню слева, содержимое по центру.
 // На телефоне меню прячется и открывается кнопкой в верхней строке.
 // canteens: [{ id, name, occupied, capacity, online, total }]
-export default function AdminShell({ theme, user, canteens, pendingCount, view, selectedId, onNavigate, onBack, title, children }) {
+export default function AdminShell({ theme, user, isSuper = true, canteens, pendingCount, view, selectedId, onNavigate, onBack, title, children }) {
   const [open, setOpen] = useState(false);
   useEffect(() => { setOpen(false); }, [view, selectedId]);
 
@@ -49,7 +49,7 @@ export default function AdminShell({ theme, user, canteens, pendingCount, view, 
         <button type="button" className={s.navItem} onClick={onBack}>
           <Icon name="back" size={18} /><span className={s.navText}><span>На сайт</span></span>
         </button>
-        {item('inbox', undefined, <Icon name="inbox" size={18} />,
+        {isSuper && item('inbox', undefined, <Icon name="inbox" size={18} />,
           <span className={s.navText}><span>Новые платы</span></span>,
           pendingCount > 0 ? <span className={s.navCount}>{pendingCount}</span> : null)}
 
@@ -62,11 +62,15 @@ export default function AdminShell({ theme, user, canteens, pendingCount, view, 
               <small>{c.total ? `${c.occupied} из ${c.capacity} · дверей ${c.total}` : 'нет счётчиков'}</small>
             </span>);
         })}
-        {item('new-canteen', undefined, <Icon name="plus" size={18} />, <span className={s.navText}><span>Добавить столовую</span></span>)}
+        {isSuper && item('new-canteen', undefined, <Icon name="plus" size={18} />, <span className={s.navText}><span>Добавить столовую</span></span>)}
 
-        <div className={s.navLabel}>Система</div>
-        {item('firmware', undefined, <Icon name="chip" size={18} />, <span className={s.navText}><span>Прошивка</span></span>)}
-        {item('admins', undefined, <Icon name="shield" size={18} />, <span className={s.navText}><span>Администраторы</span></span>)}
+        {isSuper && (
+          <>
+            <div className={s.navLabel}>Система</div>
+            {item('firmware', undefined, <Icon name="chip" size={18} />, <span className={s.navText}><span>Прошивка</span></span>)}
+            {item('admins', undefined, <Icon name="shield" size={18} />, <span className={s.navText}><span>Сотрудники</span></span>)}
+          </>
+        )}
 
         <div className={s.sideBottom}>
           {pendingCount > 0 && view !== 'inbox' && (
@@ -81,7 +85,7 @@ export default function AdminShell({ theme, user, canteens, pendingCount, view, 
           {user && (
             <div className={s.userCard}>
               {user.avatar ? <img src={user.avatar} alt="" /> : <span className="avatar">{(user.name || '?').charAt(0)}</span>}
-              <div><b>{user.name || 'Администратор'}</b><small>администратор</small></div>
+              <div><b>{user.name || 'Администратор'}</b><small>{isSuper ? 'суперадминистратор' : 'менеджер столовой'}</small></div>
             </div>
           )}
         </div>

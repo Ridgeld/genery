@@ -135,35 +135,52 @@ String fsInc(const String &path, long v) {
   return "{\"fieldPath\":\"" + path + "\",\"increment\":" + fsInt(v) + "}";
 }
 
-// Отправляет накопленные события. true — сервер принял.
-bool cloudSend(uint32_t inN, uint32_t outN) {
-  struct tm t;
-  if (!getLocalTime(&t, 0)) { setCloud("wait", "Жду синхронизации времени"); return false; }
+// Отправляет накопленные корзины (проходы по часам). true — сервер принял.
+bool cloudSend(const Bucket *bk, uint8_t n) {
+  if (!timeValid()) { setCloud("wait", "Жду синхронизации времени"); return false; }
   if (!fbEnsureToken()) return false;
 
-  char day[11], hourKey[4];
-  strftime(day, sizeof day, "%Y-%m-%d", &t);
-  snprintf(hourKey, sizeof hourKey, "h%02d", t.tm_hour);
+  time_t now = time(nullptr);
+  String day = businessDay(now);
   bool newDay = sentDay != day;
   String base = "projects/" + cfgServer + "/databases/(default)/documents";
   String devPath = base + "/devices/" + deviceId;
+
+  // Корзины без известного времени относим к текущему часу; одинаковые часы объединяем
+  std::vector<Bucket> eff;
+  for (uint8_t i = 0; i < n; i++) {
+    uint32_t h = bk[i].hourEpoch ? bk[i].hourEpoch : (uint32_t)(now / 3600);
+    bool merged = false;
+    for (auto &e : eff) if (e.hourEpoch == h) { e.in += bk[i].in; e.out += bk[i].out; merged = true; break; }
+    if (!merged) eff.push_back({h, bk[i].in, bk[i].out});
+  }
+  uint32_t inN = 0, outN = 0, inToday = 0, outToday = 0;
+  for (auto &e : eff) {
+    inN += e.in; outN += e.out;
+    if (businessDay((time_t)e.hourEpoch * 3600) == day) { inToday += e.in; outToday += e.out; }
+  }
 
   // --- devices/{id}: живое состояние ---
   // Столовую (canteenId) назначает администратор на сайте. Плата лишь подсказывает,
   // какую столовую ввёл мастер при установке (canteenRequested).
   String fields = "\"uid\":" + fsStr(fbUid) + ",\"canteenRequested\":" + fsStr(cfgCanteen) +
                   ",\"fw\":" + fsStr(FW_VERSION) + ",\"ip\":" + fsStr(WiFi.localIP().toString()) +
-                  ",\"rssi\":" + fsInt(WiFi.RSSI()) + ",\"sim\":" + fsBool(SIMULATE_SENSOR) +
-                  ",\"day\":" + fsStr(day) + ",\"ota\":" + fsStr(otaMsg);
-  String mask = "\"uid\",\"canteenRequested\",\"fw\",\"ip\",\"rssi\",\"sim\",\"day\",\"ota\"";
+                  ",\"rssi\":" + fsInt(WiFi.RSSI()) + ",\"sim\":" + fsBool(simMode) +
+                  ",\"day\":" + fsStr(day) + ",\"ota\":" + fsStr(otaMsg) +
+                  ",\"rawA\":" + fsInt(rawA) + ",\"rawB\":" + fsInt(rawB) +
+                  ",\"floorMm\":" + fsInt(sensorFloorMm) + ",\"thresholdMm\":" + fsInt(sensorThresholdMm) +
+                  ",\"effInvert\":" + fsBool(cfgInvert) + ",\"effThreshold\":" + fsInt(cfgThreshold) +
+                  ",\"effDebounce\":" + fsInt(cfgDebounce);
+  String mask = "\"uid\",\"canteenRequested\",\"fw\",\"ip\",\"rssi\",\"sim\",\"day\",\"ota\",\"rawA\",\"rawB\",\"floorMm\",\"thresholdMm\","
+                "\"effInvert\",\"effThreshold\",\"effDebounce\"";
   String tr = "{\"fieldPath\":\"lastSeen\",\"setToServerValue\":\"REQUEST_TIME\"}";
   if (newDay) {
-    // Первая отправка за день: счётчики дня начинаются заново
-    fields += ",\"dayIn\":" + fsInt(inN) + ",\"dayOut\":" + fsInt(outN);
+    // Первая отправка за рабочий день: счётчики дня начинаются заново
+    fields += ",\"dayIn\":" + fsInt(inToday) + ",\"dayOut\":" + fsInt(outToday);
     mask += ",\"dayIn\",\"dayOut\"";
   } else {
-    if (inN)  tr += "," + fsInc("dayIn", inN);
-    if (outN) tr += "," + fsInc("dayOut", outN);
+    if (inToday)  tr += "," + fsInc("dayIn", inToday);
+    if (outToday) tr += "," + fsInc("dayOut", outToday);
   }
   if (inN)  tr += "," + fsInc("totalIn", inN);
   if (outN) tr += "," + fsInc("totalOut", outN);
@@ -171,12 +188,22 @@ bool cloudSend(uint32_t inN, uint32_t outN) {
   String writes = "{\"update\":{\"name\":\"" + devPath + "\",\"fields\":{" + fields + "}}," +
                   "\"updateMask\":{\"fieldPaths\":[" + mask + "]},\"updateTransforms\":[" + tr + "]}";
 
-  // --- devices/{id}/days/{дата}: почасовая статистика ---
-  if (inN || outN) {
+  // --- devices/{id}/days/{рабочий день}: почасовая статистика, каждый час — в свою ячейку ---
+  std::vector<String> doneDays;
+  for (auto &e : eff) {
+    String d = businessDay((time_t)e.hourEpoch * 3600);
+    if (std::find(doneDays.begin(), doneDays.end(), d) != doneDays.end()) continue;
+    doneDays.push_back(d);
     String dtr;
-    if (inN)  dtr += fsInc(String("in.") + hourKey, inN);
-    if (outN) dtr += (dtr.length() ? "," : "") + fsInc(String("out.") + hourKey, outN);
-    writes += ",{\"update\":{\"name\":\"" + devPath + "/days/" + day + "\",\"fields\":{\"uid\":" + fsStr(fbUid) +
+    for (auto &x : eff) {
+      if (businessDay((time_t)x.hourEpoch * 3600) != d) continue;
+      char hk[4];
+      snprintf(hk, sizeof hk, "h%02d", localHour((time_t)x.hourEpoch * 3600));
+      if (x.in)  dtr += (dtr.length() ? "," : "") + fsInc(String("in.") + hk, x.in);
+      if (x.out) dtr += (dtr.length() ? "," : "") + fsInc(String("out.") + hk, x.out);
+    }
+    if (!dtr.length()) continue;
+    writes += ",{\"update\":{\"name\":\"" + devPath + "/days/" + d + "\",\"fields\":{\"uid\":" + fsStr(fbUid) +
               "}},\"updateMask\":{\"fieldPaths\":[\"uid\"]}," +
               "\"updateTransforms\":[" + dtr + "]}";
   }

@@ -19,6 +19,7 @@ export const cmpVersion = (a = '0.0.0', b = '0.0.0') => {
 export default function FirmwareSection({ theme, latest, devices, onPublish, onToggle }) {
   const [version, setVersion] = useState('');
   const [url, setUrl] = useState('');
+  const [sha, setSha] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const tile = theme.element_first_color;
@@ -37,12 +38,14 @@ export default function FirmwareSection({ theme, latest, devices, onPublish, onT
     if (!VERSION_RE.test(v)) return setError('Версия в формате 0.5.1');
     if (target && cmpVersion(v, target) <= 0) return setError(`Версия должна быть новее ${target}`);
     if (!/^https:\/\/\S+\.bin(\?\S*)?$/i.test(u)) return setError('Нужна https-ссылка на файл .bin из GitHub Releases');
+    const h = sha.trim().toLowerCase();
+    if (h && !/^[0-9a-f]{64}$/.test(h)) return setError('SHA-256 — 64 символа 0–9 и a–f (её печатает release.ps1)');
     if (!window.confirm(`Выпустить прошивку ${v} для всех плат? Они обновятся в течение часа.`)) return undefined;
     setError('');
     setBusy(true);
     try {
-      await onPublish({ version: v, url: u });
-      setVersion(''); setUrl('');
+      await onPublish({ version: v, url: u, sha256: h });
+      setVersion(''); setUrl(''); setSha('');
     } finally {
       setBusy(false);
     }
@@ -94,6 +97,7 @@ export default function FirmwareSection({ theme, latest, devices, onPublish, onT
           </div>
 
           <a className={styles.linkLine} href={latest.url} target="_blank" rel="noreferrer" style={{ color: muted }}>{latest.url}</a>
+          <span className={styles.linkLine} style={{ color: muted }}>{latest.sha256 ? `SHA-256: ${latest.sha256}` : 'SHA-256 не указана — файл проверяется только по целостности образа'}</span>
 
           <button
             type="button"
@@ -138,6 +142,10 @@ export default function FirmwareSection({ theme, latest, devices, onPublish, onT
             <input className={styles.devInput} style={field} placeholder="https://github.com/…/releases/download/…/people_counter-0.5.1.bin" value={url} onChange={(e) => setUrl(e.target.value)} autoCapitalize="off" spellCheck="false" />
           </label>
         </div>
+        <label>
+          <small style={{ color: muted }}>SHA-256 (из вывода release.ps1, по желанию — плата сверит файл перед установкой)</small>
+          <input className={styles.devInput} style={field} placeholder="547e922f92547935f7512384a8db189b…" value={sha} onChange={(e) => setSha(e.target.value)} autoCapitalize="off" spellCheck="false" />
+        </label>
         {error && <div className={styles.formError}>{error}</div>}
         <button type="button" className={styles.devButton} disabled={busy} onClick={publish} style={{ background: theme.first_color }}>
           <AdminIcon name="upload" size={18} />
