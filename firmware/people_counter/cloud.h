@@ -17,6 +17,7 @@
 #include <HTTPClient.h>
 #include "firebase_config.h"
 
+bool sensorPresent();                   // sensor.h: датчик присылает измерения
 String   cloudState = "wait";          // wait | ok | error | auth
 String   cloudMsg   = "Ожидание первой отправки";
 String   fbUid, fbRefresh, fbIdToken;
@@ -103,8 +104,14 @@ bool fbEnsureToken() {
       fbSave();
       return true;
     }
-    Serial.printf("[СЕРВЕР] Не удалось обновить вход (%d): %s\n", code, jsonStr(resp, "message").c_str());
-    if (code != 400) { setCloud("error", "Нет связи с Firebase (" + String(code) + ")"); return false; }
+    String m = jsonStr(resp, "message");
+    Serial.printf("[СЕРВЕР] Не удалось обновить вход (%d): %s\n", code, m.c_str());
+    // Новый вход = новый ключ (uid), и плату придётся заново подтверждать на сайте.
+    // Поэтому регистрируемся заново, только если Firebase прямо сказал, что старый ключ недействителен.
+    bool dead = code == 400 && (m.indexOf("TOKEN_EXPIRED") >= 0 || m.indexOf("INVALID_REFRESH_TOKEN") >= 0 ||
+                                m.indexOf("USER_NOT_FOUND") >= 0 || m.indexOf("USER_DISABLED") >= 0 ||
+                                m.indexOf("PROJECT_NUMBER_MISMATCH") >= 0);
+    if (!dead) { setCloud("error", "Нет связи с Firebase (" + String(code) + ")"); return false; }
     fbRefresh = "";    // токен недействителен — регистрируемся заново
   }
 
@@ -133,6 +140,22 @@ String fsInt(long v)          { return "{\"integerValue\":\"" + String(v) + "\"}
 String fsBool(bool v)         { return String("{\"booleanValue\":") + (v ? "true" : "false") + "}"; }
 String fsInc(const String &path, long v) {
   return "{\"fieldPath\":\"" + path + "\",\"increment\":" + fsInt(v) + "}";
+}
+
+// Заявка «у платы новый ключ»: deviceClaims/{id} { uid, fw, at }. Не чаще раза в 10 минут.
+uint32_t lastClaimAt = 0;
+bool lastClaimOk = false;
+bool cloudClaim(const String &base) {
+  if (lastClaimAt && millis() - lastClaimAt < 600000UL) return lastClaimOk;
+  lastClaimAt = millis();
+  String w = "{\"update\":{\"name\":\"" + base + "/deviceClaims/" + deviceId + "\",\"fields\":{\"uid\":" + fsStr(fbUid) +
+             ",\"fw\":" + fsStr(FW_VERSION) + "}},\"updateTransforms\":[{\"fieldPath\":\"at\",\"setToServerValue\":\"REQUEST_TIME\"}]}";
+  String resp;
+  int code = httpsPost("https://firestore.googleapis.com/v1/" + base + ":commit", "{\"writes\":[" + w + "]}",
+                       "application/json", resp, fbIdToken);
+  lastClaimOk = code == 200;
+  Serial.printf("[СЕРВЕР] Заявка на новый ключ %s: %d\n", fbUid.c_str(), code);
+  return lastClaimOk;
 }
 
 // Отправляет накопленные корзины (проходы по часам). true — сервер принял.
@@ -165,13 +188,13 @@ bool cloudSend(const Bucket *bk, uint8_t n) {
   // какую столовую ввёл мастер при установке (canteenRequested).
   String fields = "\"uid\":" + fsStr(fbUid) + ",\"canteenRequested\":" + fsStr(cfgCanteen) +
                   ",\"fw\":" + fsStr(FW_VERSION) + ",\"ip\":" + fsStr(WiFi.localIP().toString()) +
-                  ",\"rssi\":" + fsInt(WiFi.RSSI()) + ",\"sim\":" + fsBool(simMode) +
+                  ",\"rssi\":" + fsInt(WiFi.RSSI()) + ",\"sim\":" + fsBool(simMode) + ",\"sensorOk\":" + fsBool(sensorPresent()) +
                   ",\"day\":" + fsStr(day) + ",\"ota\":" + fsStr(otaMsg) +
                   ",\"rawA\":" + fsInt(rawA) + ",\"rawB\":" + fsInt(rawB) +
                   ",\"floorMm\":" + fsInt(sensorFloorMm) + ",\"thresholdMm\":" + fsInt(sensorThresholdMm) +
                   ",\"effInvert\":" + fsBool(cfgInvert) + ",\"effThreshold\":" + fsInt(cfgThreshold) +
                   ",\"effDebounce\":" + fsInt(cfgDebounce);
-  String mask = "\"uid\",\"canteenRequested\",\"fw\",\"ip\",\"rssi\",\"sim\",\"day\",\"ota\",\"rawA\",\"rawB\",\"floorMm\",\"thresholdMm\","
+  String mask = "\"uid\",\"canteenRequested\",\"fw\",\"ip\",\"rssi\",\"sim\",\"sensorOk\",\"day\",\"ota\",\"rawA\",\"rawB\",\"floorMm\",\"thresholdMm\","
                 "\"effInvert\",\"effThreshold\",\"effDebounce\"";
   String tr = "{\"fieldPath\":\"lastSeen\",\"setToServerValue\":\"REQUEST_TIME\"}";
   if (newDay) {
@@ -221,7 +244,13 @@ bool cloudSend(const Bucket *bk, uint8_t n) {
   String m = jsonStr(resp, "message");
   Serial.printf("[СЕРВЕР] Ошибка записи (%d): %s\n", code, m.c_str());
   if (code == 401)      { fbIdToken = ""; setCloud("error", "Вход устарел, обновляю"); }
-  else if (code == 403) setCloud("error", "Нет доступа: проверьте правила Firestore");
+  else if (code == 403) {
+    // Скорее всего у платы новый ключ (uid), а документ привязан к старому.
+    // Оставляем заявку — администратор подтвердит её на сайте в «Новых платах».
+    bool claimed = cloudClaim(base);
+    setCloud("error", claimed ? "Новый ключ платы ждёт подтверждения на сайте: Управление → Новые платы"
+                              : "Нет доступа: проверьте правила Firestore");
+  }
   else if (code == 404) setCloud("error", "Проект «" + cfgServer + "» не найден");
   else if (code < 0)    setCloud("error", "Нет связи с сервером");
   else                  setCloud("error", "Ошибка сервера " + String(code));

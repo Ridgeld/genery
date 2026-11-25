@@ -1,12 +1,14 @@
 import { useMemo, useState } from 'react';
 import styles from './CanteenOccupancy.module.scss';
 import AdminIcon from './AdminIcons.jsx';
+import { AnimatePresence, motion } from 'framer-motion';
+import { EASE } from './motion.jsx';
 
 const Avatar = ({ photo, name, theme }) => (
   photo
     ? <img className={styles.avatar} src={photo} alt="" />
     : (
-      <span className={styles.avatar} style={{ background: theme.element_second_color, color: '#fff' }}>
+      <span className={styles.avatar} style={{ background: theme.element_second_color, color: theme.text_first_color }}>
         {(name || '?').trim().charAt(0).toUpperCase()}
       </span>
     )
@@ -36,8 +38,17 @@ export default function AdminsSection({ theme, admins, myUid, canteens = [], use
   return (
     <>
       <div className={styles.devCard} style={{ background: tile }}>
+        <AnimatePresence initial={false}>
         {admins.map((a, i) => (
-          <div key={a.id} style={i ? { borderTop: '1px solid rgba(127,127,140,.16)' } : undefined}>
+          <motion.div
+            key={a.id}
+            layout
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: EASE }}
+            style={{ overflow: 'hidden', ...(i ? { borderTop: '1px solid rgba(127,127,140,.16)' } : {}) }}
+          >
           <div className={styles.personRow}>
             <Avatar photo={a.photo} name={a.name} theme={theme} />
             <div className={styles.devTitle}>
@@ -81,7 +92,7 @@ export default function AdminsSection({ theme, admins, myUid, canteens = [], use
                     key={c.id}
                     type="button"
                     className={styles.chip}
-                    style={{ background: on ? theme.first_color : theme.background_color, color: on ? '#fff' : text }}
+                    style={{ background: on ? theme.first_color : theme.background_color, color: on ? 'var(--on-hero, #fff)' : text }}
                     onClick={() => run(a.id, () => onSave(a.id, {
                       canteens: on ? (a.canteens || []).filter((x) => x !== c.id) : [...(a.canteens || []), c.id],
                     }))}
@@ -92,8 +103,9 @@ export default function AdminsSection({ theme, admins, myUid, canteens = [], use
               })}
             </div>
           )}
-          </div>
+          </motion.div>
         ))}
+        </AnimatePresence>
       </div>
 
       <div className={styles.sectionTitle} style={{ color: text }}>Добавить администратора</div>
@@ -117,10 +129,16 @@ export default function AdminsSection({ theme, admins, myUid, canteens = [], use
           <div className={styles.formHint} style={{ color: muted }}>Введите хотя бы 2 буквы имени</div>
         )}
 
-        {results.map((u) => {
+        {results.map((u, i) => {
           const already = adminIds.has(u.uid);
           return (
-            <div key={u.uid} className={styles.personRow}>
+            <motion.div
+              key={u.uid}
+              className={styles.personRow}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, delay: i * 0.03, ease: EASE }}
+            >
               <Avatar photo={u.photo} name={u.name} theme={theme} />
               <div className={styles.devTitle}>
                 <b style={{ color: text }}>{u.name}</b>
@@ -132,13 +150,13 @@ export default function AdminsSection({ theme, admins, myUid, canteens = [], use
                   className={styles.smallBtn}
                   disabled={busy === u.uid}
                   onClick={() => run(u.uid, () => onAdd(u))}
-                  style={{ background: theme.first_color }}
+                  style={{ background: theme.first_color, color: 'var(--on-hero, #fff)' }}
                 >
                   <AdminIcon name="shield" size={16} />
                   {busy === u.uid ? '…' : 'Сделать'}
                 </button>
               )}
-            </div>
+            </motion.div>
           );
         })}
       </div>

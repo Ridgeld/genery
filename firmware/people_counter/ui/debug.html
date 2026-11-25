@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0A0B10">
+<title>Отладка датчика</title>
+<style>
+@font-face{font-family:'Noto Sans';src:local('Noto Sans'),local('NotoSans-Regular'),url(/font.woff2) format('woff2');font-weight:100 900;font-display:swap}
+:root{--bg:#0A0B10;--tile:#16161C;--tile2:#1C1C23;--tile3:#24242D;--line:rgba(255,255,255,.06);--text:#fff;--text2:#C9C9D3;--muted:#7D7D8C;--accent:#0040F9;--accent-hi:#2B62FF;--lime:#C3F82B;--red:#FF4365;--r-tile:28px;--r-md:20px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg)}
+body{color:var(--text);font-family:'Noto Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;letter-spacing:-.06em;font-size:15px;line-height:1.35;-webkit-font-smoothing:antialiased}
+button{font:inherit;letter-spacing:inherit;color:inherit;border:0;background:none;cursor:pointer}
+svg{display:block;flex:none}
+.num{font-variant-numeric:tabular-nums}
+.app{max-width:480px;margin:0 auto;padding:max(18px,env(safe-area-inset-top)) 16px 40px;display:grid;gap:12px}
+
+.top{display:flex;align-items:center;gap:12px}
+.ibtn{width:46px;height:46px;border-radius:50%;background:var(--tile);display:grid;place-items:center;text-decoration:none;color:inherit}
+.top .t small{display:block;color:var(--muted);font-size:13px}
+.top .t b{display:block;font-size:17px;font-weight:600}
+
+/* Маячок связи */
+.beacon{display:flex;align-items:center;gap:16px;background:var(--tile);border-radius:var(--r-tile);padding:18px}
+.bc{position:relative;width:64px;height:64px;flex:none;display:grid;place-items:center}
+.bc .core{width:22px;height:22px;border-radius:50%;background:var(--muted);transition:background .2s;position:relative;z-index:2}
+.bc .ring{position:absolute;inset:0;border-radius:50%;border:2px solid var(--muted);opacity:0}
+.bc .halo{position:absolute;inset:14px;border-radius:50%;background:var(--muted);opacity:.14}
+.ok .core,.ok .halo{background:var(--lime)}.ok .ring{border-color:var(--lime)}
+.bad .core,.bad .halo{background:var(--red)}.bad .ring{border-color:var(--red)}
+.ok .ring{animation:ping 1.6s cubic-bezier(.2,.6,.3,1) infinite}
+.ok .ring.r2{animation-delay:.8s}
+.bad .core{animation:blink 1.2s ease-in-out infinite}
+@keyframes ping{0%{transform:scale(.35);opacity:.9}100%{transform:scale(1);opacity:0}}
+@keyframes blink{50%{opacity:.35}}
+.beacon .t{flex:1;min-width:0}
+.beacon .t b{display:block;font-size:24px;font-weight:600;line-height:1.1}
+.beacon .t span{display:block;color:var(--muted);font-size:13px;margin-top:4px}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.w{background:var(--tile);border-radius:var(--r-md);padding:14px 16px;min-width:0}
+.w small{display:block;color:var(--muted);font-size:13px}
+.w b{display:block;font-size:30px;font-weight:600;line-height:1.1;margin-top:4px;white-space:nowrap}
+.w b em{font-style:normal;font-size:14px;font-weight:500;color:var(--muted);margin-left:4px}
+.w.accent{background:var(--accent)}
+.w.accent small,.w.accent b em{color:rgba(255,255,255,.75)}
+.mini3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.mini3 .w b{font-size:22px}
+
+.card{background:var(--tile);border-radius:var(--r-md);padding:14px 16px}
+.card .hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.card .hd b{font-weight:600}
+.card .hd span{color:var(--muted);font-size:12.5px}
+canvas{width:100%;height:40px;display:block;border-radius:10px}
+
+.zones{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.zone .bar{position:relative;height:120px;margin-top:10px;border-radius:14px;background:var(--tile3);overflow:hidden}
+.zone .fill{position:absolute;left:0;right:0;bottom:0;background:var(--accent);border-radius:14px;transition:height .15s,background .15s}
+.zone .fill.hit{background:var(--lime)}
+.zone .thr{position:absolute;left:8px;right:8px;border-top:2px dashed rgba(255,255,255,.45)}
+.zone b{display:block;font-size:22px;font-weight:600;margin-top:2px}
+.note{color:var(--muted);font-size:12.5px;padding:0 4px}
+
+.grp{background:var(--tile);border-radius:var(--r-md);overflow:hidden}
+.row{display:flex;align-items:center;gap:12px;width:100%;padding:13px 14px;text-align:left}
+.row+.row{border-top:1px solid var(--line)}
+.row .ri{width:38px;height:38px;border-radius:12px;background:var(--tile2);display:grid;place-items:center;flex:none}
+.row .rt{flex:1;min-width:0}
+.row .rt b{display:block;font-weight:500}
+.row .rt small{display:block;color:var(--muted);font-size:12.5px}
+.sw{-webkit-appearance:none;appearance:none;flex:none;width:50px;height:30px;border-radius:999px;background:var(--tile3);position:relative;cursor:pointer;transition:background .2s}
+.sw::after{content:'';position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--muted);transition:transform .2s,background .2s}
+.sw:checked{background:var(--accent)}
+.sw:checked::after{transform:translateX(20px);background:#fff}
+
+.log{background:var(--tile);border-radius:var(--r-md);padding:12px 16px;font-size:13px;color:var(--text2);max-height:180px;overflow:auto}
+.log div{display:flex;gap:10px;padding:3px 0}
+.log div i{font-style:normal;color:var(--muted);font-variant-numeric:tabular-nums}
+.log .ok{color:var(--lime)}.log .bad{color:var(--red)}
+.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translate(-50%,30px);opacity:0;background:#F4F4F6;color:var(--bg);padding:12px 18px;border-radius:999px;font-weight:600;font-size:14px;transition:.25s;z-index:60;white-space:nowrap}
+.toast.on{transform:translate(-50%,0);opacity:1}
+</style></head><body>
+<div class="app">
+  <header class="top">
+    <a class="ibtn" href="/" aria-label="Назад"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></a>
+    <div class="t"><small>Настройка датчика</small><b>Меню отладки</b></div>
+  </header>
+
+  <div class="beacon" id="bc">
+    <div class="bc"><span class="halo"></span><span class="ring"></span><span class="ring r2"></span><span class="core"></span></div>
+    <div class="t"><b id="state">Подключаюсь…</b><span id="hint">жду ответа платы</span></div>
+  </div>
+
+  <div class="grid">
+    <div class="w accent"><small>Держится</small><b class="num" id="streak">0,0<em>с</em></b></div>
+    <div class="w"><small>Рекорд</small><b class="num" id="best">0,0<em>с</em></b></div>
+  </div>
+  <div class="mini3">
+    <div class="w"><small>Изм./с</small><b class="num" id="hz">0</b></div>
+    <div class="w"><small>Ошибки</small><b class="num" id="bad">—</b></div>
+    <div class="w"><small>Перезапуски</small><b class="num" id="rst">0</b></div>
+  </div>
+
+  <div class="card">
+    <div class="hd"><b>Связь за минуту</b><span>салатовый — есть, красный — нет</span></div>
+    <canvas id="tl" width="600" height="40"></canvas>
+  </div>
+
+  <div class="zones">
+    <div class="card zone"><small class="note" style="padding:0">Зона A</small><b class="num" id="a">—</b><div class="bar"><div class="fill" id="fa"></div><div class="thr" id="thrA"></div></div></div>
+    <div class="card zone"><small class="note" style="padding:0">Зона B</small><b class="num" id="b">—</b><div class="bar"><div class="fill" id="fb"></div><div class="thr" id="thrB"></div></div></div>
+  </div>
+  <p class="note" id="floor">Пол: —</p>
+
+  <div class="grp">
+    <label class="row" style="cursor:pointer"><span class="ri"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg></span><span class="rt"><b>Звук и вибрация</b><small>сигнал, когда контакт появился или пропал</small></span><input type="checkbox" class="sw" id="snd"></label>
+    <button class="row" id="cal"><span class="ri"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M8 16H3v5"/></svg></span><span class="rt"><b>Калибровать пол</b><small>под датчиком никого не должно быть</small></span></button>
+    <button class="row" id="clr"><span class="ri"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></span><span class="rt"><b>Сбросить рекорд</b></span></button>
+  </div>
+
+  <div class="log" id="log"><div><i>—</i>События появятся здесь</div></div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const $=id=>document.getElementById(id);
+let sound=false,ctx=null,prevOk=null,since=0,best=0,prevReads=null,prevT=0,rate=0,hist=[],fails=0,firstLog=true;
+const fmt=s=>s.toFixed(1).replace('.',',');
+const sec=s=>fmt(s)+'<em>с</em>';
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),2000)}
+function beep(f,d){if(!sound||!ctx)return;const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=f;o.connect(g);g.connect(ctx.destination);g.gain.setValueAtTime(.2,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+d);o.start();o.stop(ctx.currentTime+d)}
+function log(t,cls){const l=$('log');if(firstLog){l.innerHTML='';firstLog=false}const d=document.createElement('div');d.innerHTML='<i>'+new Date().toTimeString().slice(0,8)+'</i><span class="'+(cls||'')+'">'+t+'</span>';l.prepend(d);while(l.children.length>60)l.lastChild.remove()}
+$('snd').onchange=()=>{sound=$('snd').checked;if(sound&&!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();beep(880,.08)};
+$('clr').onclick=()=>{best=0;$('best').innerHTML=sec(0);toast('Рекорд сброшен')};
+$('cal').onclick=async()=>{toast('Калибрую…');try{const r=await fetch('/api/calibrate',{method:'POST'});const j=await r.json();toast(j.ok?'Пол откалиброван':'Датчик не на связи')}catch(e){toast('Нет ответа платы')}};
+function draw(){const c=$('tl'),x=c.getContext('2d'),W=c.width,H=c.height,now=Date.now();x.clearRect(0,0,W,H);x.fillStyle='#24242D';x.fillRect(0,0,W,H);
+ hist=hist.filter(h=>now-h.t<60000);for(const h of hist){if(h.v<0)continue;const px=W-(now-h.t)/60000*W;x.fillStyle=h.v?'#C3F82B':'#FF4365';x.fillRect(px,0,Math.max(2,W/280),H)}}
+function zone(id,fid,thrId,v,floor,thr,live){$(id).textContent=live&&v?v+' мм':'—';const max=Math.max(floor||2000,thr||0,v||0)*1.05;
+ $(fid).style.height=(live&&v?Math.min(100,v/max*100):0)+'%';$(fid).classList.toggle('hit',!!(live&&v&&thr&&v<thr));$(thrId).style.bottom=(thr?thr/max*100:0)+'%';$(thrId).style.display=thr?'':'none'}
+async function tick(){const t0=Date.now();let j=null;
+ const ac=new AbortController();const to=setTimeout(()=>ac.abort(),1500);
+ try{const r=await fetch('/api/live',{cache:'no-store',signal:ac.signal});j=await r.json();fails=0}catch(e){fails++}
+ clearTimeout(to);
+ const now=Date.now();let ok=null,txt,hint,cls='';
+ if(!j){txt=fails>2?'Плата не отвечает':'Жду ответа…';hint='задержка Wi‑Fi — состояние датчика неизвестно'}
+ else{
+  if(prevReads!==null&&now>prevT){const dr=j.reads-prevReads;rate=dr<0?0:rate*.5+(dr*1000/(now-prevT))*.5}
+  prevReads=j.reads;prevT=now;
+  ok=!!j.present;cls=ok?'ok':'bad';
+  txt=ok?'Контакт есть':(j.sim?'Датчик не найден':'Нет данных');
+  hint=ok?('измерение '+j.age+' мс назад'):(j.sim?'плата ищет датчик каждую секунду — прижмите плотнее':(j.age>=0?'последнее измерение '+fmt(j.age/1000)+' с назад, плата перезапускает датчик':'датчик найден, но ещё не присылал измерений'));
+  zone('a','fa','thrA',j.a,j.floor,j.thr,ok);zone('b','fb','thrB',j.b,j.floor,j.thr,ok);
+  $('floor').textContent='Пол '+(j.floor||'—')+' мм · порог '+(j.thr||'—')+' мм · срабатываний A '+j.rawA+', B '+j.rawB+(ok?(' · код измерения '+j.st+(j.st?' (ошибка)':' (норма)')):'');
+  $('hz').textContent=ok?Math.round(rate):0;$('rst').textContent=j.restarts;
+  $('bad').textContent=j.reads?Math.round(j.bad/j.reads*100)+'%':'—';
+ }
+ if(ok!==null&&ok!==prevOk){
+  if(ok){since=now;beep(1320,.12);navigator.vibrate&&navigator.vibrate(60);log('Контакт появился','ok')}
+  else if(prevOk===true){beep(220,.25);navigator.vibrate&&navigator.vibrate([80,60,80]);log('Контакт пропал, держался '+fmt((now-since)/1000)+' с','bad')}
+  prevOk=ok}
+ // Пока плата не отвечает по Wi‑Fi, счёт «держится» не сбрасываем — о датчике мы просто не знаем
+ const streak=(ok||(ok===null&&prevOk))?(now-since)/1000:0;if(streak>best)best=streak;
+ $('streak').innerHTML=sec(streak);$('best').innerHTML=sec(best);
+ $('bc').className='beacon '+cls;$('state').textContent=txt;$('hint').textContent=hint;
+ hist.push({t:now,v:ok===null?-1:ok?1:0});draw();
+ setTimeout(tick,Math.max(0,200-(Date.now()-t0)))}
+tick();
+</script></body></html>

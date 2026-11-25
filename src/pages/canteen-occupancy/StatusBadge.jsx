@@ -44,7 +44,7 @@ export const STATUS = {
   // Счётчики
   online:    { icon: 'ok', color: C.ok, text: 'На связи' },
   offline:   { icon: 'wifiOff', color: C.bad, text: 'Нет связи' },
-  sim:       { icon: 'dashed', color: C.muted, text: 'Имитация' },
+  sim:       { icon: 'dashed', color: C.bad, text: 'Нет датчика' },
   updating:  { icon: 'half', color: C.info, text: 'Обновляется' },
   outdated:  { icon: 'up', color: C.warn, text: 'Старая прошивка' },
   pending:   { icon: 'dashed', color: C.warn, text: 'Ждёт подключения' },

@@ -165,7 +165,7 @@ export default function BarsChart({ pal, capacity, typical, todayOcc, now, occup
         ) : (
           <span><i className={styles.swatchSq} style={{ background: pal.base }} />как обычно в этот день</span>
         )}
-        <span><i className={styles.swatchSq} style={{ background: pal.warn }} />людно</span>
+        <span><i className={styles.swatchSq} style={{ background: pal.busy }} />людно</span>
         <span><i className={styles.swatchSq} style={{ background: pal.bad }} />почти нет мест</span>
         {brs.length > 0 && <span><i className={styles.swatchLine} style={{ background: pal.warn }} />перемены</span>}
       </div>

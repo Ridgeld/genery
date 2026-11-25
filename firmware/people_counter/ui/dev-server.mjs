@@ -63,7 +63,7 @@ http.createServer(async (req, res) => {
     catch { res.writeHead(404); return res.end(); }
   }
   if (p === '/status') {
-    return json(res, { id: 'counter-9134f0', fw: '0.4.0', server: st.server, canteen: st.canteen, portal: st.portal, sim: true,
+    return json(res, { id: 'counter-9134f0', fw: '0.4.0', server: st.server, canteen: st.canteen, portal: st.portal, ap: 'Counter-9134F0', sim: true,
       cloud: st.wifi.connected ? { state: 'ok', msg: 'Данные приняты сервером', uid: 'mock' } : { state: 'error', msg: 'Нет Wi‑Fi', uid: '' },
       wifi: st.wifi, test: st.test, count: st.count, lastSend: st.lastSend, sends: st.sends,
       time: now(), uptime: Math.floor((Date.now() - started) / 1000), hist: st.hist });
@@ -102,5 +102,6 @@ http.createServer(async (req, res) => {
   }
   if (p === '/api/forget' && req.method === 'POST') { st.wifi = { connected: false, ssid: '', ip: '', rssi: 0 }; st.portal = true; st.test = { state: 'idle', msg: '' }; return json(res, { ok: true }); }
   if (p === '/api/reboot' && req.method === 'POST') return json(res, { ok: true });
+  if (p === '/api/portal' && req.method === 'POST') { st.portal = true; return json(res, { ok: true }); }
   res.writeHead(404); res.end('Not found');
 }).listen(PORT, () => console.log(`UI dev server: http://localhost:${PORT}`));

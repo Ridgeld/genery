@@ -33,8 +33,8 @@ const ts = (minAgo) => ({ toMillis: () => Date.now() - minAgo * 60000 });
 const MOCK_DEVICES = [
   { id: 'counter-a1b2c3', canteenRequested: 'main', day: dayKey(), dayIn: 0, dayOut: 0, lastSeen: ts(0.2), rssi: -58, fw: '0.5.1', sim: true },
   { id: 'counter-5e0f11', canteenRequested: 'stolovaya-3', day: dayKey(), lastSeen: ts(3), rssi: -66, fw: '0.5.1' },
-  { id: 'counter-9134f0', door: 'Главный вход', canteenId: 'main', approved: true, day: dayKey(), dayIn: 143, dayOut: 98, lastSeen: ts(1), rssi: -61, fw: '0.5.1', ota: 'Обновлено до 0.5.1' },
-  { id: 'counter-77e0d1', door: 'Вход со двора', canteenId: 'main', approved: true, day: dayKey(), dayIn: 40, dayOut: 37, lastSeen: ts(45), rssi: -82, fw: '0.5.0', ota: 'Загружаю версию 0.5.1' },
+  { id: 'counter-9134f0', door: 'Главный вход', canteenId: 'main', approved: true, day: dayKey(new Date(), 2), dayIn: 143, dayOut: 98, lastSeen: ts(1), rssi: -61, fw: '0.5.1', ota: 'Обновлено до 0.5.1' },
+  { id: 'counter-77e0d1', door: 'Вход со двора', canteenId: 'main', approved: true, day: dayKey(new Date(), 2), dayIn: 40, dayOut: 37, lastSeen: ts(45), rssi: -82, fw: '0.5.0', ota: 'Загружаю версию 0.5.1' },
   { id: 'counter-c0ffee', door: 'Вход', canteenId: 'korpus-2', approved: true, day: dayKey(), dayIn: 31, dayOut: 12, lastSeen: ts(2), rssi: -55, fw: '0.5.1' },
 ];
 const MOCK_CANTEENS = [
@@ -44,8 +44,11 @@ const MOCK_CANTEENS = [
 const MOCK_VOTES = [{ vote: 'full', at: ts(2) }, { vote: 'full', at: ts(4) }, { vote: 'full', at: ts(6) }, { vote: 'ok', at: ts(9) }];
 
 export default function CanteenPreview() {
-  const { theme, setElementColors } = useContext(ElementContext);
+  const { theme, setElementColors, setThemeById } = useContext(ElementContext);
   const [params, setParams] = useSearchParams();
+  // &theme=simple_light — посмотреть превью в другой теме (для скриншотов)
+  const themeParam = params.get('theme');
+  useEffect(() => { if (themeParam && setThemeById) setThemeById(themeParam); }, [themeParam, setThemeById]);
   const days = Number(params.get('days') ?? 21);
   const occ = Number(params.get('occ') ?? 72);
   const [clock] = useState(Date.now());
@@ -82,6 +85,9 @@ export default function CanteenPreview() {
         onBack={() => {}}
         devices={devices}
         canteens={canteens}
+        claims={params.get('claim') ? [{ id: devices[0]?.id, uid: 'newUid123', fw: '0.6.4', at: { toMillis: () => Date.now() - 120000 } }] : []}
+        onAcceptClaim={async (c) => setDevices((list) => list.map((d) => (d.id === c.id ? { ...d, uid: c.uid } : d)))}
+        onRejectClaim={async () => {}}
         admins={[{ id: 'me', name: 'Даниил' }, { id: 'u2', name: 'Айгерим', role: 'manager', canteens: ['main'] }]}
         onSaveAdmin={async () => {}}
         firmware={{ version: '0.5.1', url: 'https://github.com/example/genery-firmware/releases/download/v0.5.1/people_counter-0.5.1.bin', enabled: true }}

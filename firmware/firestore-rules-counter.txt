@@ -36,7 +36,7 @@ service cloud.firestore {
     // Запись — всё приложение, как раньше, КРОМЕ служебных коллекций счётчиков
     match /{collection}/{rest=**} {
       allow write: if isUser()
-        && !(collection in ['admins', 'devices', 'canteens', 'firmware']);
+        && !(collection in ['admins', 'devices', 'canteens', 'firmware', 'deviceClaims']);
     }
 
     // Сотрудники: меняет только суперадмин (на сайте). Первого суперадмина создают в консоли.
@@ -66,6 +66,15 @@ service cloud.firestore {
           && request.resource.data.vote in ['ok', 'full', 'free'];
         allow delete: if managesCanteen(canteenId);
       }
+    }
+
+    // Заявка платы «у меня новый ключ входа» (uid сменился, свой документ ей больше не доступен).
+    // Плата пишет только свой uid; суперадмин подтверждает на сайте («Новые платы») и удаляет заявку.
+    match /deviceClaims/{deviceId} {
+      allow create, update: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['uid', 'fw', 'at']);
+      allow delete: if isAdmin();
     }
 
     // Счётчик людей (одна дверь)

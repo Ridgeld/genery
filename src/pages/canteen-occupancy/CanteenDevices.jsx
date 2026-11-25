@@ -30,6 +30,7 @@ export default function CanteenDevices() {
   const [canteensLoaded, setCanteensLoaded] = useState(false);
   const [admins, setAdmins] = useState([]);
   const [firmware, setFirmware] = useState(null);
+  const [claims, setClaims] = useState([]);
   const [users, setUsers] = useState(null);
   const [usersLoading, setUsersLoading] = useState(false);
   const [, setClock] = useState(0);
@@ -50,6 +51,7 @@ export default function CanteenDevices() {
         setAdmins(snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort(byName));
       }, fail('администраторы')),
       onSnapshot(doc(db, 'firmware', 'latest'), (snap) => setFirmware(snap.exists() ? snap.data() : null), fail('прошивка')),
+      onSnapshot(collection(db, 'deviceClaims'), (snap) => setClaims(snap.docs.map((d) => ({ id: d.id, ...d.data() }))), fail('заявки плат')),
     ];
     return () => offs.forEach((off) => off());
   }, [isAdmin]);
@@ -163,6 +165,15 @@ export default function CanteenDevices() {
       users={users}
       usersLoading={usersLoading}
       onLoadUsers={loadUsers}
+      claims={claims}
+      onAcceptClaim={(c) => guard('подтвердить новый ключ платы', async () => {
+        // Документ платы переходит на новый ключ, заявка удаляется — одной операцией
+        const batch = writeBatch(db);
+        if (devices.some((d) => d.id === c.id)) batch.update(doc(db, 'devices', c.id), { uid: c.uid });
+        batch.delete(doc(db, 'deviceClaims', c.id));
+        await batch.commit();
+      })}
+      onRejectClaim={(c) => guard('отклонить заявку', () => deleteDoc(doc(db, 'deviceClaims', c.id)))}
       onSaveDevice={(id, data) => guard('сохранить счётчик', () => updateDoc(doc(db, 'devices', id), data))}
       onSaveCanteen={(id, data) => guard('сохранить столовую', async () => {
         const batch = writeBatch(db);

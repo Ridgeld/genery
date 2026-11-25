@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import styles from './CanteenOccupancy.module.scss';
 import AdminIcon from './AdminIcons.jsx';
+import a from './AdminDashboard.module.scss';
+import { AnimatePresence, motion } from 'framer-motion';
+import { EASE } from './motion.jsx';
 
 // Латиница для ID столовой: «Политех №2» -> «politeh-2»
 const TR = {
@@ -52,7 +55,7 @@ export default function CanteensSection({ theme, canteens, devices, onSave, onCr
         return (
           <div key={c.id} className={styles.devCard} style={{ background: tile }}>
             <div className={styles.devHead}>
-              <span className={styles.devIcon} style={{ background: theme.first_color, color: '#fff' }}>
+              <span className={styles.devIcon} style={{ background: theme.first_color, color: 'var(--on-hero, #fff)' }}>
                 <AdminIcon name="building" />
               </span>
               <div className={styles.devTitle}>
@@ -109,7 +112,33 @@ export default function CanteensSection({ theme, canteens, devices, onSave, onCr
       })}
 
       {!onlyForm && <div className={styles.sectionTitle} style={{ color: text }}>Новая столовая</div>}
-      <div className={styles.devCard} style={{ background: tile }}>
+      {onlyForm && (
+        // Живое превью: так столовая появится в меню и на дашборде
+        <motion.div className={`${a.tile} ${a.tileHero} ${a.newPreview}`} layout transition={{ duration: 0.3, ease: EASE }}>
+          <small className={a.tileLabel}>Превью</small>
+          <AnimatePresence mode="popLayout" initial={false}>
+            <motion.b
+              key={name.trim() || '—'}
+              className={a.newPreviewName}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2, ease: EASE }}
+            >
+              {name.trim() || 'Новая столовая'}
+            </motion.b>
+          </AnimatePresence>
+          <span className={a.heroLevel}>0 из {Number(capacity) || '—'} мест · свободно</span>
+          <span className={a.newPreviewLink}>/canteen?id={finalId || '…'}</span>
+        </motion.div>
+      )}
+      <motion.div
+        className={styles.devCard}
+        style={{ background: tile }}
+        key={error ? `e-${error}` : 'form'}
+        animate={error ? { x: [0, -8, 8, -5, 5, 0] } : { x: 0 }}
+        transition={{ duration: 0.35 }}
+      >
         <div className={styles.formRow}>
           <label>
             <small style={{ color: muted }}>Название</small>
@@ -133,11 +162,11 @@ export default function CanteensSection({ theme, canteens, devices, onSave, onCr
           />
         </label>
         {error && <div className={styles.formError}>{error}</div>}
-        <button type="button" className={styles.devButton} disabled={busy} onClick={create} style={{ background: theme.first_color }}>
+        <button type="button" className={styles.devButton} disabled={busy} onClick={create} style={{ background: theme.first_color, color: 'var(--on-hero, #fff)' }}>
           <AdminIcon name="plus" size={18} />
           {busy ? 'Создаю…' : 'Создать столовую'}
         </button>
-      </div>
+      </motion.div>
     </>
   );
 }

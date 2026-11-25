@@ -21,7 +21,12 @@
     padding: 20px 16px;
     border-right: 1px solid var(--line);
     overflow-y: auto;
-    background: var(--bg);
+    position: relative;
+    z-index: 2;
+    // «Стекло»: сквозь меню просвечивает свечение фона
+    background: color-mix(in srgb, var(--bg) 78%, transparent);
+    backdrop-filter: blur(20px) saturate(1.3);
+    -webkit-backdrop-filter: blur(20px) saturate(1.3);
 }
 
 .brand {
@@ -79,19 +84,231 @@
     svg { flex: none; opacity: 0.85; }
 }
 
-.navItemActive {
+.navItemActive { font-weight: 600; }
+
+.navItem > *:not(.navActiveBg) { position: relative; z-index: 1; }
+
+// Подложка активного пункта «переезжает» между пунктами (layoutId)
+.navActiveBg {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
     background: var(--panel);
+    border: 1px solid var(--line);
+    box-shadow: 0 6px 20px -12px rgba(0, 0, 0, 0.45);
 
     &::before {
         content: '';
         position: absolute;
-        left: -16px;
+        left: -17px;
         top: 10px;
         bottom: 10px;
         width: 3px;
         border-radius: 0 3px 3px 0;
         background: var(--accent);
     }
+}
+
+.navDot { width: 18px; display: grid; place-items: center; flex: none; }
+
+// Кнопка командного меню в боковой панели
+.cmdTrigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    height: 40px;
+    padding: 0 10px 0 12px;
+    margin-bottom: 6px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: color-mix(in srgb, var(--panel) 70%, transparent);
+    color: var(--muted);
+    font: inherit;
+    font-size: 13.5px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+
+    span { flex: 1; text-align: left; }
+    &:hover { border-color: var(--accent); color: var(--text); }
+    &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+}
+
+kbd {
+    font: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: var(--panel2);
+    color: var(--muted);
+    letter-spacing: 0;
+}
+
+// Мягкое свечение акцентом сверху и «зерно» поверх всего — убирают цифровую стерильность
+.glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(900px 420px at 78% -12%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%),
+        radial-gradient(700px 360px at 10% 110%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 70%);
+    z-index: 0;
+}
+
+.grain {
+    position: absolute;
+    inset: -50%;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+}
+
+// Маячок «на связи» (motion.jsx → Pulse)
+:global(.pulse-dot) {
+    position: relative;
+    display: inline-block;
+    border-radius: 50%;
+    background: var(--pc);
+    flex: none;
+
+    &[data-on='1']::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: var(--pc);
+        animation: pulseRing 1.8s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+    }
+}
+
+@keyframes pulseRing {
+    0% { transform: scale(1); opacity: 0.55; }
+    100% { transform: scale(3.2); opacity: 0; }
+}
+
+:global(.num-anim) { font-variant-numeric: tabular-nums; }
+
+// ---------- Командное меню ----------
+.cmdScrim {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 12vh 16px 16px;
+    background: rgba(5, 5, 8, 0.45);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+.cmd {
+    width: min(640px, 100%);
+    max-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    background: color-mix(in srgb, var(--panel) 88%, transparent);
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    border: 1px solid var(--line);
+    box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+}
+
+.cmdInput {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 16px;
+    height: 58px;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+
+    input {
+        flex: 1;
+        min-width: 0;
+        height: 100%;
+        border: none;
+        outline: none;
+        background: transparent;
+        color: var(--text);
+        font: inherit;
+        font-size: 16px;
+    }
+}
+
+.cmdList {
+    overflow-y: auto;
+    padding: 6px 8px 8px;
+}
+
+.cmdGroup {
+    padding: 10px 10px 4px;
+    font-size: 11.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+}
+
+.cmdItem {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 44px;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    font-size: 14.5px;
+    text-align: left;
+    cursor: pointer;
+
+    > *:not(.cmdHL) { position: relative; z-index: 1; }
+}
+
+.cmdHL {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: var(--panel2);
+}
+
+.cmdIcon {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    display: grid;
+    place-items: center;
+    background: var(--bg);
+    flex: none;
+}
+
+.cmdItemOn .cmdIcon { background: var(--accent-bg); color: var(--on-hero, #fff); }
+
+.cmdLabel { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cmdHint { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+.cmdEmpty { padding: 28px; text-align: center; color: var(--muted); }
+
+.cmdFoot {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 10px 16px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--muted);
+
+    span { display: inline-flex; gap: 4px; align-items: center; }
 }
 
 .navText {
@@ -117,8 +334,8 @@
     height: 22px;
     padding: 0 7px;
     border-radius: 11px;
-    background: var(--c-warn, #FFC24B);
-    color: var(--c-glyph, #0A0B10);
+    background: var(--c-accent, #0040F9);
+    color: var(--c-on-accent, #fff);
     font-size: 12px;
     font-weight: 700;
     display: grid;
@@ -181,6 +398,8 @@
     min-width: 0;
     overflow-y: auto;
     padding: 28px 32px 48px;
+    position: relative;
+    z-index: 1;
 }
 
 .mainInner {
@@ -189,6 +408,30 @@
     display: flex;
     flex-direction: column;
     gap: 18px;
+}
+
+// Появление по очереди: блоки раздела, вкладки и строки списков всплывают друг за другом.
+// Срабатывает при каждом открытии раздела или вкладки (элементы монтируются заново).
+@keyframes rise {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .mainInner > *,
+    .devList > *,
+    .alerts > *,
+    .personList > * {
+        // backwards, а не both: после окончания анимация не должна перебивать transform от framer-motion
+        animation: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    }
+
+    @for $i from 1 through 10 {
+        .mainInner > *:nth-child(#{$i}),
+        .devList > *:nth-child(#{$i}),
+        .alerts > *:nth-child(#{$i}),
+        .personList > *:nth-child(#{$i}) { animation-delay: #{($i - 1) * 45}ms; }
+    }
 }
 
 .pageHead {
@@ -420,7 +663,7 @@
         border-bottom: 1px dashed var(--muted) !important;
         border-radius: 6px 6px 0 0 !important;
 
-        &::placeholder { color: var(--c-warn, #FFC24B); font-weight: 600; }
+        &::placeholder { color: var(--c-accent, #0040F9); font-weight: 600; }
     }
 }
 
@@ -447,7 +690,7 @@
     display: grid;
     place-items: center;
     flex: none;
-    color: #fff;
+    color: var(--text);
 }
 
 .pill {
@@ -458,7 +701,8 @@
     border-radius: 999px;
     font-size: 12.5px;
     font-weight: 600;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(127, 127, 140, 0.12);
+    background: color-mix(in srgb, currentColor 12%, transparent);
 
     i { width: 7px; height: 7px; border-radius: 50%; }
 }
@@ -503,7 +747,28 @@
     place-items: center;
     cursor: pointer;
     flex: none;
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s, transform 0.15s;
+
+    &:active { transform: scale(0.94); }
+    &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 }
+
+// Подсветка при наведении — только для мыши, на телефоне она «залипает» после касания
+@media (hover: hover) and (pointer: fine) {
+    .iconBtn:hover { border-color: var(--accent); }
+    .statusTile:hover { transform: translateY(-2px); }
+}
+
+// Кто отключил анимации в системе — без движения
+@media (prefers-reduced-motion: reduce) {
+    .root *, .root *::before, .root *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+.nowrap { white-space: nowrap; }
 
 .muted { color: var(--muted); }
 
@@ -607,10 +872,258 @@
     white-space: nowrap;
 }
 
-.tabOn {
-    background: var(--panel2);
+.tab { position: relative; transition: color 0.15s; }
+.tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.tabLabel { position: relative; z-index: 1; }
+.tabOn { color: var(--text); }
+
+// ---------- Новая столовая: живое превью ----------
+.newPreview {
+    min-height: 180px;
+    margin-bottom: 14px;
+    justify-content: flex-end;
+}
+
+.newPreviewName {
+    display: block;
+    font-size: clamp(32px, 4.4vw, 52px);
+    font-weight: 750;
+    line-height: 1;
+    letter-spacing: -0.05em;
+    margin: auto 0 8px;
+    word-break: break-word;
+}
+
+.newPreviewLink {
+    font-size: 12.5px;
+    opacity: 0.7;
+    font-family: ui-monospace, Consolas, monospace;
+    letter-spacing: 0;
+    margin-top: 4px;
+}
+
+// ---------- Прошивка: витрина версии ----------
+.fwHero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.fwHeroText {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+
+    small { font-size: 13px; color: var(--muted); }
+}
+
+.fwVersion {
+    font-size: clamp(44px, 6vw, 72px);
+    font-weight: 750;
+    line-height: 0.95;
+    letter-spacing: -0.06em;
     color: var(--text);
 }
+
+.fwMeta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); }
+
+.segBar {
+    display: flex;
+    gap: 3px;
+    height: 10px;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    background: var(--panel2);
+
+    i { display: block; height: 100%; border-radius: 999px; transform-origin: left; flex-basis: 0; }
+}
+
+// Подложка активной вкладки «переезжает» (layoutId)
+.tabBg {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: var(--panel2);
+    box-shadow: 0 4px 14px -8px rgba(0, 0, 0, 0.5);
+}
+
+// ---------- Обзор: бенто-сетка ----------
+.bento {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: auto;
+    grid-auto-flow: row dense;   // плитки заполняют пустоты сетки
+    gap: 14px;
+}
+
+.tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+    min-height: 160px;
+    padding: 18px 20px;
+    border-radius: 24px;
+    background: color-mix(in srgb, var(--panel) 92%, transparent);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.2s, box-shadow 0.25s;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .tile:hover {
+        transform: translateY(-3px);
+        border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+        box-shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.55);
+    }
+}
+
+.tileLabel { font-size: 13px; color: var(--muted); font-weight: 500; }
+.tileSub { font-size: 12.5px; color: var(--muted); margin-top: auto; }
+
+.tileValue {
+    font-size: clamp(38px, 4vw, 52px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.045em;
+    margin: 6px 0 4px;
+}
+
+.tileHeadRow { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.tileBadge { font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+
+// Главная плитка — 2×2, акцентная
+.tileHero {
+    grid-column: span 2;
+    grid-row: span 2;
+    background: var(--accent-bg);
+    color: var(--on-hero, #fff);
+    border-color: transparent;
+    padding: 22px 24px 18px;
+
+    .tileLabel, .heroLevel, .heroAxis, .heroHint { color: inherit; opacity: 0.78; }
+
+    // Мягкий блик в углу
+    &::after {
+        content: '';
+        position: absolute;
+        width: 380px;
+        height: 380px;
+        right: -120px;
+        top: -160px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.22), transparent 65%);
+        pointer-events: none;
+    }
+}
+
+.heroTop { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+
+.heroValue {
+    font-size: clamp(64px, 7.5vw, 104px);
+    font-weight: 750;
+    line-height: 0.95;
+    letter-spacing: -0.06em;
+    margin: 10px 0 10px;
+
+    em { font-style: normal; font-size: 0.28em; font-weight: 600; opacity: 0.7; margin-left: 8px; letter-spacing: -0.02em; }
+}
+
+.heroLevel { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+
+.ringText {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+
+    b { font-size: 28px; font-weight: 700; letter-spacing: -0.04em; }
+    small { font-size: 11.5px; opacity: 0.75; margin-top: 4px; }
+}
+
+.heroChart { margin-top: auto; padding-top: 14px; }
+.heroAxis { display: flex; justify-content: space-between; font-size: 11.5px; margin-top: 6px; }
+.heroHint { font-size: 13px; }
+
+// Полоска «свободно»
+.meter {
+    height: 8px;
+    border-radius: 999px;
+    background: var(--panel2);
+    overflow: hidden;
+    margin: 4px 0 6px;
+
+    i { display: block; height: 100%; border-radius: inherit; background: var(--c-ok); transform-origin: left; }
+}
+
+.inOut {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 8px 0 6px;
+
+    div { display: flex; flex-direction: column; gap: 2px; }
+    b { font-size: 34px; font-weight: 700; letter-spacing: -0.04em; line-height: 1.05; }
+    small { font-size: 12px; color: var(--muted); }
+}
+
+.inOutIcon {
+    width: 28px;
+    height: 28px;
+    border-radius: 9px;
+    display: grid;
+    place-items: center;
+    background: var(--panel2);
+    margin-bottom: 6px;
+}
+
+.tileFeed { grid-column: span 2; }
+.tileDoors { grid-column: 1 / -1; min-height: 0; }
+
+.doorList { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; margin-top: 6px; }
+
+.doorRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    background: var(--bg);
+    font-size: 14px;
+}
+
+.doorName { flex: 1; min-width: 0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.doorMeta { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.live { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+
+.feed { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; min-height: 60px; }
+
+.feedRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13.5px;
+
+    time { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+}
+
+.feedIcon {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    background: var(--panel2);
+    flex: none;
+}
+
+.feedText { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 // Колокольчик и уведомления
 .bellWrap { position: relative; }
@@ -691,15 +1204,27 @@
     font: inherit;
     text-align: left;
     cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
+    transition: border-color 0.15s, background 0.15s, transform 0.15s;
 
     b { font-size: 14.5px; margin-top: auto; }
     small { font-size: 12px; color: var(--muted); line-height: 1.3; }
 
     &:hover { border-color: rgba(127, 127, 140, 0.4); }
+    &:active { transform: scale(0.98); }
+    &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 }
 
-.statusTileOn { border-width: 2px; }
+.statusTile { position: relative; }
+.statusTile > *:not(.statusHL) { position: relative; z-index: 1; }
+.statusTileOn { border-color: transparent; }
+
+.statusHL {
+    position: absolute;
+    inset: -1.5px;
+    border-radius: 18px;
+    border: 2px solid;
+    pointer-events: none;
+}
 
 .hallGrid {
     display: grid;
@@ -951,7 +1476,7 @@
 
 .cfgGrid {
     display: grid;
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
     gap: 12px;
     align-items: end;
 }
@@ -962,7 +1487,36 @@
     gap: 10px;
     cursor: pointer;
 
-    input { width: 20px; height: 20px; accent-color: var(--accent); flex: none; }
+    // Переключатель в цветах темы вместо системного чекбокса
+    input {
+        -webkit-appearance: none;
+        appearance: none;
+        flex: none;
+        width: 46px;
+        height: 28px;
+        margin: 0;
+        border-radius: 999px;
+        background: var(--panel2);
+        position: relative;
+        cursor: pointer;
+        transition: background 0.2s;
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--muted);
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        &:checked { background: var(--accent-bg); }
+        &:checked::after { transform: translateX(18px); background: var(--on-hero, #fff); }
+        &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    }
     b { display: block; font-size: 14px; }
     small { display: block; font-size: 12.5px; color: var(--muted); }
 }
@@ -1026,6 +1580,13 @@
     .main { padding: 18px 16px 40px; }
     .pageHead h1 { font-size: 24px; }
     .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .tileHero { grid-row: auto; padding: 18px; }
+    .heroTop { flex-direction: row; }
+    .heroValue { font-size: 64px; }
+    .tile { padding: 16px; border-radius: 20px; min-height: 0; }
+    .tileValue { font-size: 38px; }
+    .inOut b { font-size: 28px; }
     .stat { min-height: 112px; padding: 14px 16px; }
     .stat b { font-size: 28px; }
     .statIcon { width: 36px; height: 36px; right: 12px; top: 12px; }
@@ -1040,13 +1601,22 @@
     .inline input { width: 120px; }
     .statusGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .statusTile { min-height: 96px; }
+    // Пятая плитка («Закрыто») — на всю ширину, а не одна в ряду
+    .statusTile:last-child:nth-child(odd) { grid-column: 1 / -1; min-height: 0; flex-direction: row; align-items: center; }
+    .statusTile:last-child:nth-child(odd) b { margin-top: 0; }
     .hallGrid { grid-template-columns: minmax(0, 1fr); }
+    .hallBox .inline input { flex: 1 1 0; width: auto !important; min-width: 0; }
+    .hallBox .inline > button:not(.btnPrimary) { flex: none; }
+    .hallBox .inline > .btnPrimary { flex-basis: 100%; justify-content: center; }
+    .cardHead { flex-wrap: wrap; row-gap: 4px; }
+    .cardHead > small { flex-basis: 100%; text-align: left; }
     .lesson { flex-wrap: wrap; gap: 8px 10px; }
     .lessonTitle { flex: 1; }
     .lessonTime { order: 5; width: 100%; }
     .lessonDur { flex: none; }
     .breakChip { margin-left: 12px; }
-    .tabs { align-self: stretch; }
-    .tab { flex: 1; padding: 0 10px; }
+    // Все четыре вкладки помещаются на экране телефона
+    .tabs { align-self: stretch; display: flex; gap: 2px; overflow: visible; }
+    .tab { flex: 1 1 auto; padding: 0 6px; font-size: 13px; min-width: 0; }
     .fields2 { grid-template-columns: minmax(0, 1fr) !important; }
 }

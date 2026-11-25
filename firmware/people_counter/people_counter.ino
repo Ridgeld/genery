@@ -30,8 +30,9 @@
 #include "esp_mac.h"
 #include "esp_task_wdt.h"
 #include "ui_bundle.h"   // интерфейс: ui/index.html, собирается командой node ui/build.mjs
+#include "debug_page.h"  // /debug — отладка датчика в реальном времени
 
-#define FW_VERSION      "0.6.1"
+#define FW_VERSION      "0.6.7"
 #define PIN_LED         2      // встроенный светодиод ESP32 DevKit
 #define PIN_BUTTON      0      // кнопка BOOT
 #define DEFAULT_SERVER  "genery-c83e3"
@@ -40,12 +41,17 @@
 
 #define WDT_TIMEOUT_MS  60000       // зависла программа дольше минуты — перезагрузка
 
-const uint32_t FIRST_CONNECT_TIMEOUT = 60UL * 1000;      // после включения: нет сети 60 с → портал
-const uint32_t LOST_CONNECT_TIMEOUT  = 5UL * 60 * 1000;  // во время работы: нет сети 5 мин → портал
-const uint32_t RECONNECT_PERIOD      = 30UL * 1000;
+const uint32_t FIRST_CONNECT_TIMEOUT = 60UL * 1000;      // после включения: нет связи 60 с → портал
+const uint32_t LOST_CONNECT_TIMEOUT  = 5UL * 60 * 1000;  // во время работы: сеть видна, но не пускает 5 мин → портал
+const uint32_t NO_AP_TIMEOUT_FIRST   = 20UL * 1000;      // сохранённой сети вообще нет рядом: после включения — 20 с
+const uint32_t NO_AP_TIMEOUT_LOST    = 60UL * 1000;      //                                    во время работы — 1 мин
+const uint32_t RECONNECT_PERIOD      = 15UL * 1000;
 const uint32_t PORTAL_RETRY_PERIOD   = 3UL * 60 * 1000;  // в портале иногда пробуем старую сеть
 const uint32_t PORTAL_RETRY_DURATION = 20UL * 1000;
-const uint32_t PORTAL_CLOSE_DELAY    = 60UL * 1000;      // после успеха портал живёт ещё минуту
+const uint32_t PORTAL_IDLE_CLOSE     = 2UL * 60 * 1000;  // плата в сети: точка доступа гаснет, когда к ней 2 мин никто не подключён
+const uint32_t PORTAL_KEEP_AFTER_OK  = 3UL * 60 * 1000;  // после настройки точка живёт минимум 3 мин
+const uint32_t PORTAL_MANUAL_TIME    = 10UL * 60 * 1000; // кнопка BOOT: точка доступа на 10 мин
+const uint32_t BUTTON_HOLD_PORTAL    = 1000;             // кнопка BOOT: держать 1 с → открыть точку доступа
 const uint32_t CONNECT_TEST_TIMEOUT  = 20UL * 1000;
 const uint32_t SEND_MIN_INTERVAL     = 10UL * 1000;      // не чаще раза в 10 с
 const uint32_t HEARTBEAT_INTERVAL    = 5UL * 60 * 1000;  // «я жив» раз в 5 мин
@@ -63,6 +69,9 @@ String cfgSsid, cfgPass, cfgServer, cfgCanteen;
 bool     portalActive = false;
 bool     portalRetrying = false;
 uint32_t portalSuccessAt = 0, lastPortalRetry = 0;
+uint32_t portalKeepUntil = 0;        // раньше этого момента точку доступа не выключаем
+uint32_t portalEmptySince = 0;       // с какого момента к точке доступа никто не подключён
+uint32_t noApSince = 0;              // с какого момента сохранённой сети нет в эфире
 uint32_t lastConnectedAt = 0, lastReconnect = 0;
 bool     everConnected = false, netServicesStarted = false;
 
@@ -88,6 +97,12 @@ uint32_t rawA = 0, rawB = 0;     // «сырые» срабатывания зо
 uint16_t sensorFloorMm = 0;      // расстояние до пола по калибровке
 uint16_t sensorThresholdMm = 0;  // действующий порог: ближе — в зоне кто-то есть
 uint16_t sensorDistA = 0, sensorDistB = 0;   // последние измерения зон (для панели)
+// Диагностика связи с датчиком
+uint32_t sensorReads = 0;        // всего измерений с момента включения
+uint32_t sensorBad = 0;          // из них с ошибкой (нет цели / слабый сигнал / сбой)
+uint32_t sensorRestarts = 0;     // сколько раз датчик «замолкал» и перезапускался
+uint8_t  sensorLastSt = 0;       // код последнего измерения (0 = норма)
+float    sensorHz = 0;           // измерений в секунду (обновляется раз в 2 с)
 
 // --- Счётчик и очередь отправки ---
 // «Внутри» считается так же, как на сайте: входы минус выходы за рабочий день (не меньше 0).
@@ -404,15 +419,26 @@ bool sendBatch(bool heartbeat) {
   return true;
 }
 
+bool     sentSensorOk = false;     // какое состояние датчика последним ушло на сервер
+uint32_t sensorFlipAt = 0;         // когда состояние датчика стало отличаться от отправленного
+
 void senderLoop() {
   if (WiFi.status() != WL_CONNECTED) return;  // без сети события копятся в очереди
   uint32_t now = millis();
   if (cloudBackoff && (int32_t)(now - cloudRetryAt) < 0) return;  // ждём паузу после ошибки
   bool hasData = pendingIn || pendingOut;
 
-  if (!everSent)                                              sendBatch(!hasData);  // сразу после подключения
-  else if (hasData && now - lastSendAt >= SEND_MIN_INTERVAL)  sendBatch(false);
-  else if (!hasData && now - lastSendAt >= HEARTBEAT_INTERVAL) sendBatch(true);
+  // Датчик подключили или он пропал — сообщаем сайту сразу (если состояние держится 5 с)
+  bool pres = sensorPresent();
+  if (pres == sentSensorOk) sensorFlipAt = 0;
+  else if (!sensorFlipAt) sensorFlipAt = now;
+  bool sensorChanged = everSent && sensorFlipAt && now - sensorFlipAt > 5000 && now - lastSendAt > 10000;
+
+  if (!everSent || sensorChanged) {
+    if (sendBatch(!hasData)) { sentSensorOk = pres; sensorFlipAt = 0; }  // сразу после подключения / смены состояния датчика
+  }
+  else if (hasData && now - lastSendAt >= SEND_MIN_INTERVAL)  { if (sendBatch(false)) sentSensorOk = pres; }
+  else if (!hasData && now - lastSendAt >= HEARTBEAT_INTERVAL) { if (sendBatch(true)) sentSensorOk = pres; }
 }
 
 // ======================================================================
@@ -426,11 +452,15 @@ void onWiFiEvent(WiFiEvent_t event, WiFiEventInfo_t info) {
   }
 }
 
-void startPortal(const char *reason) {
+// keepSta = true — плата остаётся в своей сети и продолжает работать (кнопка BOOT, «открыть сеть платы»)
+void startPortalEx(const char *reason, bool keepSta, uint32_t keepFor) {
   Serial.printf("[ПОРТАЛ] Открываю точку доступа \"%s\" (%s)\n", apName.c_str(), reason);
   Serial.println("         Подключитесь к ней с телефона: страница настройки откроется сама");
   Serial.println("         (или откройте http://192.168.4.1)");
-  WiFi.disconnect(false);
+  portalKeepUntil = millis() + keepFor;
+  portalEmptySince = 0;
+  if (portalActive) return;            // уже открыта — только продлили
+  if (!keepSta) WiFi.disconnect(false);
   WiFi.mode(WIFI_AP_STA);
   WiFi.softAP(apName.c_str());
   delay(100);
@@ -443,6 +473,8 @@ void startPortal(const char *reason) {
   testState = "idle";
   WiFi.scanNetworks(true);
 }
+
+void startPortal(const char *reason) { startPortalEx(reason, false, 0); }
 
 void stopPortal() {
   Serial.println("[ПОРТАЛ] Настройка завершена, точка доступа выключена");
@@ -483,6 +515,7 @@ void wifiLoop() {
       testMessage = WiFi.localIP().toString();
       cfgSsid = testSsid; cfgPass = testPass; cfgServer = testServer;
       saveConfig();
+      portalKeepUntil = now + PORTAL_KEEP_AFTER_OK;   // телефон должен успеть увидеть IP и открыть панель
       Serial.printf("[WIFI] Подключено к \"%s\", IP %s. Настройки сохранены\n",
                     cfgSsid.c_str(), testMessage.c_str());
     } else if (lastDisconnectAt > testStartedAt && isFatalReason(lastDisconnectReason)) {
@@ -507,12 +540,24 @@ void wifiLoop() {
     lastConnectedAt = now;
     everConnected = true;
     portalRetrying = false;
+    noApSince = 0;
     if (!netServicesStarted) startNetServices();
+    // Точка доступа гаснет, только когда к ней никто не подключён 2 минуты (и прошло обещанное время),
+    // иначе телефон мастера теряет страницу посреди настройки
     if (portalActive && !testing) {
       if (!portalSuccessAt) portalSuccessAt = now;
-      else if (now - portalSuccessAt > PORTAL_CLOSE_DELAY) stopPortal();
+      if (WiFi.softAPgetStationNum() > 0) portalEmptySince = 0;
+      else if (!portalEmptySince) portalEmptySince = now;
+      if ((int32_t)(now - portalKeepUntil) > 0 && portalEmptySince && now - portalEmptySince > PORTAL_IDLE_CLOSE) stopPortal();
     }
     return;
+  }
+
+  // Сохранённой сети нет в эфире (код 201) — ждать 5 минут бессмысленно
+  if (lastDisconnectReason == 201 && now - lastDisconnectAt < RECONNECT_PERIOD * 2) {
+    if (!noApSince) noApSince = now;
+  } else if (lastDisconnectReason != 201) {
+    noApSince = 0;
   }
 
   // --- Сети нет ---
@@ -535,6 +580,11 @@ void wifiLoop() {
   if (cfgSsid.isEmpty()) { startPortal("сеть ещё не настроена"); return; }
 
   uint32_t limit = everConnected ? LOST_CONNECT_TIMEOUT : FIRST_CONNECT_TIMEOUT;
+  uint32_t noApLimit = everConnected ? NO_AP_TIMEOUT_LOST : NO_AP_TIMEOUT_FIRST;
+  if (noApSince && now - noApSince > noApLimit) {
+    startPortal("сохранённой сети нет рядом");
+    return;
+  }
   if (now - lastConnectedAt > limit) {
     startPortal(everConnected ? "связь потеряна надолго" : "сохранённая сеть не найдена");
     return;
@@ -622,13 +672,16 @@ void handleStatus() {
   j += "\"server\":\"" + jsonEscape(cfgServer) + "\",\"canteen\":\"" + jsonEscape(cfgCanteen) + "\",";
   j += "\"cloud\":{\"state\":\"" + cloudState + "\",\"msg\":\"" + jsonEscape(cloudMsg) + "\",\"uid\":\"" + fbUid + "\"},";
   j += "\"ota\":{\"state\":\"" + otaState + "\",\"msg\":\"" + jsonEscape(otaMsg) + "\",\"progress\":" + String(otaProgress) + "},";
-  j += String("\"portal\":") + (portalActive ? "true" : "false") + ",";
+  j += String("\"portal\":") + (portalActive ? "true" : "false") + ",\"ap\":\"" + jsonEscape(apName) + "\",";
   j += String("\"sim\":") + (simMode ? "true" : "false") + ",";
-  j += "\"sensor\":{\"present\":" + String(simMode ? "false" : "true") + ",\"a\":" + String(sensorDistA) +
+  j += "\"sensor\":{\"present\":" + String(sensorPresent() ? "true" : "false") +
+       ",\"found\":" + String(simMode ? "false" : "true") + ",\"a\":" + String(sensorDistA) +
        ",\"b\":" + String(sensorDistB) + ",\"floor\":" + String(sensorFloorMm) + ",\"threshold\":" + String(sensorThresholdMm) +
        ",\"rawA\":" + String(rawA) + ",\"rawB\":" + String(rawB) + ",\"invert\":" + (cfgInvert ? "true" : "false") +
        ",\"debounce\":" + String(cfgDebounce) + ",\"resetHour\":" + String(cfgResetHour) +
-       ",\"cfgThreshold\":" + String(cfgThreshold) + "},";
+       ",\"cfgThreshold\":" + String(cfgThreshold) +
+       ",\"reads\":" + String(sensorReads) + ",\"bad\":" + String(sensorBad) + ",\"restarts\":" + String(sensorRestarts) +
+       ",\"st\":" + String(sensorLastSt) + ",\"hz\":" + String(sensorHz, 1) + "},";
   j += String("\"wifi\":{\"connected\":") + (c ? "true" : "false") +
        ",\"ssid\":\"" + jsonEscape(c ? WiFi.SSID() : cfgSsid) + "\"" +
        ",\"ip\":\"" + (c ? WiFi.localIP().toString() : String("")) + "\"" +
@@ -728,10 +781,33 @@ void setupWeb() {
     everSent = false;
     sendOk(ok);
   });
+  // Включить сеть платы на 10 минут (то же, что держать кнопку BOOT 1 с)
+  server.on("/api/portal", HTTP_POST, []() {
+    sendOk();
+    startPortalEx("со страницы платы", true, PORTAL_MANUAL_TIME);
+  });
   server.on("/api/reboot", HTTP_POST, []() {
     sendOk();
     Serial.println("[НАСТРОЙКИ] Перезагрузка по команде со страницы");
     rebootAt = millis() + 500;
+  });
+  // Отладка датчика в реальном времени
+  server.on("/debug", HTTP_GET, []() {
+    server.sendHeader("Cache-Control", "no-store");
+    server.sendHeader("Content-Encoding", "gzip");
+    server.send_P(200, "text/html; charset=utf-8", (const char *)DEBUG_HTML_GZ, DEBUG_HTML_GZ_LEN);
+  });
+  server.on("/api/live", HTTP_GET, []() {
+    String j = "{\"sim\":" + String(simMode ? "true" : "false") +
+               ",\"present\":" + String(sensorPresent() ? "true" : "false") +
+               ",\"age\":" + String(lastDataAt ? (long)(millis() - lastDataAt) : -1L) +
+               ",\"reads\":" + String(sensorReads) + ",\"bad\":" + String(sensorBad) + ",\"st\":" + String(sensorLastSt) +
+               ",\"a\":" + String(sensorDistA) + ",\"b\":" + String(sensorDistB) +
+               ",\"floor\":" + String(sensorFloorMm) + ",\"thr\":" + String(sensorThresholdMm) +
+               ",\"restarts\":" + String(sensorRestarts) + ",\"rawA\":" + String(rawA) + ",\"rawB\":" + String(rawB) +
+               ",\"inside\":" + String(occupancy) + "}";
+    server.sendHeader("Cache-Control", "no-store");
+    server.send(200, "application/json", j);
   });
   server.onNotFound(handleNotFound);
   server.begin();
@@ -767,6 +843,10 @@ void printHelp() {
   Serial.println("Команды: + вход | - выход | s статус | r обнулить | p портал | f забыть Wi‑Fi | h помощь");
 }
 
+// Кнопка BOOT:
+//   короткое нажатие          — статус в монитор порта
+//   держать 1 с и отпустить   — открыть сеть платы на 10 минут (плата продолжает работать в своей сети)
+//   держать 5 с               — забыть Wi‑Fi и открыть настройку заново
 void buttonLoop() {
   static uint32_t pressedAt = 0;
   static bool handled = false;
@@ -775,7 +855,11 @@ void buttonLoop() {
     if (!pressedAt) { pressedAt = millis(); handled = false; }
     else if (!handled && millis() - pressedAt >= BUTTON_HOLD_RESET) { handled = true; forgetWifi(); }
   } else {
-    if (pressedAt && !handled && millis() - pressedAt > 50) printStatus();
+    if (pressedAt && !handled) {
+      uint32_t held = millis() - pressedAt;
+      if (held >= BUTTON_HOLD_PORTAL) startPortalEx("кнопка BOOT", true, PORTAL_MANUAL_TIME);
+      else if (held > 50) printStatus();
+    }
     pressedAt = 0;
   }
 }
@@ -787,7 +871,7 @@ void serialLoop() {
       case '-': countEvent(-1); break;
       case 's': printStatus(); break;
       case 'r': resetCounter(); break;
-      case 'p': if (!portalActive) startPortal("команда из монитора порта"); break;
+      case 'p': startPortalEx("команда из монитора порта", true, PORTAL_MANUAL_TIME); break;
       case 'f': forgetWifi(); break;
       case 'h': case '?': printHelp(); break;
     }
@@ -824,7 +908,7 @@ void setup() {
   otaBootCheck();
 
   simMode = !sensorBegin();
-  if (simMode) Serial.println("[ДАТЧИК] Не найден — режим ИМИТАЦИИ (проходы вводятся вручную)");
+  if (simMode) Serial.println("[ДАТЧИК] Не найден — режим ИМИТАЦИИ, ищу датчик каждую секунду, отладка: /debug (проверьте SDA→21, SCL→22, VIN→3V3, GND)");
   Serial.printf("Восстановлено: внутри %ld, ждут отправки +%lu / -%lu\n",
                 (long)occupancy, (unsigned long)pendingIn, (unsigned long)pendingOut);
 

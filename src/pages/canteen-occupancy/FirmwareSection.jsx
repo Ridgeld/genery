@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import styles from './CanteenOccupancy.module.scss';
 import AdminIcon from './AdminIcons.jsx';
+import a from './AdminDashboard.module.scss';
+import { motion } from 'framer-motion';
+import { AnimatedNumber, EASE, Pulse, Ring } from './motion.jsx';
 
 import { C } from './themeColors.js';
 
@@ -69,32 +72,53 @@ export default function FirmwareSection({ theme, latest, devices, onPublish, onT
     <>
       {latest ? (
         <div className={styles.devCard} style={{ background: tile }}>
-          <div className={styles.devHead}>
-            <span className={styles.devIcon} style={{ background: theme.first_color, color: '#fff' }}><AdminIcon name="chip" /></span>
-            <div className={styles.devTitle}>
-              <b style={{ color: text }}>Версия {latest.version}</b>
-              <span style={{ color: muted }}>
-                {latest.publishedAt?.toDate ? `выпущена ${latest.publishedAt.toDate().toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}` : 'текущая'}
+          {/* Витрина: текущая версия и ход раскатки */}
+          <div className={a.fwHero}>
+            <div className={a.fwHeroText}>
+              <small>Текущая прошивка</small>
+              <b className={a.fwVersion}>v{latest.version}</b>
+              <span className={a.fwMeta}>
+                <span className={a.pill} style={{ color: latest.enabled === false ? AMBER : GREEN }}>
+                  <Pulse color="currentColor" size={7} on={latest.enabled !== false} />
+                  {latest.enabled === false ? 'пауза' : 'раздаётся'}
+                </span>
+                {latest.publishedAt?.toDate ? `выпущена ${latest.publishedAt.toDate().toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}` : ''}
               </span>
             </div>
-            <span className={styles.devPill} style={{ color: latest.enabled === false ? AMBER : GREEN, background: 'rgba(127,127,140,.12)' }}>
-              <i style={{ background: latest.enabled === false ? AMBER : GREEN }} />
-              {latest.enabled === false ? 'пауза' : 'раздаётся'}
-            </span>
+            <Ring value={devices.length ? updated.length / devices.length : 0} size={112} stroke={10} color={GREEN}>
+              <div className={a.ringText}>
+                <b><AnimatedNumber value={devices.length ? Math.round((updated.length / devices.length) * 100) : 0} />%</b>
+                <small>обновлены</small>
+              </div>
+            </Ring>
           </div>
+
+          {devices.length > 0 && (
+            <div className={a.segBar} aria-label={`Обновлены ${updated.length}, ожидают ${waiting.length}, ошибки ${failed.length}`}>
+              {[[updated.length, GREEN], [waiting.length, 'var(--accent)'], [failed.length, RED]].map(([n, c], i) => (n > 0 ? (
+                <motion.i
+                  key={i}
+                  style={{ background: c, flexGrow: n }}
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: 0.8, delay: 0.15 * i, ease: EASE }}
+                />
+              ) : null))}
+            </div>
+          )}
 
           <div className={styles.devStats}>
             <div style={{ background: theme.background_color }}>
               <small style={{ color: muted }}>Обновлены</small>
-              <b style={{ color: GREEN }}>{updated.length}</b>
+              <b style={{ color: GREEN }}><AnimatedNumber value={updated.length} /></b>
             </div>
             <div style={{ background: theme.background_color }}>
               <small style={{ color: muted }}>Ожидают</small>
-              <b style={{ color: text }}>{waiting.length}</b>
+              <b style={{ color: text }}><AnimatedNumber value={waiting.length} /></b>
             </div>
             <div style={{ background: theme.background_color }}>
               <small style={{ color: muted }}>Ошибки</small>
-              <b style={{ color: failed.length ? RED : text }}>{failed.length}</b>
+              <b style={{ color: failed.length ? RED : text }}><AnimatedNumber value={failed.length} /></b>
             </div>
           </div>
 

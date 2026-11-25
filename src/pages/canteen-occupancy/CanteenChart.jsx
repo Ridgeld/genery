@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
 import styles from './CanteenOccupancy.module.scss';
 import { CLOSE_HOUR, OPEN_HOUR, fmtTime, predictAt, valueAt } from './canteenStats.js';
+import { motion, useReducedMotion } from 'framer-motion';
+import { EASE } from './motion.jsx';
 
 const W = 340;
 const H = 200;
@@ -12,6 +14,7 @@ const END = CLOSE_HOUR * 60;
 // typical — { occ: [25] } или null; todayOcc — массив [25] за сегодня или null.
 export default function CanteenChart({ theme, accent, capacity, typical, todayOcc, now, occupied, isToday }) {
   const [hover, setHover] = useState(null);
+  const reduce = useReducedMotion();
 
   const geo = useMemo(() => {
     let maxV = capacity;
@@ -96,7 +99,7 @@ export default function CanteenChart({ theme, accent, capacity, typical, todayOc
 
         {typPts.length > 1 && (
           <>
-            <path d={area(typPts)} fill={muted} fillOpacity={isToday ? 0.05 : 0.1} />
+            <motion.path d={area(typPts)} fill={muted} fillOpacity={isToday ? 0.05 : 0.1} initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }} />
             <path
               d={line(typPts)}
               fill="none"
@@ -111,8 +114,18 @@ export default function CanteenChart({ theme, accent, capacity, typical, todayOc
 
         {todayPts.length > 1 && (
           <>
-            <path d={area(todayPts)} fill="url(#todayArea)" />
-            <path d={line(todayPts)} fill="none" stroke={accent} strokeWidth="2.8" strokeLinejoin="round" strokeLinecap="round" />
+            <motion.path d={area(todayPts)} fill="url(#todayArea)" initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.5 }} />
+            <motion.path
+              d={line(todayPts)}
+              fill="none"
+              stroke={accent}
+              strokeWidth="2.8"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              initial={reduce ? false : { pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 1.2, ease: EASE }}
+            />
           </>
         )}
 

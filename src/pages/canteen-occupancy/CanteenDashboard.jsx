@@ -10,6 +10,47 @@ import {
 } from './canteenStats.js';
 
 import { C, tint } from './themeColors.js';
+import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
+import { AnimatedNumber, EASE, Item, Pulse, Ring, Sparkline, Stagger } from './motion.jsx';
+import { OPEN_HOUR, loadLevel, valueAt } from './canteenStats.js';
+
+const GRAY = C.muted;
+const LOAD_TEXT = { free: 'свободно', mid: 'умеренно', busy: 'людно', full: 'почти нет мест' };
+
+// Лента событий «в реальном времени»: сравнивает новые данные из Firestore с предыдущими
+function useLiveEvents(canteen, devices, today) {
+  const [events, setEvents] = useState([]);
+  const prev = useRef(null);
+  useEffect(() => { prev.current = null; setEvents([]); }, [canteen.id]);
+  useEffect(() => {
+    const snap = {
+      status: canteen.status || 'open',
+      dev: Object.fromEntries(devices.map((d) => [d.id, {
+        in: d.day === today ? Number(d.dayIn) || 0 : 0,
+        out: d.day === today ? Number(d.dayOut) || 0 : 0,
+        on: isOnline(d),
+        name: d.door || d.id,
+      }])),
+    };
+    const p = prev.current;
+    prev.current = snap;
+    if (!p) return;
+    const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const add = [];
+    const mk = (icon, color, text) => add.push({ id: `${Date.now()}-${Math.random()}`, icon, color, text, time });
+    if (p.status !== snap.status) mk('bell', C.accent, `Статус: ${STATUS[snap.status]?.text || snap.status}`);
+    Object.entries(snap.dev).forEach(([id, d]) => {
+      const o = p.dev[id];
+      if (!o) { mk('door', C.accent, `Подключена дверь «${d.name}»`); return; }
+      if (d.in > o.in) mk('login', C.ok, `${d.name}: вошли +${d.in - o.in}`);
+      if (d.out > o.out) mk('logout', C.muted, `${d.name}: вышли −${d.out - o.out}`);
+      if (o.on && !d.on) mk('wifiOff', C.bad, `${d.name}: пропала связь`);
+      if (!o.on && d.on) mk('wifi', C.ok, `${d.name}: снова на связи`);
+    });
+    if (add.length) setEvents((e) => [...add.reverse(), ...e].slice(0, 30));
+  }, [canteen.status, devices, today]); // eslint-disable-line react-hooks/exhaustive-deps
+  return events;
+}
 
 // Цвета берутся из темы через CSS-переменные (их задаёт AdminShell)
 const GREEN = C.ok;
@@ -40,11 +81,20 @@ export function SignalBars({ rssi }) {
     </span>
   );
 }
+// Датчик: 'ok' — присылает измерения, 'nodata' — найден, но молчит (плохой контакт), 'missing' — не найден.
+// sensorOk приходит с прошивки 0.6.6; у старых плат судим по sim.
+export function sensorState(d) {
+  if (d.sim) return 'missing';
+  if (d.sensorOk === false) return 'nodata';
+  return 'ok';
+}
+export const SENSOR_TEXT = { missing: 'датчик не найден', nodata: 'нет данных с датчика' };
+
 // Статус счётчика для плашки
 export function deviceStatus(d, latestFw) {
   if (!isOnline(d)) return 'offline';
   if (/Загружаю/i.test(d.ota || '')) return 'updating';
-  if (d.sim) return 'sim';
+  if (sensorState(d) !== 'ok') return 'sim';
   if (latestFw?.version && cmpVersion(d.fw, latestFw.version) < 0) return 'outdated';
   return 'online';
 }
@@ -73,25 +123,36 @@ function HallControl({ canteen, live, today, onSave }) {
         <small>студенты видят изменения сразу</small>
       </div>
 
-      <div className={s.statusGrid}>
-        {Object.keys(CANTEEN_STATUSES).map((key) => {
-          const st = STATUS[key];
-          const on = status === key;
-          return (
-            <button
-              key={key}
-              type="button"
-              className={`${s.statusTile} ${on ? s.statusTileOn : ''}`}
-              style={on ? { borderColor: st.color, background: tint(st.color, 10) } : undefined}
-              onClick={() => !on && onSave({ status: key })}
-            >
-              <StatusIcon kind={key} size={26} />
-              <b style={on ? { color: st.color } : undefined}>{st.text}</b>
-              <small>{STATUS_HINTS[key]}</small>
-            </button>
-          );
-        })}
-      </div>
+      <LayoutGroup id={`status-${canteen.id}`}>
+        <div className={s.statusGrid}>
+          {Object.keys(CANTEEN_STATUSES).map((key) => {
+            const st = STATUS[key];
+            const on = status === key;
+            return (
+              <button
+                key={key}
+                type="button"
+                aria-pressed={on}
+                className={`${s.statusTile} ${on ? s.statusTileOn : ''}`}
+                onClick={() => !on && onSave({ status: key })}
+              >
+                {/* Рамка выбранного статуса «переезжает» к новой плитке */}
+                {on && (
+                  <motion.span
+                    layoutId="statusHL"
+                    className={s.statusHL}
+                    style={{ borderColor: st.color, background: tint(st.color, 10) }}
+                    transition={{ type: 'spring', stiffness: 420, damping: 36 }}
+                  />
+                )}
+                <StatusIcon kind={key} size={26} />
+                <b style={on ? { color: st.color } : undefined}>{st.text}</b>
+                <small>{STATUS_HINTS[key]}</small>
+              </button>
+            );
+          })}
+        </div>
+      </LayoutGroup>
 
       <div className={s.hallGrid}>
         <div className={s.hallBox}>
@@ -123,10 +184,18 @@ function HallControl({ canteen, live, today, onSave }) {
 }
 
 // ---------- Расписание звонков: модуль с карточкой на каждую пару ----------
+let lessonKey = 0;
+const withKeys = (list) => (list || []).map((r) => ({ ...r, _k: ++lessonKey }));
+const stripKeys = (list) => list.map(({ _k, ...r }) => r);
+
 function ScheduleModule({ canteen, readOnly, onSave }) {
-  const [rows, setRows] = useState(canteen.schedule || []);
-  useEffect(() => { setRows(canteen.schedule || []); }, [canteen.id, canteen.schedule]);
-  const dirty = JSON.stringify(rows) !== JSON.stringify(canteen.schedule || []);
+  // _k — постоянный ключ пары, чтобы анимация удаления/добавления затрагивала именно её
+  const [rows, setRows] = useState(() => withKeys(canteen.schedule));
+  // После сохранения данные с сервера совпадают с текущими — ключи не меняем, иначе все пары «переедут» заново
+  useEffect(() => {
+    setRows((prev) => (JSON.stringify(stripKeys(prev)) === JSON.stringify(canteen.schedule || []) ? prev : withKeys(canteen.schedule)));
+  }, [canteen.id, canteen.schedule]);
+  const dirty = JSON.stringify(stripKeys(rows)) !== JSON.stringify(canteen.schedule || []);
   const set = (i, key, v) => setRows(rows.map((r, j) => (j === i ? { ...r, [key]: v } : r)));
   const dur = (r) => toMin(r.to) - toMin(r.from);
   const invalid = rows.some((r) => !(dur(r) > 0)) || rows.some((r, i) => i && toMin(r.from) < toMin(rows[i - 1].to));
@@ -143,18 +212,27 @@ function ScheduleModule({ canteen, readOnly, onSave }) {
           Расписание не задано — прогноз строится без учёта перемен.
           {!readOnly && (
             <div style={{ marginTop: 12 }}>
-              <button type="button" className={`${s.btn} ${s.btnPrimary}`} onClick={() => setRows(DEFAULT_SCHEDULE)}>Заполнить типовым</button>
+              <button type="button" className={`${s.btn} ${s.btnPrimary}`} onClick={() => setRows(withKeys(DEFAULT_SCHEDULE))}>Заполнить типовым</button>
             </div>
           )}
         </div>
       )}
 
       <div className={s.lessons}>
+        <AnimatePresence initial={false}>
         {rows.map((r, i) => {
           const next = rows[i + 1];
           const gap = next ? toMin(next.from) - toMin(r.to) : null;
           return (
-            <Fragment key={i}>
+            <motion.div
+              key={r._k}
+              layout
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.28, ease: EASE }}
+              style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 6 }}
+            >
               <div className={s.lesson}>
                 <span className={s.lessonNum}>{i + 1}</span>
                 <b className={s.lessonTitle}>{i + 1}-я пара</b>
@@ -175,9 +253,10 @@ function ScheduleModule({ canteen, readOnly, onSave }) {
                   {gap > 0 ? `перемена ${gap} мин` : gap === 0 ? 'без перемены' : 'пересечение'}
                 </div>
               )}
-            </Fragment>
+            </motion.div>
           );
         })}
+        </AnimatePresence>
         {!readOnly && rows.length > 0 && (
           <button
             type="button"
@@ -185,7 +264,7 @@ function ScheduleModule({ canteen, readOnly, onSave }) {
             onClick={() => {
               const last = rows[rows.length - 1];
               const start = last ? toMin(last.to) + 10 : 8 * 60;
-              setRows([...rows, { from: fmtTime(start), to: fmtTime(start + 80) }]);
+              setRows([...rows, { from: fmtTime(start), to: fmtTime(start + 80), _k: ++lessonKey }]);
             }}
           >
             <Icon name="plus" size={20} />Добавить пару
@@ -195,8 +274,8 @@ function ScheduleModule({ canteen, readOnly, onSave }) {
 
       {!readOnly && (
         <div className={s.actions} style={{ marginTop: 16 }}>
-          <button type="button" className={`${s.btn} ${s.btnPrimary}`} disabled={!dirty || invalid} onClick={() => onSave({ schedule: rows })}>Сохранить расписание</button>
-          {dirty && <button type="button" className={s.btn} onClick={() => setRows(canteen.schedule || [])}>Отменить</button>}
+          <button type="button" className={`${s.btn} ${s.btnPrimary}`} disabled={!dirty || invalid} onClick={() => onSave({ schedule: stripKeys(rows) })}>Сохранить расписание</button>
+          {dirty && <button type="button" className={s.btn} onClick={() => setRows(withKeys(canteen.schedule))}>Отменить</button>}
           {invalid && <span style={{ color: RED, fontSize: 13 }}>Проверьте время пар</span>}
         </div>
       )}
@@ -263,10 +342,13 @@ const TABS = [
 // ---------- Дашборд одной столовой ----------
 export default function CanteenDashboard({
   theme, canteen, devices, allCanteens, latestFw, curves, today, now, votes, readOnly,
-  onSaveDevice, onSaveCanteen, onDeleteCanteen, onOpenPage, assignedTotal,
+  onSaveDevice, onSaveCanteen, onDeleteCanteen, onOpenPage, assignedTotal, tab: tabProp, onTab,
 }) {
-  const [tab, setTab] = useState('overview');
-  useEffect(() => { setTab('overview'); }, [canteen.id]);
+  const [tabLocal, setTabLocal] = useState('overview');
+  useEffect(() => { setTabLocal('overview'); }, [canteen.id]);
+  const tab = tabProp || tabLocal;
+  const setTab = onTab || setTabLocal;
+  const events = useLiveEvents(canteen, devices, today);
   const accent = theme.gradient_first_color || '#0040F9';
   const corr = correctionFor(canteen, today);
   const live = liveOccupancy(devices, today, corr);
@@ -278,6 +360,20 @@ export default function CanteenDashboard({
   const typical = useMemo(() => typicalDay(curves, weekdayIndex(today), today), [curves, today]);
   const todayOcc = curves.get(today) || null;
   const fb = feedbackSummary(votes);
+  // Загрузка за сегодня по часам — с открытия до текущего момента
+  const daySeries = useMemo(() => {
+    const hNow = Math.floor(now / 60);
+    if (hNow < OPEN_HOUR) return [];
+    const out = [];
+    for (let h = OPEN_HOUR; h <= hNow; h += 1) out.push(todayOcc ? Number(todayOcc[h]) || 0 : 0);
+    out.push(live.occupied);
+    return out;
+  }, [todayOcc, now, live.occupied]);
+  const usualNow = typical ? Math.round(valueAt(typical.occ, now)) : null;
+  // Пока сегодня проходов нет (утро, ночь) — показываем «обычный» день по прошлым неделям
+  const hasToday = daySeries.some((v) => v > 0);
+  const typicalSeries = useMemo(() => (typical ? typical.occ.slice(OPEN_HOUR, 20).map((v) => Math.round(v)) : []), [typical]);
+  const heroSeries = hasToday ? daySeries : typicalSeries;
 
   // Что требует внимания
   const alerts = [];
@@ -290,10 +386,12 @@ export default function CanteenDashboard({
     const label = d.door || d.id;
     if (!isOnline(d)) alerts.push({ c: RED, icon: 'wifiOff', t: `${label}: нет связи`, s: `последний сигнал ${ago(seenOf(d))}` });
     else if (d.rssi && d.rssi < -80) alerts.push({ c: AMBER, icon: 'wifi', t: `${label}: слабый Wi‑Fi`, s: `${d.rssi} дБм — переставьте плату или роутер` });
-    if (d.sim) alerts.push({ c: AMBER, icon: 'alert', t: `${label}: режим имитации`, s: 'датчик не подключён, проходы не считаются' });
+    const ss = sensorState(d);
+    if (ss === 'missing') alerts.push({ c: RED, icon: 'alert', t: `${label}: датчик не найден`, s: 'проходы не считаются — проверьте провода SDA, SCL и питание' });
+    if (ss === 'nodata') alerts.push({ c: AMBER, icon: 'alert', t: `${label}: нет данных с датчика`, s: 'датчик найден, но не присылает измерения — вероятно, плохой контакт' });
     const a = Number(d.rawA) || 0;
     const b = Number(d.rawB) || 0;
-    if (!d.sim && Math.max(a, b) >= 30 && Math.min(a, b) < Math.max(a, b) * 0.6) {
+    if (ss === 'ok' &&Math.max(a, b) >= 30 && Math.min(a, b) < Math.max(a, b) * 0.6) {
       alerts.push({ c: AMBER, icon: 'alert', t: `${label}: зоны срабатывают неравномерно`, s: `A ${a}, B ${b} — одна из зон могла запылиться или сбиться` });
     }
     if (/не прошла|Ошибка|недоступен|повреждён|прервалась|SHA/i.test(d.ota || '')) alerts.push({ c: RED, icon: 'chip', t: `${label}: ошибка обновления`, s: d.ota });
@@ -327,40 +425,120 @@ export default function CanteenDashboard({
         </div>
       )}
 
-      <div className={s.tabs}>
-        {TABS.filter((t) => !(t.superOnly && readOnly)).map((t) => (
-          <button key={t.key} type="button" className={`${s.tab} ${tab === t.key ? s.tabOn : ''}`} onClick={() => setTab(t.key)}>{t.label}</button>
-        ))}
-      </div>
+      <LayoutGroup id={`tabs-${canteen.id}`}>
+        <div className={s.tabs} role="tablist">
+          {TABS.filter((t) => !(t.superOnly && readOnly)).map((t) => (
+            <button key={t.key} type="button" role="tab" aria-selected={tab === t.key} className={`${s.tab} ${tab === t.key ? s.tabOn : ''}`} onClick={() => setTab(t.key)}>
+              {tab === t.key && <motion.span layoutId="tabActive" className={s.tabBg} transition={{ type: 'spring', stiffness: 500, damping: 38 }} />}
+              <span className={s.tabLabel}>{t.label}</span>
+            </button>
+          ))}
+        </div>
+      </LayoutGroup>
 
       {tab === 'overview' && (
         <>
-          <div className={s.stats}>
-            <div className={`${s.stat} ${s.statAccent}`}>
-              <span className={s.statIcon}><Icon name="users" /></span>
-              <small>Сейчас внутри</small>
-              <b>{live.occupied}<em>/ {eff || '—'}</em></b>
-              <span>заполнено на {pct}%{corr ? ` · поправка ${corr > 0 ? '+' : ''}${corr}` : ''}</span>
-            </div>
-            <div className={s.stat}>
-              <span className={s.statIcon}><Icon name="door" /></span>
-              <small>Свободно мест</small>
-              <b>{Math.max(0, eff - live.occupied)}</b>
-              <span>комфортно {eff || '—'} из {capacity || '—'} стульев</span>
-            </div>
-            <div className={s.stat}>
-              <span className={s.statIcon}><Icon name="wifi" /></span>
-              <small>Счётчики на связи</small>
-              <b style={{ color: devices.length && live.online < devices.length ? RED : undefined }}>{live.online}<em>из {devices.length}</em></b>
-              <span>{devices.length ? (live.online === devices.length ? 'все работают' : 'есть проблемы') : 'подключите плату'}</span>
-            </div>
-            <div className={s.stat}>
-              <span className={s.statIcon}><Icon name="login" /></span>
-              <small>Сегодня вошло</small>
-              <b>{todayIn}</b>
-              <span>вышло {todayOut}</span>
-            </div>
-          </div>
+          <Stagger className={s.bento}>
+            {/* Главная плитка: сколько людей внутри */}
+            <Item className={`${s.tile} ${s.tileHero}`}>
+              <div className={s.heroTop}>
+                <div>
+                  <small className={s.tileLabel}>Сейчас внутри</small>
+                  <div className={s.heroValue}>
+                    <AnimatedNumber value={live.occupied} />
+                    <em>/ {eff || '—'}</em>
+                  </div>
+                  <span className={s.heroLevel}>
+                    <Pulse color="currentColor" size={7} on={live.online > 0} />
+                    {LOAD_TEXT[loadLevel(live.occupied, eff || 1).key]}{corr ? ` · поправка ${corr > 0 ? '+' : ''}${corr}` : ''}
+                  </span>
+                </div>
+                <Ring value={eff ? live.occupied / eff : 0} size={132} stroke={12} color="currentColor">
+                  <div className={s.ringText}><b><AnimatedNumber value={pct} />%</b><small>заполнено</small></div>
+                </Ring>
+              </div>
+              <div className={s.heroChart}>
+                {heroSeries.length > 1
+                  ? <Sparkline key={hasToday ? 'today' : 'typ'} data={heroSeries} color="currentColor" height={64} marker={hasToday} />
+                  : <span className={s.heroHint}>график дня появится после первых проходов</span>}
+                <div className={s.heroAxis}>
+                  <span>08:00</span>
+                  <span>{hasToday ? 'сегодня' : (typicalSeries.length ? 'обычно в этот день' : '')}</span>
+                  <span>{hasToday ? 'сейчас' : '19:00'}</span>
+                </div>
+              </div>
+            </Item>
+
+            <Item className={s.tile}>
+              <small className={s.tileLabel}>Свободно мест</small>
+              <div className={s.tileValue}><AnimatedNumber value={Math.max(0, eff - live.occupied)} /></div>
+              <div className={s.meter}><motion.i initial={{ scaleX: 0 }} animate={{ scaleX: eff ? Math.max(0, 1 - live.occupied / eff) : 0 }} transition={{ duration: 0.9, ease: EASE }} /></div>
+              <span className={s.tileSub}>комфортно {eff || '—'} из {capacity || '—'} стульев</span>
+            </Item>
+
+            <Item className={s.tile}>
+              <small className={s.tileLabel}>Сегодня</small>
+              <div className={s.inOut}>
+                <div><span className={s.inOutIcon}><Icon name="login" size={16} /></span><b><AnimatedNumber value={todayIn} /></b><small>вошло</small></div>
+                <div><span className={s.inOutIcon} style={{ transform: 'scaleX(-1)' }}><Icon name="login" size={16} /></span><b><AnimatedNumber value={todayOut} /></b><small>вышло</small></div>
+              </div>
+              <span className={s.tileSub}>{usualNow !== null ? `обычно в это время ${usualNow} чел.` : 'история ещё копится'}</span>
+            </Item>
+
+            <Item className={`${s.tile} ${s.tileDoors}`}>
+              <div className={s.tileHeadRow}>
+                <small className={s.tileLabel}>Двери</small>
+                <span className={s.tileBadge} style={{ color: devices.length && live.online < devices.length ? RED : GREEN }}>
+                  {live.online} из {devices.length} на связи
+                </span>
+              </div>
+              <div className={s.doorList}>
+                {devices.length === 0 && <span className={s.tileSub}>подключите плату в «Новых платах»</span>}
+                {devices.map((d) => {
+                  const st = deviceStatus(d, latestFw);
+                  const on = st === 'online' || st === 'outdated';
+                  return (
+                    <div key={d.id} className={s.doorRow}>
+                      <Pulse color={STATUS[st]?.color || GRAY} size={8} on={on} />
+                      <span className={s.doorName}>{d.door || d.id}</span>
+                      <span className={s.doorMeta}>{d.day === today ? `+${d.dayIn || 0} / −${d.dayOut || 0}` : '+0 / −0'}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </Item>
+
+            <Item className={`${s.tile} ${s.tileFeed}`}>
+              <div className={s.tileHeadRow}>
+                <small className={s.tileLabel}>События</small>
+                <span className={s.live}><Pulse color={GREEN} size={7} />в реальном времени</span>
+              </div>
+              <div className={s.feed}>
+                <AnimatePresence initial={false}>
+                  {events.length === 0 && (
+                    <motion.span key="empty" className={s.tileSub} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                      Здесь появятся проходы и изменения, пока страница открыта
+                    </motion.span>
+                  )}
+                  {events.slice(0, 6).map((e) => (
+                    <motion.div
+                      key={e.id}
+                      layout
+                      className={s.feedRow}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3, ease: EASE }}
+                    >
+                      <span className={s.feedIcon} style={{ color: e.color }}><Icon name={e.icon} size={14} /></span>
+                      <span className={s.feedText}>{e.text}</span>
+                      <time>{e.time}</time>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+            </Item>
+          </Stagger>
 
           <HallControl canteen={canteen} live={live} today={today} onSave={saveHall} />
 
@@ -397,9 +575,9 @@ export default function CanteenDashboard({
             <div className={s.card}>
               <div className={s.cardHead}><h3><span className={s.cardIcon}><Icon name="users" size={18} /></span>Отзывы студентов</h3><small>за 15 минут</small></div>
               <div className={s.fbGrid}>
-                <div><StatusIcon kind="online" size={22} /><b>{fb.ok}</b><small>данные верны</small></div>
-                <div><StatusIcon kind="full" size={22} /><b>{fb.full}</b><small>мест нет</small></div>
-                <div><StatusIcon kind="free" size={22} /><b>{fb.free}</b><small>свободнее</small></div>
+                <div><StatusIcon kind="online" size={22} /><b><AnimatedNumber value={fb.ok} /></b><small>данные верны</small></div>
+                <div><StatusIcon kind="full" size={22} /><b><AnimatedNumber value={fb.full} /></b><small>мест нет</small></div>
+                <div><StatusIcon kind="free" size={22} /><b><AnimatedNumber value={fb.free} /></b><small>свободнее</small></div>
               </div>
               <p className={s.muted} style={{ fontSize: 13, margin: '12px 0 0' }}>Если трое подряд пишут «мест нет», у студентов показывается «Плотно (по отзывам)», а здесь появляется предупреждение.</p>
             </div>
@@ -494,7 +672,7 @@ function CanteenSettings({ canteen, allCanteens, assignedTotal, onSaveCanteen, o
 }
 
 // ---------- Настройки датчика (без перепрошивки) ----------
-function SensorConfig({ d, onSave }) {
+function SensorConfig({ d, allCanteens = [], onSave }) {
   const [thr, setThr] = useState(String(d.threshold ?? ''));
   const [deb, setDeb] = useState(String(d.debounceMs ?? 300));
   useEffect(() => { setThr(String(d.threshold ?? '')); setDeb(String(d.debounceMs ?? 300)); }, [d.threshold, d.debounceMs]);
@@ -520,11 +698,26 @@ function SensorConfig({ d, onSave }) {
           <small>Антидребезг, мс</small>
           <input type="number" min="0" max="5000" value={deb} onChange={(e) => setDeb(e.target.value)} onBlur={() => onSave(d.id, { debounceMs: Number(deb) || 0 })} />
         </label>
+        {allCanteens.length > 1 && (
+          <label className={s.field}>
+            <small>Столовая — перенести плату</small>
+            <select value={d.canteenId || ''} onChange={(e) => onSave(d.id, { canteenId: e.target.value })}>
+              {allCanteens.map((c) => <option key={c.id} value={c.id}>{c.name || c.id}</option>)}
+            </select>
+          </label>
+        )}
       </div>
       <div className={s.devMetrics}>
         <span>Срабатывания за день: зона A <b>{a}</b> · зона B <b>{b}</b></span>
-        <span>{d.sim ? 'датчик не подключён' : `пол ${d.floorMm || '—'} мм, действующий порог ${d.thresholdMm || '—'} мм`}</span>
+        <span>{sensorState(d) !== 'ok' ? SENSOR_TEXT[sensorState(d)] : `пол ${d.floorMm || '—'} мм, действующий порог ${d.thresholdMm || '—'} мм`}</span>
         <span>применится в течение 5 минут</span>
+      </div>
+      <div className={s.devMetrics}>
+        <span>
+          Панель платы: {d.ip ? <a href={`http://${d.ip}/`} target="_blank" rel="noreferrer" style={{ color: 'var(--accent)' }}><b>http://{d.ip}</b></a> : '—'}
+          {' '}или <b>{d.id}.local</b> — открывается, когда телефон в той же Wi‑Fi сети.
+          Без этой сети: держите кнопку BOOT на плате 1–2 с и подключитесь к сети «Counter-…» платы.
+        </span>
       </div>
       {local && (
         <div className={s.devMetrics} style={{ color: AMBER }}>
@@ -562,19 +755,29 @@ export function DeviceTable({ theme, devices, allCanteens, latestFw, today, onSa
   );
   const actions = (d) => (readOnly ? null : (
     <div className={s.rowActions}>
-      <select className={s.select} value={d.canteenId || ''} onChange={(e) => onSave(d.id, { canteenId: e.target.value })} aria-label="Столовая" title="Перенести в другую столовую">
-        {allCanteens.map((c) => <option key={c.id} value={c.id}>{c.name || c.id}</option>)}
-      </select>
-      <button type="button" className={s.iconBtn} title="Обновить прошивку этой платы сейчас" onClick={() => onSave(d.id, { otaRequest: Math.floor(Date.now() / 1000) })}>
+      {d.ip && (
+        <a
+          className={s.iconBtn}
+          href={`http://${d.ip}/`}
+          target="_blank"
+          rel="noreferrer"
+          title={`Открыть панель платы: http://${d.ip} — работает, если телефон или компьютер в той же Wi‑Fi сети, что и плата`}
+          aria-label="Открыть панель платы"
+        >
+          <Icon name="arrow" size={16} />
+        </a>
+      )}
+      <button type="button" className={s.iconBtn} title="Обновить прошивку этой платы сейчас" aria-label="Обновить прошивку" onClick={() => onSave(d.id, { otaRequest: Math.floor(Date.now() / 1000) })}>
         <Icon name="upload" size={16} />
       </button>
-      <button type="button" className={`${s.iconBtn} ${open === d.id ? s.iconBtnOn : ''}`} title="Настройки датчика" onClick={() => setOpen(open === d.id ? null : d.id)}>
+      <button type="button" className={`${s.iconBtn} ${open === d.id ? s.iconBtnOn : ''}`} title="Настройки датчика и перенос в другую столовую" aria-label="Настройки" aria-expanded={open === d.id} onClick={() => setOpen(open === d.id ? null : d.id)}>
         <Icon name="settings" size={16} />
       </button>
       <button
         type="button"
         className={s.iconBtn}
         title="Отключить от столовой"
+        aria-label="Отключить"
         onClick={() => { if (window.confirm(`Отключить «${d.door || d.id}»? Её данные перестанут учитываться.`)) onSave(d.id, { approved: false }); }}
       >
         <Icon name="pause" size={16} />
@@ -588,7 +791,7 @@ export function DeviceTable({ theme, devices, allCanteens, latestFw, today, onSa
       <div className={s.onlyDesktop} style={{ overflowX: 'auto' }}>
         <table className={s.table}>
           <thead>
-            <tr><th>Дверь</th><th>Статус</th><th>Сегодня</th><th>Сигнал</th><th>Прошивка</th><th>Связь</th><th /></tr>
+            <tr><th>Дверь</th><th>Статус</th><th>Сегодня</th><th>Связь</th><th>Прошивка</th><th /></tr>
           </thead>
           <tbody>
             {devices.map((d) => (
@@ -596,19 +799,21 @@ export function DeviceTable({ theme, devices, allCanteens, latestFw, today, onSa
                 <tr>
                   <td>
                     <div className={s.doorCell}>
-                      <span className={s.doorIcon} style={{ background: theme.first_color }}><Icon name="door" size={17} /></span>
+                      <span className={s.doorIcon} style={{ background: theme.first_color, color: 'var(--on-hero, #fff)' }}><Icon name="door" size={17} /></span>
                       <div style={{ minWidth: 0, flex: 1 }}>{doorName(d)}<small>{d.id}</small></div>
                     </div>
                   </td>
                   <td>{status(d)}</td>
-                  <td>{todayCell(d)}</td>
-                  <td title={signalLabel(d.rssi)}><SignalBars rssi={d.rssi} />{d.rssi ? `${d.rssi} дБм` : '—'}</td>
+                  <td className={s.nowrap}>{todayCell(d)}</td>
+                  <td title={signalLabel(d.rssi)}>
+                    <span className={s.nowrap}><SignalBars rssi={d.rssi} />{d.rssi ? `${d.rssi} дБм` : '—'}</span>
+                    <small className={s.muted} style={{ display: 'block', fontSize: 11.5 }}>{ago(seenOf(d))}</small>
+                  </td>
                   <td>{fwCell(d)}</td>
-                  <td className={s.muted}>{ago(seenOf(d))}</td>
                   <td>{actions(d)}</td>
                 </tr>
                 {open === d.id && !readOnly && (
-                  <tr><td colSpan={7} className={s.cfgCell}><SensorConfig d={d} onSave={onSave} /></td></tr>
+                  <tr><td colSpan={6} className={s.cfgCell}><SensorConfig d={d} allCanteens={allCanteens} onSave={onSave} /></td></tr>
                 )}
               </Fragment>
             ))}
@@ -620,7 +825,7 @@ export function DeviceTable({ theme, devices, allCanteens, latestFw, today, onSa
         {devices.map((d) => (
           <div key={d.id} className={s.devItem}>
             <div className={s.doorCell}>
-              <span className={s.doorIcon} style={{ background: theme.first_color }}><Icon name="door" size={17} /></span>
+              <span className={s.doorIcon} style={{ background: theme.first_color, color: 'var(--on-hero, #fff)' }}><Icon name="door" size={17} /></span>
               <div style={{ minWidth: 0, flex: 1 }}>{doorName(d)}<small>{d.id}</small></div>
               <StatusBadge kind={deviceStatus(d, latestFw)} iconOnly />
             </div>
@@ -629,9 +834,10 @@ export function DeviceTable({ theme, devices, allCanteens, latestFw, today, onSa
               <span><SignalBars rssi={d.rssi} /><b>{d.rssi ? `${d.rssi} дБм` : '—'}</b> {signalLabel(d.rssi)}</span>
               <span>Прошивка <b style={{ color: outdated(d) ? AMBER : undefined }}>v{d.fw || '?'}</b></span>
               <span>{ago(seenOf(d))}</span>
+              {d.ip && <span>Панель <b>{d.ip}</b></span>}
             </div>
             {actions(d)}
-            {open === d.id && !readOnly && <SensorConfig d={d} onSave={onSave} />}
+            {open === d.id && !readOnly && <SensorConfig d={d} allCanteens={allCanteens} onSave={onSave} />}
           </div>
         ))}
       </div>

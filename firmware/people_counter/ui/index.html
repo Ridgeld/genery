@@ -128,6 +128,19 @@ svg{display:block;flex:none}
 .state .big.bad{background:var(--red)}
 .state h4{font-size:22px;font-weight:600}
 .state p{color:var(--muted);font-size:14px;margin:8px auto 4px;max-width:320px}
+/* Экран «Подключено»: новый адрес и как найти панель потом */
+.ipcard{background:var(--accent);border-radius:var(--r-md);padding:16px;margin-top:16px;display:flex;flex-direction:column;gap:2px}
+.ipcard small{font-size:13px;opacity:.8}
+.ipcard b{font-size:34px;font-weight:600;line-height:1.15;letter-spacing:-.04em}
+.ipcard span{font-size:13px;opacity:.8}
+.ipbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.ipbtns .cta{margin-top:0;height:46px;text-decoration:none;color:#fff}
+.ipcard .cta.sec2{background:rgba(255,255,255,.16)}
+.ipcard .cta:not(.sec2){background:#fff;color:var(--bg)}
+.howto{background:var(--tile);border-radius:var(--r-md);padding:14px 16px;margin-top:12px;display:flex;flex-direction:column;gap:10px;text-align:left}
+.howto>b{font-weight:600}
+.howto div{display:flex;gap:10px;font-size:13.5px;color:var(--text2);line-height:1.4}
+.howto i{font-style:normal;flex:none;width:22px;height:22px;border-radius:50%;background:var(--tile3);display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--text)}
 
 .grp{background:var(--tile);border-radius:var(--r-md);overflow:hidden;margin-bottom:12px}
 .row{display:flex;align-items:center;gap:12px;width:100%;padding:13px 14px;text-align:left}
@@ -140,6 +153,12 @@ svg{display:block;flex:none}
 .row.danger{color:var(--red)}
 .row.danger .ri{background:rgba(255,67,101,.14)}
 .glb{color:var(--muted);font-size:13px;margin:16px 4px 8px}
+/* Переключатель в стиле панели */
+.sw{-webkit-appearance:none;appearance:none;flex:none;width:50px;height:30px;border-radius:999px;background:var(--tile3);position:relative;cursor:pointer;transition:background .2s}
+.sw::after{content:'';position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--muted);transition:transform .2s,background .2s}
+.sw:checked{background:var(--accent)}
+.sw:checked::after{transform:translateX(20px);background:#fff}
+.sw:focus-visible{box-shadow:0 0 0 2px var(--accent-hi)}
 .fl{display:block;padding:10px 14px 0;border-top:1px solid var(--line)}
 .fl small{display:block;color:var(--muted);font-size:12.5px;margin-bottom:6px}
 .fl input{width:100%;height:46px;border-radius:14px;background:var(--bg);border:1px solid var(--line);padding:0 14px;font-size:16px}
@@ -273,6 +292,7 @@ svg{display:block;flex:none}
     <div class="grp">
       <button class="row" id="aSensor"><span class="ri" data-i="signal"></span><span class="rt"><b>Настройка датчика</b></span><span data-i="chevron" class="rv"></span></button>
       <button class="row" id="aWifi"><span class="ri" data-i="wifi"></span><span class="rt"><b>Сменить сеть Wi‑Fi</b></span><span data-i="chevron" class="rv"></span></button>
+      <button class="row" id="aPortal"><span class="ri" data-i="signal"></span><span class="rt"><b>Включить сеть платы на 10 минут</b><small>чтобы открыть панель без роутера (то же — кнопка BOOT 1–2 с)</small></span><span data-i="chevron" class="rv"></span></button>
       <button class="row" id="aSend"><span class="ri" data-i="cloud"></span><span class="rt"><b>Отправить данные сейчас</b></span><span data-i="chevron" class="rv"></span></button>
       <button class="row" id="aOta"><span class="ri" data-i="refresh"></span><span class="rt"><b>Проверить обновления</b></span><span data-i="chevron" class="rv"></span></button>
       <button class="row" id="aReset"><span class="ri" data-i="reset"></span><span class="rt"><b>Обнулить счётчик</b></span><span data-i="chevron" class="rv"></span></button>
@@ -295,12 +315,15 @@ svg{display:block;flex:none}
     <p class="foot" style="margin:8px 4px 0;text-align:left" id="snInfo"></p>
     <div class="glb">Настройки</div>
     <div class="grp">
-      <label class="row" style="cursor:pointer"><span class="ri" data-i="reset"></span><span class="rt"><b>Поменять вход и выход</b><small>если датчик повесили «задом наперёд»</small></span><input type="checkbox" id="snInv" style="width:22px;height:22px;accent-color:#0040F9"></label>
+      <label class="row" style="cursor:pointer"><span class="ri" data-i="reset"></span><span class="rt"><b>Поменять вход и выход</b><small>если датчик повесили «задом наперёд»</small></span><input type="checkbox" class="sw" id="snInv"></label>
       <label class="fl"><small>Порог срабатывания, мм (0 — автоматически по полу)</small><input id="snThr" type="number" min="0" max="4000" inputmode="numeric"></label>
       <label class="fl"><small>Антидребезг, мс — чтобы одного человека не посчитать дважды</small><input id="snDeb" type="number" min="0" max="5000" inputmode="numeric"></label>
       <div class="inl"><button id="snSave" style="flex:1">Сохранить</button></div>
     </div>
-    <button class="cta sec2" id="snCal"><span data-i="refresh"></span>Калибровать пол</button>
+    <div class="grp">
+      <a class="row" href="/debug" style="text-decoration:none;color:inherit"><span class="ri" data-i="pulse"></span><span class="rt"><b>Меню отладки</b><small>связь с датчиком в реальном времени, со звуком</small></span><span data-i="chevron" class="rv"></span></a>
+    </div>
+    <button class="cta sec2" id="snCal" style="margin-top:0"><span data-i="refresh"></span>Калибровать пол</button>
     <p class="foot" style="margin:10px 4px 0;text-align:left">Перед калибровкой под датчиком никого не должно быть. Если администратор изменит эти настройки на сайте, плата применит его значения.</p>
   </div>
 </section>
@@ -376,6 +399,7 @@ const IC={
   power:'<path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.77.04"/>',
   server:'<rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><path d="M6 6h.01"/><path d="M6 18h.01"/>',
   alert:'<circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/>',
+  pulse:'<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
   dash:'<path d="M8 12h8"/>',
 };
 const ic=(n,s=20,w=1.9)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${IC[n]||''}</svg>`;
@@ -494,17 +518,20 @@ function render(){
   setOv('oWi','oWv',wifi.connected?'ok':'bad',wifi.connected?'В сети':'Нет связи');
   const cs=S.cloud?S.cloud.state:'wait';
   setOv('oSi','oSv',cs==='ok'?'ok':cs==='wait'?'':'bad',cs==='ok'?(q?('Очередь '+q):'Данные ушли'):cs==='wait'?'Ожидание':'Ошибка');
-  setOv('oDi','oDv',S.sim?'':'ok',S.sim?'Имитация':'Работает');
+  const sn0=S.sensor||{};
+  setOv('oDi','oDv',sn0.present?'ok':'bad',sn0.present?'Работает':(S.sim?'Не найден':'Нет данных'));
   $('simBlock').style.display=S.sim?'block':'none';
   $('foot').textContent=`Прошивка ${S.fw} · ${S.id}`;
 
   // открытые окна
   if(openSheet==='shSet'){
+    const o=S.ota||{};
     $('sId').textContent=S.id;$('sIp').textContent=wifi.connected?wifi.ip:'192.168.4.1 (точка доступа)';
     $('sUp').textContent=fmtUpText(S.uptime);$('sFw').textContent=S.fw;
     const sn=S.sensor||{};
-    $('sSen').textContent=sn.present?`Зона A ${sn.a} мм · зона B ${sn.b} мм`:'Не подключён — режим имитации';
-    $('sSen2').textContent=sn.present?`Пол ${sn.floor} мм, порог ${sn.threshold} мм · срабатываний A ${sn.rawA}, B ${sn.rawB}${sn.invert?' · вход/выход поменяны':''}`:'Настройки датчика меняются на сайте в «Управлении»';
+    $('sSen').textContent=sn.present?`Зона A ${sn.a} мм · зона B ${sn.b} мм`:(S.sim?'Не найден — режим имитации':'Найден, но не присылает данные');
+    $('sSen').style.color=sn.present?'':'var(--red)';
+    $('sSen2').textContent=sn.present?`Пол ${sn.floor} мм, порог ${sn.threshold} мм · срабатываний A ${sn.rawA}, B ${sn.rawB}${sn.invert?' · вход/выход поменяны':''}`:'Проверьте провода SDA→21, SCL→22, VIN→3V3, GND. Подробно — «Настройка датчика → Меню отладки»';
     $('sOta').textContent=o.state==='downloading'?`Загрузка обновления: ${o.progress}%`:(o.msg||'');
     $('sOta').style.color=o.state==='error'?'var(--red)':'';
     if(document.activeElement!==$('sSrv'))$('sSrv').value=S.server;
@@ -522,7 +549,7 @@ function render(){
   if(openSheet==='shSensor'){
     const sn=S.sensor||{};
     $('snA').textContent=sn.present?sn.a:'—';$('snB').textContent=sn.present?sn.b:'—';$('snF').textContent=sn.present?sn.floor:'—';
-    $('snInfo').textContent=sn.present?`Действующий порог ${sn.threshold} мм · срабатываний за день: A ${sn.rawA}, B ${sn.rawB}`:'Датчик не подключён — плата в режиме имитации. Настройки сохранятся и начнут работать после подключения.';
+    $('snInfo').textContent=sn.present?`Действующий порог ${sn.threshold} мм · срабатываний за день: A ${sn.rawA}, B ${sn.rawB}`:(S.sim?'Датчик не найден — плата ищет его каждую секунду. Настройки сохранятся и начнут работать после подключения.':'Датчик найден, но не присылает измерения — вероятно, плохой контакт. Откройте «Меню отладки».');
     $('snCal').disabled=!sn.present;
     if(!sensorFormTouched){$('snInv').checked=!!sn.invert;$('snThr').value=sn.cfgThreshold??0;$('snDeb').value=sn.debounce??300}
   }
@@ -560,7 +587,19 @@ async function scan(refresh){
 function wifiRender(){
   const b=$('wifiBody');
   if(W.view==='busy'){b.innerHTML=`<div class="state"><div class="big spin">${ic('refresh',34)}</div><h4>Подключаюсь</h4><p>к сети «${esc(W.ssid)}». Это займёт до 20 секунд.</p></div>`;return}
-  if(W.view==='ok'){b.innerHTML=`<div class="state"><div class="big ok">${ic('check',40,2.6)}</div><h4>Подключено</h4><p>Счётчик в сети «${esc(W.ssid)}»${W.ip?', IP '+esc(W.ip):''}. Точка доступа выключится через минуту, светодиод будет гореть постоянно.</p></div><button class="cta" data-w="done">Готово</button>`;bindW();return}
+  if(W.view==='ok'){
+    const ip=W.ip||'',host=S&&S.id?S.id+'.local':'',ap=(S&&S.ap)||'сеть платы';
+    b.innerHTML=`<div class="state"><div class="big ok">${ic('check',40,2.6)}</div><h4>Подключено</h4><p>Счётчик в сети «${esc(W.ssid)}» и уже отправляет данные.</p></div>
+    ${ip?`<div class="ipcard"><small>Новый адрес панели — сохраните его</small><b class="num">${esc(ip)}</b>${host?`<span>или ${esc(host)} (iPhone, компьютер)</span>`:''}
+      <div class="ipbtns"><button class="cta sec2" data-w="copy">${ic('copy',18)}Скопировать</button><a class="cta" href="http://${esc(ip)}/">${ic('arrow',18)}Открыть</a></div></div>`:''}
+    <div class="howto"><b>Как открыть панель потом</b>
+      <div><i>1</i><span>Подключите телефон к сети «${esc(W.ssid)}» и откройте <b>http://${esc(ip||'IP-адрес')}</b>. Кнопка «Открыть» выше сработает только после этого.</span></div>
+      <div><i>2</i><span>Адрес забыли или вы не в этой сети — держите кнопку <b>BOOT</b> на плате 1–2 секунды. На 10 минут включится сеть «${esc(ap)}», подключитесь к ней — панель откроется сама. Счётчик при этом продолжает работать.</span></div>
+      <div><i>3</i><span>Через мобильный интернет панель платы не открыть — но состояние платы и настройки датчика есть на сайте: Управление → столовая → Счётчики.</span></div>
+    </div>
+    <p class="foot" style="margin-top:12px">Сеть «${esc(ap)}» погаснет сама, когда к ней 2 минуты никто не подключён.</p>
+    <button class="cta" data-w="done">Готово</button>`;
+    bindW();return}
   if(W.view==='fail'){b.innerHTML=`<div class="state"><div class="big bad">${ic('x',40,2.6)}</div><h4>Не удалось подключиться</h4><p>${esc(W.msg)}</p></div><button class="cta" data-w="retry">Попробовать снова</button>`;bindW();return}
   if(W.view==='lost'){b.innerHTML=`<div class="state"><div class="big">${ic('info',36)}</div><h4>Связь прервалась</h4><p>Так бывает в момент подключения. Посмотрите на светодиод: горит постоянно — всё готово, медленно мигает — подключитесь к точке снова и повторите.</p></div><button class="cta sec2" data-w="retry">Назад к списку</button>`;bindW();return}
 
@@ -607,6 +646,7 @@ function bindW(){
     if(a==='connect')connect();
     if(a==='done'){W.view='list';hide()}
     if(a==='retry'){W.view='list';wifiRender()}
+    if(a==='copy')copyText(W.ip,'Адрес скопирован');
   });
   const pw=$('wPw');if(pw)pw.onkeydown=e=>{if(e.key==='Enter')connect()};
 }
@@ -650,11 +690,21 @@ $('snCal').onclick=()=>confirmBox({title:'Калибровать пол?',text:'
   toast('Калибрую…','refresh');const j=await postJ('/api/calibrate');toast(j.ok?'Готово':'Не удалось откалибровать',j.ok?'check':'x');poll();
 });
 $('aOta').onclick=async()=>{await postJ('/api/ota-check');toast('Проверяю обновления…','refresh');setTimeout(poll,4000)};
-$('rId').onclick=()=>{const t=S?S.id:'';
-  const done=()=>toast('ID скопирован','copy');
+function copyText(t,msg){
+  const done=()=>toast(msg,'copy');
   if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(t).then(done);
-  else{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');done()}catch(e){}a.remove()}};
-$('sSrvB').onclick=async()=>{const server=$('sSrv').value.trim(),canteen=$('sCan').value.trim();if(!server||!canteen)return;await postJ('/api/settings',{server,canteen});document.activeElement.blur();toast('Настройки сохранены');poll()};
+  else{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');done()}catch(e){}a.remove()}}
+$('rId').onclick=()=>copyText(S?S.id:'','ID скопирован');
+$('aPortal').onclick=()=>confirmBox({title:'Включить сеть платы?',text:`На 10 минут появится сеть «${S&&S.ap||'Counter'}». Подключитесь к ней с телефона — эта панель откроется по адресу 192.168.4.1. Счётчик продолжит работать.`,icon:'wifi',yes:'Включить'},async()=>{await postJ('/api/portal');toast('Сеть платы включена на 10 минут','wifi')});
+$('sSrvB').onclick=async()=>{
+  if(!S){toast('Подождите, загружаю настройки…','refresh');return}
+  const server=$('sSrv').value.trim(),canteen=$('sCan').value.trim();
+  if(!server||!canteen){toast('Заполните оба поля','x');return}
+  const save=async()=>{await postJ('/api/settings',{server,canteen});document.activeElement.blur();toast('Настройки сохранены');poll()};
+  // Смена проекта = новый вход в Firebase: плату придётся заново подтвердить на сайте
+  if(S.server&&server!==S.server)confirmBox({title:'Сменить проект?',text:`Сейчас плата работает с проектом «${S.server}». После смены она войдёт заново, и администратору нужно будет подтвердить её на сайте.`,icon:'server',yes:'Сменить',danger:true},save);
+  else save();
+};
 $('aReset').onclick=()=>confirmBox({title:'Обнулить счётчик?',text:'Число людей внутри станет 0. Общая статистика входов и выходов сохранится.',icon:'reset',yes:'Обнулить'},async()=>{await postJ('/reset');toast('Счётчик обнулён');poll()});
 $('aReboot').onclick=()=>confirmBox({title:'Перезагрузить?',text:'Устройство перезапустится, страница обновится через 10 секунд.',icon:'power',yes:'Перезагрузить'},async()=>{await postJ('/api/reboot');toast('Перезагрузка…','power');hide();setTimeout(()=>location.reload(),10000)});
 $('aForget').onclick=()=>confirmBox({title:'Забыть Wi‑Fi?',text:'Устройство отключится от сети и откроет точку доступа для новой настройки.',icon:'wifiOff',yes:'Забыть',danger:true},async()=>{await postJ('/api/forget');toast('Сеть удалена','wifiOff');hide()});

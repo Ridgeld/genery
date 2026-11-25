@@ -27,8 +27,17 @@ export function contrast(a, b) {
   return (x + 0.05) / (y + 0.05);
 }
 
-const DARK = { ok: '#C3F82B', warn: '#FFC24B', bad: '#FF4365', info: '#6E9BFF', orange: '#FF9F43' };
-const LIGHT = { ok: '#3B8C00', warn: '#B57300', bad: '#E3173E', info: '#2D63E8', orange: '#CF5F0E' };
+// Только цвета Genery: салатовый (успех) и красный (ошибка). На светлом фоне — их тёмные оттенки, иначе не читаются.
+// Жёлтого/оранжевого/голубого в теме нет: «внимание» и «информация» рисуются акцентом темы.
+const DARK = { ok: '#C3F82B', bad: '#FF4365' };
+const LIGHT = { ok: '#3B8C00', bad: '#E3173E' };
+
+// Смесь двух hex-цветов (t — доля второго)
+export function mix(a, b, t) {
+  const x = rgb(a);
+  const y = rgb(b);
+  return '#' + x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, '0')).join('');
+}
 
 export function themePalette(theme = {}) {
   const bg = hex(theme.background_color) || '#0A0B10';
@@ -43,16 +52,21 @@ export function themePalette(theme = {}) {
   // Главная плашка («Свободно», выбранный день) красится first_color темы — он бывает градиентом
   const heroHex = hex(theme.first_color);
   const onHero = heroHex && contrast('#0A0B10', heroHex) > contrast('#FFFFFF', heroHex) ? '#0A0B10' : '#FFFFFF';
-  // Цвет обычных столбцов графика: акцент, но если он похож на «людно»/«мест нет» — нейтральный текстовый
+  // Цвет обычных столбцов графика: акцент, но если он похож на «мест нет» — нейтральный текстовый
   const dist = (a, b) => { const x = rgb(a); const y = rgb(b); return Math.hypot(x[0] - y[0], x[1] - y[1], x[2] - y[2]); };
-  const base = [sem.bad, sem.warn, DARK.bad, DARK.warn].some((c) => dist(accent, c) < 110) ? text : accent;
+  const base = [sem.bad, DARK.bad].some((c) => dist(accent, c) < 110) ? text : accent;
+  const heroSet = onHero === '#FFFFFF' ? { ...DARK, neutral: '#FFFFFF' } : { ...LIGHT, neutral: '#0A0B10' };
   return {
     light, bg, text, panel, accent, onAccent, onHero, base,
     muted: light ? '#6B6B78' : '#8A8A99',
     ...sem,
+    warn: accent,                  // «внимание» — акцент темы
+    info: accent,
+    orange: accent,
+    busy: mix(sem.bad, panel, 0.45),   // «людно» — приглушённый красный темы
     neutral: text,
-    // Цвета поверх главной плашки (кольцо в «Свободно»)
-    onHeroSet: onHero === '#FFFFFF' ? { ...DARK, neutral: '#FFFFFF' } : { ...LIGHT, neutral: '#0A0B10' },
+    // Цвета поверх главной плашки (кольцо в «Свободно»): «людно» — красный, смешанный с цветом текста плашки
+    onHeroSet: { ...heroSet, warn: mix(heroSet.bad, heroSet.neutral, 0.4), busy: mix(heroSet.bad, heroSet.neutral, 0.4) },
   };
 }
 
@@ -75,10 +89,10 @@ export function themeVars(theme) {
 // Ссылки на переменные (работают внутри элемента со style={themeVars(theme)}), с запасным значением
 export const C = {
   ok: 'var(--c-ok, #C3F82B)',
-  warn: 'var(--c-warn, #FFC24B)',
+  warn: 'var(--c-warn, #0040F9)',
   bad: 'var(--c-bad, #FF4365)',
-  info: 'var(--c-info, #6E9BFF)',
-  orange: 'var(--c-orange, #FF9F43)',
+  info: 'var(--c-info, #0040F9)',
+  orange: 'var(--c-orange, #0040F9)',
   neutral: 'var(--c-neutral, #FFFFFF)',
   muted: 'var(--c-muted, #8A8A99)',
   accent: 'var(--c-accent, #0040F9)',
@@ -92,4 +106,4 @@ export const tint = (color, pct) => `color-mix(in srgb, ${color} ${pct}%, transp
 export const statusHex = (key, p) => ({ open: p.ok, sanitary: p.warn, break: p.orange, takeaway: p.info, closed: p.bad }[key] || p.bad);
 
 // Цвет уровня загрузки
-export const levelColor = (key, p) => ({ free: p.ok, mid: p.neutral, busy: p.warn, full: p.bad }[key] || p.muted);
+export const levelColor = (key, p) => ({ free: p.ok, mid: p.neutral, busy: p.busy || p.warn, full: p.bad }[key] || p.muted);
